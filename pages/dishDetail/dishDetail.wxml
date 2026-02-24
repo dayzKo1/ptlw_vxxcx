@@ -1,5 +1,8 @@
 <view class="container">
-  <swiper class="dish-swiper" indicator-dots="{{images.length > 1}}" autoplay="{{images.length > 1}}">
+  <view class="image-placeholder" wx:if="{{images.length === 1 && images[0].length <= 2}}">
+    <text class="emoji">{{images[0]}}</text>
+  </view>
+  <swiper wx:else class="dish-swiper" indicator-dots="{{images.length > 1}}" autoplay="{{images.length > 1}}">
     <swiper-item wx:for="{{images}}" wx:key="index">
       <image class="swiper-image" src="{{item}}" mode="aspectFill"></image>
     </swiper-item>
@@ -52,7 +55,7 @@
   <view class="footer-bar">
     <view class="total-info">
       <text class="total-label">合计：</text>
-      <text class="total-price">¥{{(dish.price * quantity).toFixed(2)}}</text>
+      <text class="total-price">¥{{totalPrice}}</text>
     </view>
     <button class="add-cart-btn" bindtap="addToCart">加入购物车</button>
   </view>

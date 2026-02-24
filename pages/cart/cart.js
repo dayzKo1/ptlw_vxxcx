@@ -20,10 +20,16 @@ Page({
     const cartItems = []
     let totalPrice = 0
 
+    const mockDishes = {
+      '1': { _id: '1', name: '招牌红烧肉', price: 68, emoji: '🥩' },
+      '2': { _id: '2', name: '宫保鸡丁', price: 38, emoji: '🍗' },
+      '3': { _id: '3', name: '清蒸鲈鱼', price: 88, emoji: '🐟' }
+    }
+
     Object.keys(cart).forEach(dishId => {
       const quantity = cart[dishId]
       if (quantity > 0) {
-        const dish = wx.getStorageSync(`dish_${dishId}`)
+        const dish = wx.getStorageSync(`dish_${dishId}`) || mockDishes[dishId]
         if (dish) {
           cartItems.push({
             ...dish,

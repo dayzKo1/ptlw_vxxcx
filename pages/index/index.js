@@ -5,7 +5,8 @@ Page({
     shopInfo: {},
     hotDishes: [],
     categories: [],
-    tableNumber: ''
+    tableNumber: '',
+    currentPage: 'index'
   },
 
   onLoad() {

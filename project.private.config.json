@@ -1,5 +1,5 @@
 {
-  "libVersion": "3.14.2",
+  "libVersion": "3.6.0",
   "projectname": "ptlw_vxxcx",
   "setting": {
     "urlCheck": true,
@@ -9,6 +9,15 @@
     "preloadBackgroundData": false,
     "autoAudits": false,
     "showShadowRootInWxmlPanel": true,
-    "compileHotReLoad": true
-  }
+    "compileHotReLoad": true,
+    "useApiHook": true,
+    "useStaticServer": false,
+    "useLanDebug": false,
+    "showES6CompileOption": false,
+    "checkInvalidKey": true,
+    "ignoreDevUnusedFiles": true,
+    "bigPackageSizeSupport": false,
+    "useIsolateContext": true
+  },
+  "condition": {}
 }

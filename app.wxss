@@ -8,10 +8,11 @@ page {
 }
 
 .btn-primary {
-  background-color: #FF6B6B;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   color: #FFFFFF;
   border-radius: 50rpx;
   border: none;
+  box-shadow: 0 6rpx 20rpx rgba(255, 107, 107, 0.3);
 }
 
 .btn-secondary {
@@ -22,11 +23,11 @@ page {
 }
 
 .card {
-  background-color: #FFFFFF;
-  border-radius: 20rpx;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  background: linear-gradient(145deg, #FFFFFF 0%, #FAFAFA 100%);
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.1);
 }
 
 .text-primary {
@@ -63,4 +64,49 @@ page {
   content: '¥';
   font-size: 24rpx;
   margin-right: 4rpx;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.slide-in {
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
 }

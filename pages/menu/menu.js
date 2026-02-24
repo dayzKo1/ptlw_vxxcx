@@ -35,7 +35,34 @@ Page({
       }
     } catch (err) {
       console.error('加载分类失败', err)
+      const mockCategories = [
+        { _id: '1', name: '热菜', emoji: '🔥' },
+        { _id: '2', name: '凉菜', emoji: '🥗' },
+        { _id: '3', name: '主食', emoji: '🍚' }
+      ]
+      this.setData({
+        categories: mockCategories,
+        currentCategoryId: '1'
+      })
+      this.loadMockDishes()
     }
+  },
+
+  loadMockDishes() {
+    const mockDishes = [
+      { _id: '1', categoryId: '1', name: '招牌红烧肉', price: 68, emoji: '🥩', description: '精选五花肉', isHot: true, quantity: 0 },
+      { _id: '2', categoryId: '1', name: '宫保鸡丁', price: 38, emoji: '🍗', description: '经典川菜', isHot: true, quantity: 0 },
+      { _id: '3', categoryId: '1', name: '清蒸鲈鱼', price: 88, emoji: '🐟', description: '新鲜鲈鱼', quantity: 0 },
+      { _id: '4', categoryId: '2', name: '凉拌黄瓜', price: 18, emoji: '🥒', description: '清脆爽口', quantity: 0 },
+      { _id: '5', categoryId: '2', name: '皮蛋豆腐', price: 22, emoji: '🥚', description: '嫩滑鲜美', quantity: 0 },
+      { _id: '6', categoryId: '3', name: '白米饭', price: 5, emoji: '🍚', description: '东北大米', quantity: 0 },
+      { _id: '7', categoryId: '3', name: '炒饭', price: 15, emoji: '🍳', description: '扬州炒饭', quantity: 0 }
+    ]
+    const categoryDishes = this.data.categories.map(cat => ({
+      ...cat,
+      dishes: mockDishes.filter(d => d.categoryId === cat._id)
+    }))
+    this.setData({ categoryDishes })
   },
 
   async loadAllDishes() {

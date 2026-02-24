@@ -38,17 +38,24 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": false
+    "condition": false,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
-  "cloudfunctionRoot": "./cloudfunctions/",
-  "cloudbaseRoot": "./cloudbase/",
-  "libVersion": "2.19.4",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "cloudbaseRoot": "cloudbase/",
+  "libVersion": "3.14.2",
   "appid": "wxe42c3c5287c6681b",
   "projectname": "点餐小程序",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "simulatorPluginLibVersion": {}
 }

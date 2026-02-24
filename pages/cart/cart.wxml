@@ -1,6 +1,6 @@
 <view class="container">
   <view class="empty-cart" wx:if="{{cartItems.length === 0}}">
-    <view class="empty-icon">🛒</view>
+    <view class="empty-icon"><text>🛒</text></view>
     <text class="empty-text">购物车是空的</text>
     <button class="go-order-btn" bindtap="goToMenu">去点餐</button>
   </view>
