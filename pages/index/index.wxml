@@ -1,21 +1,21 @@
 <view class="container">
   <view class="header">
-    <image class="shop-logo" src="{{shopInfo.logo}}" mode="aspectFill"></image>
+    <view class="shop-logo">🏪</view>
     <view class="shop-info">
       <text class="shop-name">{{shopInfo.name}}</text>
-      <text class="shop-address">{{shopInfo.address}}</text>
-      <text class="shop-phone">{{shopInfo.phone}}</text>
-      <text class="shop-hours">营业时间：{{shopInfo.businessHours}}</text>
+      <text class="shop-address">📍 {{shopInfo.address}}</text>
+      <text class="shop-phone">📞 {{shopInfo.phone}}</text>
+      <text class="shop-hours">⏰ 营业时间：{{shopInfo.businessHours}}</text>
     </view>
   </view>
 
   <view class="section">
     <view class="section-title">
-      <text>热门推荐</text>
+      <text>🔥 热门推荐</text>
     </view>
     <scroll-view scroll-x class="hot-dishes">
       <view class="hot-dish-item" wx:for="{{hotDishes}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-        <image class="dish-image" src="{{item.image}}" mode="aspectFill"></image>
+        <view class="dish-image-placeholder">{{item.emoji || '🍽️'}}</view>
         <text class="dish-name">{{item.name}}</text>
         <text class="dish-price">¥{{item.price}}</text>
       </view>
@@ -24,11 +24,11 @@
 
   <view class="section">
     <view class="section-title">
-      <text>菜品分类</text>
+      <text>📂 菜品分类</text>
     </view>
     <view class="category-list">
       <view class="category-item" wx:for="{{categories}}" wx:key="_id" bindtap="goToCategory" data-id="{{item._id}}">
-        <image class="category-image" src="{{item.image}}" mode="aspectFill"></image>
+        <view class="category-image-placeholder">{{item.emoji || '🍜'}}</view>
         <text class="category-name">{{item.name}}</text>
       </view>
     </view>
@@ -36,22 +36,25 @@
 
   <view class="section">
     <view class="section-title">
-      <text>扫码点餐</text>
+      <text>📱 扫码点餐</text>
     </view>
     <button class="scan-btn" bindtap="scanCode">
-      <image class="scan-icon" src="/images/scan.png"></image>
+      <text class="scan-icon">📷</text>
       <text>扫描桌号二维码</text>
     </button>
   </view>
 
   <view class="nav-bar">
     <view class="nav-item" bindtap="goToPage" data-page="menu">
+      <text class="nav-icon">🍽️</text>
       <text>点餐</text>
     </view>
     <view class="nav-item" bindtap="goToPage" data-page="cart">
+      <text class="nav-icon">🛒</text>
       <text>购物车</text>
     </view>
     <view class="nav-item" bindtap="goToPage" data-page="order">
+      <text class="nav-icon">📋</text>
       <text>订单</text>
     </view>
   </view>

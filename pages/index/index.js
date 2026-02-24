@@ -27,6 +27,15 @@ Page({
       this.setData({ hotDishes: res.data })
     } catch (err) {
       console.error('加载热门菜品失败', err)
+      this.setData({
+        hotDishes: [
+          { _id: '1', name: '招牌红烧肉', price: 68, emoji: '🥩' },
+          { _id: '2', name: '清蒸鲈鱼', price: 88, emoji: '🐟' },
+          { _id: '3', name: '宫保鸡丁', price: 38, emoji: '🍗' },
+          { _id: '4', name: '麻婆豆腐', price: 28, emoji: '🍛' },
+          { _id: '5', name: '糖醋排骨', price: 58, emoji: '🍖' }
+        ]
+      })
     }
   },
 
@@ -40,6 +49,16 @@ Page({
       this.setData({ categories: res.data })
     } catch (err) {
       console.error('加载分类失败', err)
+      this.setData({
+        categories: [
+          { _id: '1', name: '热菜', emoji: '🔥' },
+          { _id: '2', name: '凉菜', emoji: '🥗' },
+          { _id: '3', name: '主食', emoji: '🍚' },
+          { _id: '4', name: '汤品', emoji: '🍲' },
+          { _id: '5', name: '饮品', emoji: '🥤' },
+          { _id: '6', name: '甜点', emoji: '🍰' }
+        ]
+      })
     }
   },
 

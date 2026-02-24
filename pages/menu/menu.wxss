@@ -2,6 +2,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #F8F8F8;
 }
 
 .menu-layout {
@@ -11,22 +12,24 @@
 }
 
 .category-sidebar {
-  width: 180rpx;
-  background-color: #F5F5F5;
+  width: 200rpx;
+  background-color: #F8F8F8;
   height: 100%;
+  overflow-y: auto;
 }
 
 .category-item {
-  padding: 30rpx 20rpx;
-  font-size: 26rpx;
+  padding: 32rpx 20rpx;
+  font-size: 28rpx;
   color: #666666;
   text-align: center;
-  border-bottom: 1rpx solid #E0E0E0;
+  border-bottom: 1rpx solid #EEEEEE;
   position: relative;
+  transition: all 0.3s ease;
 }
 
 .category-item.active {
-  background-color: #FFFFFF;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 100%);
   color: #FF6B6B;
   font-weight: bold;
 }
@@ -37,47 +40,76 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 6rpx;
-  height: 40rpx;
-  background-color: #FF6B6B;
-  border-radius: 0 4rpx 4rpx 0;
+  width: 8rpx;
+  height: 48rpx;
+  background: linear-gradient(180deg, #FF6B6B 0%, #FF8E53 100%);
+  border-radius: 0 6rpx 6rpx 0;
+}
+
+.category-emoji {
+  display: block;
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
 }
 
 .dish-list {
   flex: 1;
   height: 100%;
-  padding: 20rpx;
+  padding: 24rpx;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .category-section {
-  margin-bottom: 30rpx;
+  margin-bottom: 40rpx;
 }
 
 .category-header {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 20rpx;
-  padding-left: 10rpx;
+  margin-bottom: 24rpx;
+  padding-left: 16rpx;
   border-left: 6rpx solid #FF6B6B;
+  display: flex;
+  align-items: center;
 }
 
 .dish-item {
   display: flex;
-  background-color: #FFFFFF;
-  border-radius: 16rpx;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.dish-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.12);
 }
 
 .dish-image {
-  width: 160rpx;
-  height: 160rpx;
-  border-radius: 12rpx;
-  margin-right: 20rpx;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 16rpx;
+  margin-right: 24rpx;
   flex-shrink: 0;
+  background-color: #F5F5F5;
+}
+
+.dish-image-placeholder {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 16rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #FFF5F5 0%, #FFE8E8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 100rpx;
 }
 
 .dish-info {
@@ -88,10 +120,10 @@
 }
 
 .dish-name {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
 }
 
 .dish-desc {
@@ -101,7 +133,23 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
+  line-height: 1.6;
+}
+
+.dish-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.dish-tag {
+  padding: 4rpx 12rpx;
+  background: linear-gradient(135deg, #FFF5F5 0%, #FFE8E8 100%);
+  color: #FF6B6B;
+  font-size: 20rpx;
+  border-radius: 8rpx;
 }
 
 .dish-bottom {
@@ -111,7 +159,7 @@
 }
 
 .dish-price {
-  font-size: 36rpx;
+  font-size: 40rpx;
   color: #FF6B6B;
   font-weight: bold;
 }
@@ -123,31 +171,42 @@
 
 .minus-btn,
 .plus-btn {
-  width: 50rpx;
-  height: 50rpx;
+  width: 56rpx;
+  height: 56rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 32rpx;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 .minus-btn {
-  background-color: #F5F5F5;
+  background: linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%);
   color: #666666;
 }
 
+.minus-btn:active {
+  transform: scale(0.9);
+}
+
 .plus-btn {
-  background-color: #FF6B6B;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
+}
+
+.plus-btn:active {
+  transform: scale(0.9);
 }
 
 .quantity {
-  width: 60rpx;
+  width: 70rpx;
   text-align: center;
-  font-size: 28rpx;
+  font-size: 30rpx;
   color: #333333;
+  font-weight: bold;
 }
 
 .cart-bar {
@@ -155,13 +214,14 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 120rpx;
-  background-color: #FFFFFF;
+  height: 140rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%);
   display: flex;
   align-items: center;
   padding: 0 30rpx;
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.1);
-  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.15);
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  z-index: 1000;
 }
 
 .cart-info {
@@ -172,28 +232,36 @@
 
 .cart-icon-wrapper {
   position: relative;
-  margin-right: 20rpx;
+  margin-right: 24rpx;
 }
 
 .cart-icon {
-  width: 80rpx;
-  height: 80rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.3);
 }
 
 .cart-badge {
   position: absolute;
-  top: -10rpx;
-  right: -10rpx;
-  background-color: #FF6B6B;
+  top: -8rpx;
+  right: -8rpx;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   color: #FFFFFF;
   font-size: 20rpx;
-  min-width: 36rpx;
-  height: 36rpx;
-  border-radius: 18rpx;
+  min-width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 8rpx;
+  padding: 0 10rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.4);
 }
 
 .cart-total {
@@ -202,7 +270,7 @@
 }
 
 .total-price {
-  font-size: 36rpx;
+  font-size: 40rpx;
   color: #FF6B6B;
   font-weight: bold;
 }
@@ -213,14 +281,22 @@
 }
 
 .checkout-btn {
-  width: 200rpx;
-  height: 80rpx;
+  width: 220rpx;
+  height: 90rpx;
   background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   color: #FFFFFF;
-  font-size: 28rpx;
-  border-radius: 40rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  border-radius: 50rpx;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.3);
+  transition: all 0.3s ease;
+}
+
+.checkout-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.4);
 }
