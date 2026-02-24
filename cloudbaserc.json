@@ -1,0 +1,5 @@
+{
+  "description": "云函数配置文件",
+  "envId": "your_env_id_here",
+  "functionRoot": "./cloudfunctions/"
+}

@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.log
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+dist/
+build/
+.cache/
+.temp/

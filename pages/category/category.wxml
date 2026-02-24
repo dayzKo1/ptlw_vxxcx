@@ -1,0 +1,36 @@
+<view class="container">
+  <view class="category-header">
+    <image class="category-bg" src="{{category.image}}" mode="aspectFill"></image>
+    <view class="category-overlay">
+      <text class="category-name">{{category.name}}</text>
+      <text class="category-desc">{{category.description}}</text>
+    </view>
+  </view>
+
+  <view class="dish-list">
+    <view class="dish-item" wx:for="{{dishes}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+      <image class="dish-image" src="{{item.image}}" mode="aspectFill"></image>
+      <view class="dish-info">
+        <text class="dish-name">{{item.name}}</text>
+        <text class="dish-desc">{{item.description}}</text>
+        <view class="dish-tags">
+          <text class="tag" wx:if="{{item.isHot}}">热销</text>
+          <text class="tag" wx:if="{{item.isNew}}">新品</text>
+          <text class="tag spicy" wx:if="{{item.spicyLevel > 0}}">辣度{{item.spicyLevel}}</text>
+        </view>
+        <view class="dish-bottom">
+          <text class="dish-price">¥{{item.price}}</text>
+          <view class="quantity-control">
+            <view class="minus-btn" wx:if="{{item.quantity > 0}}" bindtap="minusDish" data-id="{{item._id}}">-</view>
+            <text class="quantity" wx:if="{{item.quantity > 0}}">{{item.quantity}}</text>
+            <view class="plus-btn" bindtap="plusDish" data-id="{{item._id}}">+</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{dishes.length === 0}}">
+    <text>暂无菜品</text>
+  </view>
+</view>

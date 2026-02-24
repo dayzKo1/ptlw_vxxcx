@@ -1,0 +1,53 @@
+<view class="container">
+  <view class="menu-layout">
+    <scroll-view scroll-y class="category-sidebar" scroll-into-view="{{currentCategory}}" scroll-with-animation>
+      <view 
+        class="category-item {{item._id === currentCategoryId ? 'active' : ''}}" 
+        wx:for="{{categories}}" 
+        wx:key="_id"
+        bindtap="selectCategory"
+        data-id="{{item._id}}"
+        data-index="{{index}}"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </scroll-view>
+
+    <scroll-view scroll-y class="dish-list" bindscrolltolower="loadMore">
+      <view class="category-section" id="category-{{item._id}}" wx:for="{{categoryDishes}}" wx:key="_id">
+        <view class="category-header">
+          <text>{{item.name}}</text>
+        </view>
+        <view class="dish-item" wx:for="{{item.dishes}}" wx:for-item="dish" wx:key="_id" bindtap="goToDetail" data-id="{{dish._id}}">
+          <image class="dish-image" src="{{dish.image}}" mode="aspectFill"></image>
+          <view class="dish-info">
+            <text class="dish-name">{{dish.name}}</text>
+            <text class="dish-desc">{{dish.description}}</text>
+            <view class="dish-bottom">
+              <text class="dish-price">¥{{dish.price}}</text>
+              <view class="quantity-control" catchtap="stopPropagation">
+                <view class="minus-btn" wx:if="{{dish.quantity > 0}}" bindtap="minusDish" data-id="{{dish._id}}">-</view>
+                <text class="quantity" wx:if="{{dish.quantity > 0}}">{{dish.quantity}}</text>
+                <view class="plus-btn" bindtap="plusDish" data-id="{{dish._id}}">+</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="cart-bar" wx:if="{{cartCount > 0}}">
+    <view class="cart-info" bindtap="goToCart">
+      <view class="cart-icon-wrapper">
+        <image class="cart-icon" src="/images/cart-white.png"></image>
+        <view class="cart-badge">{{cartCount}}</view>
+      </view>
+      <view class="cart-total">
+        <text class="total-price">¥{{cartTotal}}</text>
+        <text class="total-desc">另需配送费</text>
+      </view>
+    </view>
+    <button class="checkout-btn" bindtap="goToCart">去结算</button>
+  </view>
+</view>

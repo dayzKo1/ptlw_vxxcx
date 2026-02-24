@@ -1,0 +1,66 @@
+page {
+  background-color: #F5F5F5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container {
+  padding: 20rpx;
+}
+
+.btn-primary {
+  background-color: #FF6B6B;
+  color: #FFFFFF;
+  border-radius: 50rpx;
+  border: none;
+}
+
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: #FF6B6B;
+  border: 2rpx solid #FF6B6B;
+  border-radius: 50rpx;
+}
+
+.card {
+  background-color: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.text-primary {
+  color: #FF6B6B;
+}
+
+.text-secondary {
+  color: #999999;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.price {
+  color: #FF6B6B;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.price::before {
+  content: '¥';
+  font-size: 24rpx;
+  margin-right: 4rpx;
+}

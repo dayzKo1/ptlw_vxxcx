@@ -1,0 +1,183 @@
+.container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+}
+
+.tabs {
+  display: flex;
+  background-color: #FFFFFF;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.tab-item {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #666666;
+  position: relative;
+}
+
+.tab-item.active {
+  color: #FF6B6B;
+  font-weight: bold;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 6rpx;
+  background-color: #FF6B6B;
+  border-radius: 3rpx;
+}
+
+.order-list {
+  padding: 20rpx;
+  min-height: calc(100vh - 88rpx);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #999999;
+}
+
+.order-item {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.order-no {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.order-status {
+  font-size: 26rpx;
+  color: #FF6B6B;
+  font-weight: bold;
+}
+
+.order-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.table-number {
+  font-size: 26rpx;
+  color: #333333;
+  margin-right: 30rpx;
+}
+
+.order-time {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.order-items {
+  margin-bottom: 20rpx;
+}
+
+.item-preview {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.dish-image {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 8rpx;
+  margin-right: 16rpx;
+}
+
+.dish-name {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dish-quantity {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.order-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.total-price {
+  font-size: 32rpx;
+  color: #FF6B6B;
+  font-weight: bold;
+}
+
+.action-btns {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  padding: 12rpx 30rpx;
+  font-size: 24rpx;
+  border-radius: 30rpx;
+  border: none;
+  line-height: 1;
+}
+
+.pay-btn {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #FFFFFF;
+}
+
+.cancel-btn {
+  background-color: #F5F5F5;
+  color: #666666;
+}
+
+.reorder-btn {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #FFFFFF;
+}
