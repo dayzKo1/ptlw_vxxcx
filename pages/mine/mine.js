@@ -116,6 +116,12 @@ Page({
     })
   },
 
+  handleTableQRCode() {
+    wx.navigateTo({
+      url: '/pages/tableQRCode/tableQRCode'
+    })
+  },
+
   handleFavorite() {
     wx.showToast({
       title: '功能开发中',

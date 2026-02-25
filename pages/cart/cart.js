@@ -2,6 +2,7 @@ Page({
   data: {
     cartItems: [],
     tableNumber: '',
+    deliveryMode: 'pickup',
     remark: '',
     totalPrice: 0
   },
@@ -94,15 +95,17 @@ Page({
     })
   },
 
-  async submitOrder() {
-    if (this.data.tableNumber === '未选择') {
-      wx.showToast({
-        title: '请先扫描桌号',
-        icon: 'none'
-      })
-      return
-    }
+  loadTableNumber() {
+    const tableNumber = wx.getStorageSync('tableNumber') || ''
+    this.setData({ tableNumber })
+  },
 
+  switchDeliveryMode(e) {
+    const mode = e.currentTarget.dataset.mode
+    this.setData({ deliveryMode: mode })
+  },
+
+  async submitOrder() {
     if (this.data.cartItems.length === 0) {
       wx.showToast({
         title: '购物车为空',
@@ -117,7 +120,7 @@ Page({
 
     try {
       const orderData = {
-        tableNumber: this.data.tableNumber,
+        tableNumber: this.data.tableNumber || '0',
         items: this.data.cartItems.map(item => ({
           dishId: item._id,
           name: item.name,
@@ -127,6 +130,7 @@ Page({
         })),
         totalPrice: parseFloat(this.data.totalPrice),
         remark: this.data.remark,
+        deliveryMode: this.data.deliveryMode,
         status: 0,
         createTime: new Date().getTime()
       }

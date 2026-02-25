@@ -7,8 +7,30 @@
 
   <view class="cart-content" wx:else>
     <view class="cart-header">
-      <text class="table-number">📍 桌号：{{tableNumber}}</text>
+      <text class="table-number">📍 桌号：{{tableNumber || '0'}}</text>
       <text class="clear-btn" bindtap="clearCart">🗑️ 清空</text>
+    </view>
+
+    <view class="delivery-mode-section">
+      <view class="mode-title">配送方式</view>
+      <view class="mode-options">
+        <view 
+          class="mode-option {{deliveryMode === 'pickup' ? 'active' : ''}}" 
+          bindtap="switchDeliveryMode" 
+          data-mode="pickup"
+        >
+          <text class="mode-icon">🏃</text>
+          <text class="mode-text">自取</text>
+        </view>
+        <view 
+          class="mode-option {{deliveryMode === 'delivery' ? 'active' : ''}}" 
+          bindtap="switchDeliveryMode" 
+          data-mode="delivery"
+        >
+          <text class="mode-icon">🛵</text>
+          <text class="mode-text">配送</text>
+        </view>
+      </view>
     </view>
 
     <scroll-view scroll-y class="cart-list">

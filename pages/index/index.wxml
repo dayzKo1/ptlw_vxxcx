@@ -7,35 +7,28 @@
   </view>
 
   <view class="table-selector-section">
-    <view class="table-selector-card" bindtap="showTableSelector">
-      <text class="table-selector-label">📍 当前桌号</text>
-      <text class="table-selector-value">{{tableNumber}}</text>
-      <text class="table-selector-arrow">></text>
+    <view class="table-info-card">
+      <text class="table-info-label">📍 当前桌号</text>
+      <text class="table-info-value">{{tableNumber || '0'}}</text>
     </view>
   </view>
 
-  <view class="section">
-    <view class="section-title">
-      <text>🔥 热门推荐</text>
-    </view>
-    <view class="hot-dishes-grid">
-      <view class="hot-dish-item" wx:for="{{hotDishes}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-        <view class="dish-image-placeholder">{{item.emoji || '🍽️'}}</view>
-        <text class="dish-name">{{item.name}}</text>
-        <text class="dish-price">¥{{item.price}}</text>
+  <view class="order-mode-section">
+    <view class="mode-item" bindtap="goToMenu" data-mode="dine-in">
+      <view class="mode-icon">🍽️</view>
+      <view class="mode-info">
+        <text class="mode-title">在店堂食</text>
+        <text class="mode-desc">扫码点餐，堂食享受</text>
       </view>
+      <view class="mode-arrow">→</view>
     </view>
-  </view>
-
-  <view class="section">
-    <view class="section-title">
-      <text>📂 菜品分类</text>
-    </view>
-    <view class="category-list">
-      <view class="category-item" wx:for="{{categories}}" wx:key="_id" bindtap="goToCategory" data-id="{{item._id}}">
-        <view class="category-image-placeholder">{{item.emoji || '🍜'}}</view>
-        <text class="category-name">{{item.name}}</text>
+    <view class="mode-item" bindtap="goToMenu" data-mode="delivery">
+      <view class="mode-icon">🛵</view>
+      <view class="mode-info">
+        <text class="mode-title">外卖配送</text>
+        <text class="mode-desc">在线下单，配送上门</text>
       </view>
+      <view class="mode-arrow">→</view>
     </view>
   </view>
 
@@ -47,20 +40,5 @@
       <text class="shop-phone" bindtap="makeCall">📞 {{shopInfo.phone}}</text>
       <text class="shop-hours">⏰ 营业时间：{{shopInfo.businessHours}}</text>
     </view>
-  </view>
-</view>
-
-<view class="table-selector-modal" wx:if="{{showTableSelector}}" bindtap="hideTableSelector">
-  <view class="table-selector-content" catchtap="stopPropagation">
-    <view class="table-selector-header">
-      <text class="table-selector-title">选择桌号</text>
-      <text class="table-selector-close" bindtap="hideTableSelector">✕</text>
-    </view>
-    <scroll-view scroll-y class="table-selector-list">
-      <view class="table-option" wx:for="{{tables}}" wx:key="_id" bindtap="selectTable" data-table="{{item.tableNumber}}">
-        <text class="table-option-text">{{item.tableNumber}}</text>
-        <text class="table-option-icon" wx:if="{{tableNumber === item.tableNumber}}">✓</text>
-      </view>
-    </scroll-view>
   </view>
 </view>

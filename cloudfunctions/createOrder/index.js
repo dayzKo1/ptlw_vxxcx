@@ -7,7 +7,7 @@ const db = cloud.database()
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
-  const { tableNumber, items, totalPrice, remark } = event
+  const { tableNumber, items, totalPrice, remark, deliveryMode, addressId } = event
 
   try {
     const orderNo = generateOrderNo()
@@ -19,6 +19,8 @@ exports.main = async (event, context) => {
       items,
       totalPrice,
       remark,
+      deliveryMode: deliveryMode || 'pickup',
+      addressId: addressId || '',
       status: 0,
       createTime: new Date().getTime(),
       updateTime: new Date().getTime()

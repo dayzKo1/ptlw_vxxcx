@@ -10,9 +10,13 @@
 
 ### 2. createOrder - 创建订单
 - **功能**: 创建新订单
-- **输入**: tableNumber, items, totalPrice, remark
+- **输入**: tableNumber (桌号，无桌号时为0), items, totalPrice, remark, deliveryMode (pickup/delivery), addressId (配送地址ID，可选)
 - **输出**: orderId, orderNo
 - **使用页面**: cart.js
+- **说明**: 
+  - tableNumber: 桌号，扫码获取或默认为0
+  - deliveryMode: pickup(自取) 或 delivery(配送)
+  - addressId: 配送模式下需要提供地址ID
 
 ### 3. createPayment - 创建支付
 - **功能**: 创建微信支付订单
@@ -125,6 +129,18 @@
 - **输入**: addressId
 - **输出**: success, message
 - **使用页面**: mine.js (我的页面)
+
+### 21. generateTableQRCode - 生成桌号二维码
+- **功能**: 为指定桌号生成小程序码
+- **输入**: tableNumber, page (默认pages/index/index)
+- **输出**: success, fileID, downloadURL
+- **使用页面**: tableQRCode.js (桌号二维码管理页面)
+
+### 22. batchGenerateTableQRCode - 批量生成桌号二维码
+- **功能**: 为所有桌号批量生成小程序码
+- **输入**: 无
+- **输出**: success, results, total, successCount
+- **使用页面**: tableQRCode.js (桌号二维码管理页面)
 
 ---
 

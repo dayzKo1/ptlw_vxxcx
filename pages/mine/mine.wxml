@@ -68,6 +68,11 @@
       <text class="menu-text">我的收藏</text>
       <text class="menu-arrow">></text>
     </view>
+    <view class="menu-item" bindtap="handleTableQRCode">
+      <text class="menu-icon">📱</text>
+      <text class="menu-text">桌号二维码</text>
+      <text class="menu-arrow">></text>
+    </view>
     <view class="menu-item" bindtap="handleCoupon">
       <text class="menu-icon">🎫</text>
       <text class="menu-text">优惠券</text>

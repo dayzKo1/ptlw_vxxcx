@@ -8,7 +8,8 @@
     "pages/order/order",
     "pages/orderDetail/orderDetail",
     "pages/category/category",
-    "pages/dishDetail/dishDetail"
+    "pages/dishDetail/dishDetail",
+    "pages/tableQRCode/tableQRCode"
   ],
   "window": {
     "backgroundTextStyle": "light",

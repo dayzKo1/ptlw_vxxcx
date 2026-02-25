@@ -24,19 +24,25 @@ App({
     
     if (options && options.query && options.query.table) {
       tableNumber = options.query.table
+      console.log('从URL参数获取桌号:', tableNumber)
     } else if (options && options.scene) {
       const scene = decodeURIComponent(options.scene)
-      const tableMatch = scene.match(/table=(\d+)/)
+      console.log('场景参数:', scene)
+      
+      const tableMatch = scene.match(/table=([^&]+)/)
       if (tableMatch) {
         tableNumber = tableMatch[1]
+        console.log('从场景参数获取桌号:', tableNumber)
       }
     }
     
     if (tableNumber) {
       wx.setStorageSync('tableNumber', tableNumber)
       this.globalData.tableNumber = tableNumber
+      console.log('桌号已保存:', tableNumber)
     } else {
       this.globalData.tableNumber = wx.getStorageSync('tableNumber') || ''
+      console.log('使用本地存储的桌号:', this.globalData.tableNumber)
     }
   },
   

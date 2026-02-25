@@ -20,8 +20,6 @@ Page({
   onShow() {
     this.loadCart()
   },
-
-  async loadCategories() {
     try {
       const db = wx.cloud.database()
       const res = await db.collection('categories')
