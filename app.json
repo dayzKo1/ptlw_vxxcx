@@ -1,8 +1,10 @@
 {
   "pages": [
+    "pages/login/login",
     "pages/index/index",
     "pages/menu/menu",
     "pages/cart/cart",
+    "pages/mine/mine",
     "pages/order/order",
     "pages/orderDetail/orderDetail",
     "pages/category/category",
@@ -40,10 +42,10 @@
         "selectedIconPath": "images/cart-active.png"
       },
       {
-        "pagePath": "pages/order/order",
-        "text": "订单",
-        "iconPath": "images/order.png",
-        "selectedIconPath": "images/order-active.png"
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/mine.png",
+        "selectedIconPath": "images/mine-active.png"
       }
     ]
   },

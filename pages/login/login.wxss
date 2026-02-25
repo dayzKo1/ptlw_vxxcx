@@ -1,0 +1,138 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 50%, #ffb347 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 600rpx;
+  background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+  border-radius: 32rpx;
+  padding: 80rpx 40rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+
+.logo {
+  font-size: 160rpx;
+  margin-bottom: 24rpx;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20rpx);
+  }
+}
+
+.app-name {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.app-desc {
+  display: block;
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.login-section {
+  margin-bottom: 60rpx;
+}
+
+.login-btn {
+  width: 100%;
+  height: 100rpx;
+  background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
+  color: #ffffff;
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
+  transition: all 0.3s ease;
+  margin-bottom: 32rpx;
+}
+
+.login-btn::after {
+  border: none;
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+}
+
+.login-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.login-text {
+  font-size: 32rpx;
+}
+
+.agreement {
+  text-align: center;
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.agreement-text {
+  color: #999999;
+}
+
+.agreement-link {
+  color: #ff6b6b;
+  margin: 0 4rpx;
+}
+
+.tips-section {
+  text-align: center;
+}
+
+.tips-text {
+  font-size: 24rpx;
+  color: #cccccc;
+}

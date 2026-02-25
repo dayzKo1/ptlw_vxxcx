@@ -7,7 +7,17 @@ App({
         traceUser: true,
       })
     }
+    
+    this.checkLogin()
   },
+  
+  checkLogin() {
+    const userInfo = wx.getStorageSync('userInfo')
+    if (userInfo) {
+      this.globalData.userInfo = userInfo
+    }
+  },
+  
   globalData: {
     userInfo: null,
     shopInfo: {
