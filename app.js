@@ -54,7 +54,9 @@ App({
       address: '福建省福州市平潭县君山镇北港村新门前16号',
       phone: '181-5919-5897',
       businessHours: '10:00-22:00',
-      logo: ''
+      logo: '',
+      latitude: 25.5067,
+      longitude: 119.7956
     }
   }
 })

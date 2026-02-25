@@ -36,7 +36,7 @@
     <view class="shop-logo">🏪</view>
     <view class="shop-info">
       <text class="shop-name">{{shopInfo.name}}</text>
-      <text class="shop-address" bindtap="openLocation">📍 {{shopInfo.address}}</text>
+      <text class="shop-address" bindtap="openLocation">📍 {{shopInfo.address}} {{distance ? '· ' + distance : ''}}</text>
       <text class="shop-phone" bindtap="makeCall">📞 {{shopInfo.phone}}</text>
       <text class="shop-hours">⏰ 营业时间：{{shopInfo.businessHours}}</text>
     </view>

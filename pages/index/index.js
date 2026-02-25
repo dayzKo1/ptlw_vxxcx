@@ -4,7 +4,8 @@ Page({
   data: {
     shopInfo: {},
     banners: [],
-    tableNumber: ''
+    tableNumber: '',
+    distance: ''
   },
 
   onLoad() {
@@ -13,6 +14,7 @@ Page({
     })
     this.loadBanners()
     this.loadTableNumber()
+    this.getLocation()
   },
 
   loadBanners() {
@@ -73,5 +75,53 @@ Page({
         })
       }
     })
+  },
+
+  getLocation() {
+    wx.getLocation({
+      type: 'gcj02',
+      success: (res) => {
+        const { latitude, longitude } = res
+        const distance = this.calculateDistance(
+          latitude,
+          longitude,
+          this.data.shopInfo.latitude || 0,
+          this.data.shopInfo.longitude || 0
+        )
+        this.setData({ distance })
+      },
+      fail: (err) => {
+        console.error('获取位置失败', err)
+        wx.showToast({
+          title: '获取位置失败',
+          icon: 'none'
+        })
+      }
+    })
+  },
+
+  calculateDistance(lat1, lon1, lat2, lon2) {
+    if (!lat2 || !lon2) {
+      return ''
+    }
+
+    const R = 6371
+    const dLat = this.toRad(lat2 - lat1)
+    const dLon = this.toRad(lon2 - lon1)
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    const distance = R * c
+
+    if (distance < 1) {
+      return Math.round(distance * 1000) + 'm'
+    } else {
+      return distance.toFixed(1) + 'km'
+    }
+  },
+
+  toRad(deg) {
+    return deg * (Math.PI / 180)
   }
 })
