@@ -2,11 +2,13 @@ const app = getApp()
 
 Page({
   data: {
-    userInfo: null
+    userInfo: null,
+    isDev: false
   },
 
   onLoad() {
     this.checkLogin()
+    this.checkDevMode()
   },
 
   checkLogin() {
@@ -17,6 +19,11 @@ Page({
         url: '/pages/index/index'
       })
     }
+  },
+
+  checkDevMode() {
+    const isDev = wx.getStorageSync('isDevMode') || false
+    this.setData({ isDev })
   },
 
   handleLogin() {
@@ -34,6 +41,20 @@ Page({
         })
       }
     })
+  },
+
+  handleDevLogin() {
+    const mockUserInfo = {
+      nickName: '开发测试用户',
+      avatarUrl: '',
+      gender: 1,
+      language: 'zh_CN',
+      city: '福州',
+      province: '福建',
+      country: '中国'
+    }
+    
+    this.mockLogin(mockUserInfo)
   },
 
   async login(userInfo) {
@@ -89,5 +110,56 @@ Page({
         icon: 'none'
       })
     }
+  },
+
+  async mockLogin(userInfo) {
+    wx.showLoading({
+      title: '模拟登录中...',
+      mask: true
+    })
+
+    try {
+      const mockOpenid = 'dev_' + Date.now()
+      
+      const userData = {
+        ...userInfo,
+        openid: mockOpenid,
+        loginTime: new Date().getTime(),
+        isMock: true
+      }
+
+      wx.setStorageSync('userInfo', userData)
+      app.globalData.userInfo = userData
+
+      wx.hideLoading()
+      wx.showToast({
+        title: '模拟登录成功',
+        icon: 'success',
+        duration: 1500
+      })
+
+      setTimeout(() => {
+        wx.switchTab({
+          url: '/pages/index/index'
+        })
+      }, 1500)
+    } catch (err) {
+      console.error('模拟登录失败', err)
+      wx.hideLoading()
+      wx.showToast({
+        title: '模拟登录失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  toggleDevMode(e) {
+    const isDev = e.detail.value
+    wx.setStorageSync('isDevMode', isDev)
+    this.setData({ isDev })
+    wx.showToast({
+      title: isDev ? '开发模式已开启' : '开发模式已关闭',
+      icon: 'none'
+    })
   }
 })

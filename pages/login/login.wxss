@@ -128,6 +128,65 @@
   margin: 0 4rpx;
 }
 
+.dev-section {
+  margin-bottom: 24rpx;
+}
+
+.dev-login-btn {
+  width: 100%;
+  height: 100rpx;
+  background: linear-gradient(135deg, #ff8e53 0%, #ffb347 100%);
+  color: #ffffff;
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba(255, 142, 83, 0.3);
+  transition: all 0.3s ease;
+  margin-bottom: 24rpx;
+}
+
+.dev-login-btn::after {
+  border: none;
+}
+
+.dev-login-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(255, 142, 83, 0.3);
+}
+
+.dev-login-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.dev-login-text {
+  font-size: 32rpx;
+}
+
+.dev-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+  padding: 16rpx;
+  background: #f8f8f8;
+  border-radius: 16rpx;
+}
+
+.dev-toggle-text {
+  font-size: 28rpx;
+  color: #666666;
+  margin-right: 16rpx;
+}
+
+.dev-switch {
+  transform: scale(1.2);
+}
+
 .tips-section {
   text-align: center;
 }

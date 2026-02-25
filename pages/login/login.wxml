@@ -12,6 +12,18 @@
         <text class="login-text">微信一键登录</text>
       </button>
 
+      <view class="dev-section" wx:if="{{isDev}}">
+        <button class="dev-login-btn" bindtap="handleDevLogin">
+          <text class="dev-login-icon">🔧</text>
+          <text class="dev-login-text">开发环境模拟登录</text>
+        </button>
+      </view>
+
+      <view class="dev-toggle">
+        <text class="dev-toggle-text">开发模式</text>
+        <switch class="dev-switch" checked="{{isDev}}" bindchange="toggleDevMode" />
+      </view>
+
       <view class="agreement">
         <text class="agreement-text">登录即表示同意</text>
         <text class="agreement-link">《用户协议》</text>
