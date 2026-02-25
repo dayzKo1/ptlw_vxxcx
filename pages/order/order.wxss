@@ -222,17 +222,17 @@
 
 .action-btns {
   display: flex;
-  gap: 20rpx;
+  gap: 12rpx;
 }
 
 .action-btn {
-  padding: 18rpx 40rpx;
-  font-size: 28rpx;
+  padding: 12rpx 28rpx;
+  font-size: 24rpx;
   font-weight: 500;
-  border-radius: 34rpx;
+  border-radius: 24rpx;
   border: none;
   line-height: 1;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .action-btn:active {
@@ -242,7 +242,7 @@
 .pay-btn {
   background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
   color: #ffffff;
-  box-shadow: 0 6rpx 20rpx rgba(255, 107, 107, 0.35);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.25);
 }
 
 .cancel-btn {
@@ -253,5 +253,5 @@
 .reorder-btn {
   background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
   color: #ffffff;
-  box-shadow: 0 6rpx 20rpx rgba(255, 107, 107, 0.35);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.25);
 }

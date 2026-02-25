@@ -172,13 +172,13 @@
 }
 
 .action-btn {
-  padding: 18rpx 44rpx;
-  font-size: 28rpx;
+  padding: 14rpx 32rpx;
+  font-size: 26rpx;
   font-weight: 500;
-  border-radius: 44rpx;
+  border-radius: 28rpx;
   border: none;
   line-height: 1;
-  transition: all 0.35s ease;
+  transition: all 0.3s ease;
 }
 
 .action-btn:active {
@@ -193,7 +193,7 @@
 .pay-btn {
   background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
   color: #ffffff;
-  box-shadow: 0 6rpx 20rpx rgba(255, 107, 107, 0.35);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.25);
 }
 
 .contact-btn {
