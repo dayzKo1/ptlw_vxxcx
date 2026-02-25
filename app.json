@@ -3,13 +3,17 @@
     "pages/login/login",
     "pages/index/index",
     "pages/menu/menu",
-    "pages/cart/cart",
+    "pages/checkout/checkout",
     "pages/mine/mine",
     "pages/order/order",
     "pages/orderDetail/orderDetail",
     "pages/category/category",
     "pages/dishDetail/dishDetail",
-    "pages/tableQRCode/tableQRCode"
+    "pages/tableQRCode/tableQRCode",
+    "pages/addressEdit/addressEdit",
+    "pages/addressList/addressList",
+    "pages/about/about",
+    "pages/settings/settings"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -35,12 +39,6 @@
         "text": "点餐",
         "iconPath": "images/menu.png",
         "selectedIconPath": "images/menu-active.png"
-      },
-      {
-        "pagePath": "pages/cart/cart",
-        "text": "购物车",
-        "iconPath": "images/cart.png",
-        "selectedIconPath": "images/cart-active.png"
       },
       {
         "pagePath": "pages/mine/mine",

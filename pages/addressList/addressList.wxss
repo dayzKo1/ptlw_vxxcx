@@ -1,0 +1,155 @@
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 24rpx;
+  padding-bottom: 120rpx;
+  box-sizing: border-box;
+}
+
+.address-list {
+  padding-bottom: 24rpx;
+}
+
+.address-item {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.address-item.default {
+  border: 2rpx solid #ff6b6b;
+}
+
+.address-info {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.address-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-right: 16rpx;
+}
+
+.address-phone {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.address-detail {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+  margin-bottom: 8rpx;
+}
+
+.address-tags {
+  display: flex;
+  gap: 8rpx;
+}
+
+.default-tag {
+  padding: 4rpx 12rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: #ffffff;
+  font-size: 20rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+
+.address-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.action-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background: #f5f5f5;
+  color: #666666;
+}
+
+.edit-btn:active {
+  background: #eeeeee;
+}
+
+.delete-btn {
+  background: #fff5f5;
+  color: #ff6b6b;
+}
+
+.delete-btn:active {
+  background: #ffe8e8;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 32rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+  margin-bottom: 48rpx;
+}
+
+.add-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.1);
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+}
+
+.add-btn {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-radius: 48rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.35);
+  transition: all 0.3s ease;
+}
+
+.add-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.4);
+}

@@ -110,9 +110,8 @@ Page({
   },
 
   handleAddress() {
-    wx.showToast({
-      title: '功能开发中',
-      icon: 'none'
+    wx.navigateTo({
+      url: '/pages/addressList/addressList'
     })
   },
 
@@ -122,31 +121,15 @@ Page({
     })
   },
 
-  handleFavorite() {
-    wx.showToast({
-      title: '功能开发中',
-      icon: 'none'
-    })
-  },
-
-  handleCoupon() {
-    wx.showToast({
-      title: '功能开发中',
-      icon: 'none'
-    })
-  },
-
   handleSettings() {
-    wx.showToast({
-      title: '功能开发中',
-      icon: 'none'
+    wx.navigateTo({
+      url: '/pages/settings/settings'
     })
   },
 
   handleAbout() {
-    wx.showToast({
-      title: '功能开发中',
-      icon: 'none'
+    wx.navigateTo({
+      url: '/pages/about/about'
     })
   },
 

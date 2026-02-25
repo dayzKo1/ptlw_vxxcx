@@ -1,3 +1,5 @@
+const app = getApp()
+
 Page({
   data: {
     categories: [],
@@ -6,10 +8,12 @@ Page({
     cart: {},
     cartCount: 0,
     cartTotal: 0,
+    cartItems: [],
     deliveryMode: 'pickup',
     searchKeyword: '',
     showSearchResult: false,
-    searchResults: []
+    searchResults: [],
+    showCartDrawer: false
   },
 
   onLoad() {
@@ -20,6 +24,8 @@ Page({
   onShow() {
     this.loadCart()
   },
+
+  async loadCategories() {
     try {
       const db = wx.cloud.database()
       const res = await db.collection('categories')
@@ -184,6 +190,7 @@ Page({
   updateCart(cart) {
     let count = 0
     let total = 0
+    const cartItems = []
     
     const categoryDishes = this.data.categoryDishes.map(category => ({
       ...category,
@@ -191,6 +198,12 @@ Page({
         const quantity = cart[dish._id] || 0
         count += quantity
         total += quantity * dish.price
+        if (quantity > 0) {
+          cartItems.push({
+            ...dish,
+            quantity
+          })
+        }
         return {
           ...dish,
           quantity
@@ -202,7 +215,8 @@ Page({
       cart,
       cartCount: count,
       cartTotal: total.toFixed(2),
-      categoryDishes
+      categoryDishes,
+      cartItems
     })
 
     wx.setStorageSync('cart', cart)
@@ -220,13 +234,22 @@ Page({
     })
   },
 
-  goToCart() {
-    wx.switchTab({
-      url: '/pages/cart/cart'
+  stopPropagation() {
+    return false
+  },
+
+  toggleCartDrawer() {
+    this.setData({
+      showCartDrawer: !this.data.showCartDrawer
     })
   },
 
-  stopPropagation() {
-    return false
+  goToCheckout() {
+    this.setData({
+      showCartDrawer: false
+    })
+    wx.navigateTo({
+      url: '/pages/checkout/checkout'
+    })
   }
 })

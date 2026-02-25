@@ -168,6 +168,93 @@
   font-weight: bold;
 }
 
+.address-section {
+  background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+  padding: 32rpx;
+  margin: 0 28rpx 28rpx 28rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.1);
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.address-title {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: bold;
+}
+
+.add-address-btn {
+  font-size: 24rpx;
+  color: #ff6b6b;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  background: #fff5f5;
+}
+
+.address-list {
+  white-space: nowrap;
+  padding: 4rpx 0;
+}
+
+.address-item {
+  display: inline-block;
+  width: 280rpx;
+  padding: 20rpx;
+  margin-right: 16rpx;
+  background: #f5f5f5;
+  border-radius: 16rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  vertical-align: top;
+}
+
+.address-item.active {
+  background: #fff5f5;
+  border-color: #ff6b6b;
+}
+
+.address-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.address-name {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.address-detail {
+  font-size: 22rpx;
+  color: #666666;
+  line-height: 1.4;
+}
+
+.address-check {
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  font-size: 28rpx;
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.empty-address {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  color: #999999;
+  font-size: 24rpx;
+}
+
 .cart-list {
   flex: 1;
   padding: 28rpx;

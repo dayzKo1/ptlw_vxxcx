@@ -33,6 +33,31 @@
       </view>
     </view>
 
+    <view class="address-section" wx:if="{{deliveryMode === 'delivery'}}">
+      <view class="address-header">
+        <text class="address-title">配送地址</text>
+        <text class="add-address-btn" bindtap="addAddress">+ 添加地址</text>
+      </view>
+      <scroll-view scroll-x class="address-list">
+        <view 
+          class="address-item {{addressId === item._id ? 'active' : ''}}" 
+          wx:for="{{addresses}}" 
+          wx:key="_id"
+          bindtap="selectAddress"
+          data-id="{{item._id}}"
+        >
+          <view class="address-info">
+            <text class="address-name">{{item.name}} {{item.phone}}</text>
+            <text class="address-detail">{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</text>
+          </view>
+          <text class="address-check" wx:if="{{addressId === item._id}}">✓</text>
+        </view>
+        <view class="empty-address" wx:if="{{addresses.length === 0}}">
+          <text>暂无地址，请添加</text>
+        </view>
+      </scroll-view>
+    </view>
+
     <scroll-view scroll-y class="cart-list">
       <view class="cart-item" wx:for="{{cartItems}}" wx:key="_id">
         <view class="dish-image-placeholder">{{item.emoji || '🍽️'}}</view>
@@ -64,8 +89,18 @@
 
     <view class="cart-footer">
       <view class="total-info">
-        <text class="total-label">合计</text>
-        <text class="total-price">¥{{totalPrice}}</text>
+        <view class="total-row">
+          <text class="total-label">商品金额</text>
+          <text class="total-value">¥{{goodsTotal}}</text>
+        </view>
+        <view class="total-row" wx:if="{{deliveryMode === 'delivery'}}">
+          <text class="total-label">配送费</text>
+          <text class="total-value">¥{{deliveryFee}}</text>
+        </view>
+        <view class="total-row total-row-main">
+          <text class="total-label">合计</text>
+          <text class="total-price">¥{{totalPrice}}</text>
+        </view>
       </view>
       <button class="submit-btn" bindtap="submitOrder">提交订单</button>
     </view>

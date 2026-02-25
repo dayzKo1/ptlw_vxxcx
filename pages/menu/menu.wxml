@@ -110,7 +110,7 @@
   </view>
 
   <view class="cart-bar" wx:if="{{cartCount > 0}}">
-    <view class="cart-info" bindtap="goToCart">
+    <view class="cart-info" bindtap="toggleCartDrawer">
       <view class="cart-icon-wrapper">
         <view class="cart-icon">🛒</view>
         <view class="cart-badge">{{cartCount}}</view>
@@ -120,6 +120,37 @@
         <text class="total-desc">另需配送费</text>
       </view>
     </view>
-    <button class="checkout-btn" bindtap="goToCart">去结算</button>
+    <button class="checkout-btn" bindtap="goToCheckout">去结算</button>
+  </view>
+
+  <view class="cart-drawer-mask {{showCartDrawer ? 'show' : ''}}" bindtap="toggleCartDrawer"></view>
+  <view class="cart-drawer {{showCartDrawer ? 'show' : ''}}">
+    <view class="cart-drawer-header">
+      <text class="cart-drawer-title">购物车</text>
+      <text class="close-drawer" bindtap="toggleCartDrawer">✕</text>
+    </view>
+
+    <scroll-view scroll-y class="cart-drawer-list">
+      <view class="cart-drawer-item" wx:for="{{cartItems}}" wx:key="_id">
+        <view class="cart-dish-image-placeholder">{{item.emoji || '🍽️'}}</view>
+        <view class="cart-dish-info">
+          <text class="cart-dish-name">{{item.name}}</text>
+          <text class="cart-dish-price">¥{{item.price}}</text>
+        </view>
+        <view class="cart-quantity-control">
+          <view class="minus-btn" bindtap="minusDish" data-id="{{item._id}}">-</view>
+          <text class="quantity">{{item.quantity}}</text>
+          <view class="plus-btn" bindtap="plusDish" data-id="{{item._id}}">+</view>
+        </view>
+      </view>
+      <view class="empty-cart" wx:if="{{cartItems.length === 0}}">
+        <text class="empty-icon">🛒</text>
+        <text class="empty-text">购物车是空的</text>
+      </view>
+    </scroll-view>
+
+    <view class="cart-drawer-footer">
+      <button class="drawer-checkout-btn" bindtap="goToCheckout">去结算</button>
+    </view>
   </view>
 </view>

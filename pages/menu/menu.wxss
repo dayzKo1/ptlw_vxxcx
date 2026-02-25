@@ -487,3 +487,361 @@
   font-size: 26rpx;
   color: #999999;
 }
+
+.cart-drawer-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.cart-drawer-mask.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cart-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80vh;
+  background: #ffffff;
+  z-index: 1000;
+  border-radius: 32rpx 32rpx 0 0;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-drawer.show {
+  transform: translateY(0);
+}
+
+.cart-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.cart-drawer-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.close-drawer {
+  font-size: 32rpx;
+  color: #999999;
+  padding: 8rpx;
+}
+
+.cart-drawer-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cart-drawer-list {
+  flex: 1;
+  padding: 24rpx;
+  overflow-y: auto;
+}
+
+.cart-drawer-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.cart-drawer-item:last-child {
+  border-bottom: none;
+}
+
+.cart-dish-image-placeholder {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 12rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52rpx;
+}
+
+.cart-dish-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.cart-dish-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cart-dish-price {
+  font-size: 28rpx;
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.cart-quantity-control {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+.empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.empty-cart .empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.5;
+}
+
+.cart-drawer-footer {
+  padding: 24rpx;
+  border-top: 1rpx solid #f0f0f0;
+  background: #ffffff;
+}
+
+.drawer-checkout-btn {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-radius: 48rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.35);
+  transition: all 0.3s ease;
+}
+
+.drawer-checkout-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.4);
+}
+
+.delivery-mode-section {
+  margin-bottom: 24rpx;
+}
+
+.section-label {
+  display: block;
+  font-size: 26rpx;
+  color: #666666;
+  margin-bottom: 12rpx;
+}
+
+.delivery-mode-options {
+  display: flex;
+  gap: 12rpx;
+}
+
+.delivery-mode-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.delivery-mode-option.active {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: #ffffff;
+}
+
+.delivery-mode-icon {
+  font-size: 28rpx;
+  margin-right: 6rpx;
+}
+
+.delivery-mode-text {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.address-section {
+  margin-bottom: 24rpx;
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.address-title {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.add-address-btn {
+  font-size: 24rpx;
+  color: #ff6b6b;
+  padding: 6rpx 12rpx;
+  border-radius: 16rpx;
+  background: #fff5f5;
+}
+
+.address-list {
+  white-space: nowrap;
+  padding: 4rpx 0;
+}
+
+.address-item {
+  display: inline-block;
+  width: 280rpx;
+  padding: 16rpx;
+  margin-right: 12rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  vertical-align: top;
+}
+
+.address-item.active {
+  background: #fff5f5;
+  border-color: #ff6b6b;
+}
+
+.address-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.address-name {
+  font-size: 24rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.address-detail {
+  font-size: 22rpx;
+  color: #666666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.address-check {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  font-size: 24rpx;
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.empty-address {
+  text-align: center;
+  padding: 32rpx 0;
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.remark-section {
+  margin-bottom: 24rpx;
+}
+
+.remark-input {
+  width: 100%;
+  padding: 16rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #333333;
+  box-sizing: border-box;
+}
+
+.total-section {
+  margin-bottom: 24rpx;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.total-row-main {
+  margin-top: 12rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx dashed #eeeeee;
+}
+
+.total-label {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.total-value {
+  font-size: 24rpx;
+  color: #333333;
+}
+
+.total-price {
+  font-size: 36rpx;
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-radius: 48rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.35);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.4);
+}

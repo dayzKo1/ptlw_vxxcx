@@ -1,10 +1,11 @@
+const app = getApp()
+
 Page({
   data: {
     cartItems: [],
-    tableNumber: '',
-    deliveryMode: 'pickup',
-    addressId: '',
+    deliveryMode: 'dineIn',
     addresses: [],
+    addressId: '',
     remark: '',
     goodsTotal: 0,
     deliveryFee: 0,
@@ -12,12 +13,6 @@ Page({
   },
 
   onLoad() {
-    this.loadCart()
-    this.loadTableNumber()
-    this.loadAddresses()
-  },
-
-  onShow() {
     this.loadCart()
     this.loadAddresses()
   },
@@ -47,7 +42,7 @@ Page({
       }
     })
 
-    const deliveryFee = this.data.deliveryMode === 'delivery' ? 5 : 0
+    const deliveryFee = this.data.deliveryMode === 'takeaway' ? 5 : 0
     const totalPrice = goodsTotal + deliveryFee
 
     this.setData({
@@ -58,12 +53,27 @@ Page({
     })
   },
 
-  loadTableNumber() {
-    let tableNumber = wx.getStorageSync('tableNumber')
-    if (!tableNumber) {
-      tableNumber = '未选择'
+  async loadAddresses() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'getAddresses'
+      })
+
+      if (res.result.success) {
+        const addresses = res.result.addresses
+        const defaultAddress = addresses.find(addr => addr.isDefault)
+        this.setData({
+          addresses,
+          addressId: defaultAddress ? defaultAddress._id : ''
+        })
+      }
+    } catch (err) {
+      console.error('加载地址失败', err)
+      this.setData({
+        addresses: [],
+        addressId: ''
+      })
     }
-    this.setData({ tableNumber })
   },
 
   plusDish(e) {
@@ -100,54 +110,34 @@ Page({
     })
   },
 
-  onRemarkInput(e) {
-    this.setData({
-      remark: e.detail.value
-    })
-  },
-
-  loadTableNumber() {
-    const tableNumber = wx.getStorageSync('tableNumber') || ''
-    this.setData({ tableNumber })
-  },
-
   switchDeliveryMode(e) {
     const mode = e.currentTarget.dataset.mode
     this.setData({ deliveryMode: mode })
-    this.loadCart()
+    
+    const deliveryFee = mode === 'takeaway' ? 5 : 0
+    const goodsTotal = parseFloat(this.data.goodsTotal)
+    const totalPrice = goodsTotal + deliveryFee
+    
+    this.setData({
+      deliveryFee: deliveryFee.toFixed(2),
+      totalPrice: totalPrice.toFixed(2)
+    })
   },
 
-  async loadAddresses() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'getAddresses'
-      })
-
-      if (res.result.success) {
-        const addresses = res.result.addresses
-        const defaultAddress = addresses.find(addr => addr.isDefault)
-        this.setData({
-          addresses,
-          addressId: defaultAddress ? defaultAddress._id : ''
-        })
-      }
-    } catch (err) {
-      console.error('加载地址失败', err)
-      this.setData({
-        addresses: [],
-        addressId: ''
-      })
-    }
+  goToAddressList() {
+    wx.navigateTo({
+      url: '/pages/addressList/addressList'
+    })
   },
 
   selectAddress(e) {
-    const addressId = e.currentTarget.dataset.id
-    this.setData({ addressId })
+    const id = e.currentTarget.dataset.id
+    this.setData({ addressId: id })
   },
 
-  addAddress() {
-    wx.navigateTo({
-      url: '/pages/addressEdit/addressEdit'
+  onRemarkInput(e) {
+    this.setData({
+      remark: e.detail.value
     })
   },
 
@@ -160,7 +150,7 @@ Page({
       return
     }
 
-    if (this.data.deliveryMode === 'delivery' && !this.data.addressId) {
+    if (this.data.deliveryMode === 'takeaway' && !this.data.addressId) {
       wx.showToast({
         title: '请选择配送地址',
         icon: 'none'
@@ -174,7 +164,7 @@ Page({
 
     try {
       const orderData = {
-        tableNumber: this.data.tableNumber || '0',
+        tableNumber: app.globalData.tableNumber || '0',
         items: this.data.cartItems.map(item => ({
           dishId: item._id,
           name: item.name,
@@ -225,11 +215,5 @@ Page({
         icon: 'none'
       })
     }
-  },
-
-  goToMenu() {
-    wx.switchTab({
-      url: '/pages/menu/menu'
-    })
   }
 })
