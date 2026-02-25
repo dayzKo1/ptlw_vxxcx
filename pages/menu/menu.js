@@ -5,7 +5,11 @@ Page({
     currentCategoryId: '',
     cart: {},
     cartCount: 0,
-    cartTotal: 0
+    cartTotal: 0,
+    deliveryMode: 'pickup',
+    searchKeyword: '',
+    showSearchResult: false,
+    searchResults: []
   },
 
   onLoad() {
@@ -70,10 +74,20 @@ Page({
       const db = wx.cloud.database()
       const categoryDishes = await Promise.all(
         this.data.categories.map(async (category) => {
-          const res = await db.collection('dishes')
+          let query = db.collection('dishes')
             .where({ categoryId: category._id, status: 1 })
             .orderBy('sort', 'asc')
-            .get()
+          
+          if (this.data.searchKeyword) {
+            query = query.where({
+              name: db.RegExp({
+                regexp: this.data.searchKeyword,
+                options: 'i'
+              })
+            })
+          }
+          
+          const res = await query.get()
           return {
             ...category,
             dishes: res.data.map(dish => ({
@@ -87,6 +101,62 @@ Page({
     } catch (err) {
       console.error('加载菜品失败', err)
     }
+  },
+
+  switchDeliveryMode(e) {
+    const mode = e.currentTarget.dataset.mode
+    this.setData({ deliveryMode: mode })
+  },
+
+  onSearchInput(e) {
+    const keyword = e.detail.value.trim()
+    this.setData({ searchKeyword: keyword })
+    
+    if (keyword) {
+      this.searchDishes(keyword)
+    } else {
+      this.setData({ 
+        showSearchResult: false,
+        searchResults: []
+      })
+    }
+  },
+
+  async searchDishes(keyword) {
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('dishes')
+        .where({
+          status: 1,
+          name: db.RegExp({
+            regexp: keyword,
+            options: 'i'
+          })
+        })
+        .orderBy('sort', 'asc')
+        .limit(20)
+        .get()
+      
+      const searchResults = res.data.map(dish => ({
+        ...dish,
+        quantity: this.data.cart[dish._id] || 0
+      }))
+      
+      this.setData({ 
+        showSearchResult: true,
+        searchResults 
+      })
+    } catch (err) {
+      console.error('搜索失败', err)
+    }
+  },
+
+  clearSearch() {
+    this.setData({ 
+      searchKeyword: '',
+      showSearchResult: false,
+      searchResults: []
+    })
   },
 
   selectCategory(e) {

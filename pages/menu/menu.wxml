@@ -1,5 +1,40 @@
 <view class="container">
-  <view class="menu-layout">
+  <view class="header-section">
+    <view class="delivery-mode-switch">
+      <view 
+        class="mode-item {{deliveryMode === 'pickup' ? 'active' : ''}}" 
+        bindtap="switchDeliveryMode" 
+        data-mode="pickup"
+      >
+        <text class="mode-icon">🏃</text>
+        <text class="mode-text">自取</text>
+      </view>
+      <view 
+        class="mode-item {{deliveryMode === 'delivery' ? 'active' : ''}}" 
+        bindtap="switchDeliveryMode" 
+        data-mode="delivery"
+      >
+        <text class="mode-icon">🛵</text>
+        <text class="mode-text">配送</text>
+      </view>
+    </view>
+    
+    <view class="search-bar">
+      <view class="search-input-wrapper">
+        <text class="search-icon">🔍</text>
+        <input 
+          class="search-input" 
+          placeholder="搜索菜品名称" 
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          confirm-type="search"
+        />
+        <text class="clear-icon" wx:if="{{searchKeyword}}" bindtap="clearSearch">✕</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="menu-layout" wx:if="{{!showSearchResult}}">
     <scroll-view scroll-y class="category-sidebar" scroll-into-view="{{currentCategory}}" scroll-with-animation>
       <view 
         class="category-item {{item._id === currentCategoryId ? 'active' : ''}}" 
@@ -38,6 +73,38 @@
             </view>
           </view>
         </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="search-result" wx:if="{{showSearchResult}}">
+    <view class="search-result-header">
+      <text class="search-result-title">搜索结果</text>
+      <text class="search-result-count">共{{searchResults.length}}个商品</text>
+    </view>
+    <scroll-view scroll-y class="search-result-list">
+      <view class="dish-item" wx:for="{{searchResults}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+        <view class="dish-image-placeholder">{{item.emoji || '🍽️'}}</view>
+        <view class="dish-info">
+          <text class="dish-name">{{item.name}}</text>
+          <text class="dish-desc">{{item.description}}</text>
+          <view class="dish-tags" wx:if="{{item.isHot || item.isNew}}">
+            <text class="dish-tag" wx:if="{{item.isHot}}">🔥 热门</text>
+            <text class="dish-tag" wx:if="{{item.isNew}}">✨ 新品</text>
+          </view>
+          <view class="dish-bottom">
+            <text class="dish-price">¥{{item.price}}</text>
+            <view class="quantity-control" catchtap="stopPropagation">
+              <view class="minus-btn" wx:if="{{item.quantity > 0}}" bindtap="minusDish" data-id="{{item._id}}">-</view>
+              <text class="quantity" wx:if="{{item.quantity > 0}}">{{item.quantity}}</text>
+              <view class="plus-btn" bindtap="plusDish" data-id="{{item._id}}">+</view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="empty-result" wx:if="{{searchResults.length === 0}}">
+        <text class="empty-icon">🔍</text>
+        <text class="empty-text">未找到相关商品</text>
       </view>
     </scroll-view>
   </view>

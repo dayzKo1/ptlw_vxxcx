@@ -1,21 +1,17 @@
 <view class="container">
-  <view class="header">
-    <view class="shop-logo">🏪</view>
-    <view class="shop-info">
-      <text class="shop-name">{{shopInfo.name}}</text>
-      <text class="shop-address" bindtap="openLocation">📍 {{shopInfo.address}}</text>
-      <text class="shop-phone" bindtap="makeCall">📞 {{shopInfo.phone}}</text>
-      <text class="shop-hours">⏰ 营业时间：{{shopInfo.businessHours}}</text>
+  <view class="banner-section">
+    <view class="banner-item" wx:for="{{banners}}" wx:key="_id">
+      <view class="banner-image-placeholder">{{item.emoji || '🎉'}}</view>
+      <text class="banner-title">{{item.title}}</text>
     </view>
   </view>
 
-  <view class="banner-section">
-    <scroll-view scroll-x class="banner-scroll">
-      <view class="banner-item" wx:for="{{banners}}" wx:key="_id">
-        <view class="banner-image-placeholder">{{item.emoji || '🎉'}}</view>
-        <text class="banner-title">{{item.title}}</text>
-      </view>
-    </scroll-view>
+  <view class="table-selector-section">
+    <view class="table-selector-card" bindtap="showTableSelector">
+      <text class="table-selector-label">📍 当前桌号</text>
+      <text class="table-selector-value">{{tableNumber}}</text>
+      <text class="table-selector-arrow">></text>
+    </view>
   </view>
 
   <view class="section">
@@ -43,13 +39,28 @@
     </view>
   </view>
 
-  <view class="section">
-    <view class="section-title">
-      <text>📱 扫码点餐</text>
+  <view class="header">
+    <view class="shop-logo">🏪</view>
+    <view class="shop-info">
+      <text class="shop-name">{{shopInfo.name}}</text>
+      <text class="shop-address" bindtap="openLocation">📍 {{shopInfo.address}}</text>
+      <text class="shop-phone" bindtap="makeCall">📞 {{shopInfo.phone}}</text>
+      <text class="shop-hours">⏰ 营业时间：{{shopInfo.businessHours}}</text>
     </view>
-    <button class="scan-btn" bindtap="scanCode">
-      <text class="scan-icon">📷</text>
-      <text>扫描桌号二维码</text>
-    </button>
+  </view>
+</view>
+
+<view class="table-selector-modal" wx:if="{{showTableSelector}}" bindtap="hideTableSelector">
+  <view class="table-selector-content" catchtap="stopPropagation">
+    <view class="table-selector-header">
+      <text class="table-selector-title">选择桌号</text>
+      <text class="table-selector-close" bindtap="hideTableSelector">✕</text>
+    </view>
+    <scroll-view scroll-y class="table-selector-list">
+      <view class="table-option" wx:for="{{tables}}" wx:key="_id" bindtap="selectTable" data-table="{{item.tableNumber}}">
+        <text class="table-option-text">{{item.tableNumber}}</text>
+        <text class="table-option-icon" wx:if="{{tableNumber === item.tableNumber}}">✓</text>
+      </view>
+    </scroll-view>
   </view>
 </view>

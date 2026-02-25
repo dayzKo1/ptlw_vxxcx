@@ -5,8 +5,10 @@ Page({
     shopInfo: {},
     hotDishes: [],
     categories: [],
+    banners: [],
     tableNumber: '',
-    banners: []
+    showTableSelector: false,
+    tables: []
   },
 
   onLoad() {
@@ -15,8 +17,9 @@ Page({
     })
     this.loadHotDishes()
     this.loadCategories()
-    this.loadTableNumber()
     this.loadBanners()
+    this.loadTableNumber()
+    this.loadTables()
   },
 
   async loadHotDishes() {
@@ -67,18 +70,54 @@ Page({
   loadBanners() {
     this.setData({
       banners: [
-        { _id: '1', title: '新店开业，全场8折', emoji: '🎉' },
-        { _id: '2', title: '满100减20', emoji: '🎁' },
-        { _id: '3', title: '会员专享优惠', emoji: '💎' }
+        { _id: '1', title: '新店开业，全场8折', emoji: '🎉' }
       ]
     })
   },
 
   loadTableNumber() {
-    const tableNumber = wx.getStorageSync('tableNumber')
-    if (tableNumber) {
-      this.setData({ tableNumber })
+    const tableNumber = app.globalData.tableNumber || wx.getStorageSync('tableNumber') || ''
+    this.setData({ tableNumber: tableNumber || '未选择' })
+  },
+
+  async loadTables() {
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('tables')
+        .where({ status: 1 })
+        .orderBy('tableNumber', 'asc')
+        .get()
+      this.setData({ tables: res.data })
+    } catch (err) {
+      console.error('加载桌号失败', err)
+      const tables = []
+      for (let i = 1; i <= 20; i++) {
+        tables.push({ _id: i.toString(), tableNumber: `${i}号桌`, status: 1 })
+      }
+      this.setData({ tables })
     }
+  },
+
+  showTableSelector() {
+    this.setData({ showTableSelector: true })
+  },
+
+  hideTableSelector() {
+    this.setData({ showTableSelector: false })
+  },
+
+  selectTable(e) {
+    const tableNumber = e.currentTarget.dataset.table
+    wx.setStorageSync('tableNumber', tableNumber)
+    app.globalData.tableNumber = tableNumber
+    this.setData({ 
+      tableNumber,
+      showTableSelector: false 
+    })
+    wx.showToast({
+      title: `已选择${tableNumber}`,
+      icon: 'success'
+    })
   },
 
   openLocation() {
@@ -103,26 +142,6 @@ Page({
         console.error('拨打电话失败', err)
         wx.showToast({
           title: '拨打电话失败',
-          icon: 'none'
-        })
-      }
-    })
-  },
-
-  scanCode() {
-    wx.scanCode({
-      success: (res) => {
-        const tableNumber = res.result
-        wx.setStorageSync('tableNumber', tableNumber)
-        this.setData({ tableNumber })
-        wx.showToast({
-          title: `已选择${tableNumber}号桌`,
-          icon: 'success'
-        })
-      },
-      fail: () => {
-        wx.showToast({
-          title: '扫码失败',
           icon: 'none'
         })
       }
