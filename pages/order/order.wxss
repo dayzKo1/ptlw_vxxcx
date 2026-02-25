@@ -1,6 +1,9 @@
 .container {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(180deg, #f8f8f8 0%, #ffffff 100%);
+  overflow: hidden;
 }
 
 .tabs {
@@ -42,8 +45,9 @@
 }
 
 .order-list {
-  padding: 28rpx;
-  min-height: calc(100vh - 108rpx);
+  flex: 1;
+  padding: 20rpx;
+  overflow-y: auto;
 }
 
 .empty-state {
@@ -92,35 +96,35 @@
 
 .order-item {
   background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
-  border-radius: 24rpx;
-  padding: 32rpx;
-  margin-bottom: 28rpx;
-  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.1);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .order-item:active {
   transform: scale(0.99);
-  box-shadow: 0 3rpx 12rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.12);
 }
 
 .order-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28rpx;
-  padding-bottom: 28rpx;
+  margin-bottom: 16rpx;
+  padding-bottom: 16rpx;
   border-bottom: 1rpx solid #f0f0f0;
 }
 
 .order-no {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: #666666;
   font-weight: 500;
 }
 
 .order-status {
-  font-size: 30rpx;
+  font-size: 26rpx;
   color: #ff6b6b;
   font-weight: bold;
   padding: 10rpx 24rpx;
@@ -131,44 +135,44 @@
 .order-info {
   display: flex;
   align-items: center;
-  margin-bottom: 28rpx;
+  margin-bottom: 16rpx;
 }
 
 .table-number {
-  font-size: 30rpx;
+  font-size: 26rpx;
   color: #333333;
-  margin-right: 32rpx;
+  margin-right: 24rpx;
   font-weight: 500;
 }
 
 .order-time {
-  font-size: 28rpx;
+  font-size: 24rpx;
   color: #999999;
 }
 
 .order-items {
-  margin-bottom: 28rpx;
+  margin-bottom: 16rpx;
 }
 
 .item-preview {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 12rpx;
 }
 
 .dish-image {
-  width: 110rpx;
-  height: 110rpx;
-  border-radius: 16rpx;
-  margin-right: 24rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 12rpx;
+  margin-right: 16rpx;
   background-color: #f5f5f5;
 }
 
 .dish-image-placeholder {
-  width: 110rpx;
-  height: 110rpx;
-  border-radius: 16rpx;
-  margin-right: 24rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 12rpx;
+  margin-right: 16rpx;
   background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
   display: flex;
   align-items: center;
@@ -188,7 +192,7 @@
 
 .dish-name {
   flex: 1;
-  font-size: 30rpx;
+  font-size: 26rpx;
   color: #333333;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -197,7 +201,7 @@
 }
 
 .dish-quantity {
-  font-size: 30rpx;
+  font-size: 24rpx;
   color: #999999;
   font-weight: 500;
 }
@@ -206,12 +210,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 28rpx;
+  padding-top: 16rpx;
   border-top: 1rpx solid #f0f0f0;
 }
 
 .total-price {
-  font-size: 40rpx;
+  font-size: 32rpx;
   color: #ff6b6b;
   font-weight: bold;
 }
