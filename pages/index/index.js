@@ -6,7 +6,6 @@ Page({
     hotDishes: [],
     categories: [],
     tableNumber: '',
-    currentPage: 'index',
     banners: []
   },
 
@@ -141,13 +140,6 @@ Page({
     const id = e.currentTarget.dataset.id
     wx.navigateTo({
       url: `/pages/category/category?id=${id}`
-    })
-  },
-
-  goToPage(e) {
-    const page = e.currentTarget.dataset.page
-    wx.navigateTo({
-      url: `/pages/${page}/${page}`
     })
   }
 })

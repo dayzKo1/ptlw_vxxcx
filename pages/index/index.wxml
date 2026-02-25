@@ -52,19 +52,4 @@
       <text>扫描桌号二维码</text>
     </button>
   </view>
-
-  <view class="nav-bar">
-    <view class="nav-item {{currentPage === 'index' ? 'active' : ''}}" bindtap="goToPage" data-page="menu">
-      <view class="nav-icon-wrapper"><text class="nav-icon">🍽️</text></view>
-      <text>点餐</text>
-    </view>
-    <view class="nav-item {{currentPage === 'cart' ? 'active' : ''}}" bindtap="goToPage" data-page="cart">
-      <view class="nav-icon-wrapper"><text class="nav-icon">🛒</text></view>
-      <text>购物车</text>
-    </view>
-    <view class="nav-item {{currentPage === 'order' ? 'active' : ''}}" bindtap="goToPage" data-page="order">
-      <view class="nav-icon-wrapper"><text class="nav-icon">📋</text></view>
-      <text>订单</text>
-    </view>
-  </view>
 </view>
