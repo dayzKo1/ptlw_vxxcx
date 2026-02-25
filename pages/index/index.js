@@ -6,7 +6,8 @@ Page({
     hotDishes: [],
     categories: [],
     tableNumber: '',
-    currentPage: 'index'
+    currentPage: 'index',
+    banners: []
   },
 
   onLoad() {
@@ -16,6 +17,7 @@ Page({
     this.loadHotDishes()
     this.loadCategories()
     this.loadTableNumber()
+    this.loadBanners()
   },
 
   async loadHotDishes() {
@@ -63,11 +65,49 @@ Page({
     }
   },
 
+  loadBanners() {
+    this.setData({
+      banners: [
+        { _id: '1', title: '新店开业，全场8折', emoji: '🎉' },
+        { _id: '2', title: '满100减20', emoji: '🎁' },
+        { _id: '3', title: '会员专享优惠', emoji: '💎' }
+      ]
+    })
+  },
+
   loadTableNumber() {
     const tableNumber = wx.getStorageSync('tableNumber')
     if (tableNumber) {
       this.setData({ tableNumber })
     }
+  },
+
+  openLocation() {
+    const address = this.data.shopInfo.address
+    wx.openLocation({
+      latitude: 0,
+      longitude: 0,
+      name: this.data.shopInfo.name,
+      address: address,
+      scale: 18
+    })
+  },
+
+  makeCall() {
+    const phone = this.data.shopInfo.phone
+    wx.makePhoneCall({
+      phoneNumber: phone,
+      success: () => {
+        console.log('拨打电话成功')
+      },
+      fail: (err) => {
+        console.error('拨打电话失败', err)
+        wx.showToast({
+          title: '拨打电话失败',
+          icon: 'none'
+        })
+      }
+    })
   },
 
   scanCode() {

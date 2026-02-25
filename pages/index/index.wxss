@@ -73,14 +73,65 @@
   margin-bottom: 8rpx;
   display: flex;
   align-items: center;
+  transition: all 0.3s ease;
+}
+
+.shop-address:active,
+.shop-phone:active {
+  opacity: 0.7;
+}
+
+.banner-section {
+  margin-bottom: 24rpx;
+}
+
+.banner-scroll {
+  white-space: nowrap;
+  padding: 0 8rpx;
+}
+
+.banner-item {
+  display: inline-block;
+  width: 580rpx;
+  margin-right: 20rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 6rpx 20rpx rgba(255, 107, 107, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-item::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+}
+
+.banner-image-placeholder {
+  font-size: 120rpx;
+  margin-bottom: 16rpx;
+  text-align: center;
+}
+
+.banner-title {
+  display: block;
+  font-size: 32rpx;
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
 }
 
 .section {
-  margin-bottom: 30rpx;
+  margin-bottom: 24rpx;
   background-color: #ffffff;
-  border-radius: 24rpx;
-  padding: 32rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -103,31 +154,31 @@
 }
 
 .section-title {
-  font-size: 34rpx;
+  font-size: 30rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 28rpx;
-  padding-left: 20rpx;
-  border-left: 8rpx solid #ff6b6b;
+  margin-bottom: 20rpx;
+  padding-left: 16rpx;
+  border-left: 6rpx solid #ff6b6b;
   display: flex;
   align-items: center;
   letter-spacing: 1rpx;
 }
 
-.hot-dishes {
-  white-space: nowrap;
-  padding: 16rpx 8rpx;
+.hot-dishes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -8rpx;
 }
 
 .hot-dish-item {
-  display: inline-block;
-  width: 240rpx;
-  margin-right: 24rpx;
+  width: calc(50% - 16rpx);
+  margin: 8rpx;
   background: linear-gradient(180deg, #ffffff 0%, #fefefe 100%);
-  border-radius: 24rpx;
-  padding: 20rpx;
-  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.1);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16rpx;
+  padding: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
