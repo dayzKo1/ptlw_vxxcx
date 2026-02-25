@@ -1,0 +1,9 @@
+{
+  "name": "updateAddress",
+  "version": "1.0.0",
+  "description": "更新收货地址云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
