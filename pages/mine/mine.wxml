@@ -34,6 +34,24 @@
     </view>
   </view>
 
+  <view class="admin-section" wx:if="{{isDev}}">
+    <view class="admin-title">开发者工具</view>
+    <view class="menu-item" bindtap="handleAddMerchant">
+      <text class="menu-text">设为商户</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="dev-toggle-row">
+      <text class="menu-text">开发模式</text>
+      <switch checked="{{isDev}}" bindchange="toggleDevMode" />
+    </view>
+  </view>
+
+  <view class="admin-section" wx:if="{{!isDev}}">
+    <view class="dev-toggle-row" bindtap="toggleDevModeHint">
+      <text class="menu-text" style="color: #ccc;">版本 1.0.0</text>
+    </view>
+  </view>
+
   <view class="logout-section">
     <button class="logout-btn" bindtap="handleLogout">退出登录</button>
   </view>
