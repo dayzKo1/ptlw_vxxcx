@@ -55,6 +55,16 @@
   color: rgba(255,255,255, 0.75);
 }
 
+.user-role {
+  display: inline-block;
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: rgba(255,255,255, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: rgba(255,255,255, 0.9);
+}
+
 .menu-section {
   background: var(--bg-white);
   margin: var(--spacing-xl);
@@ -69,6 +79,17 @@
   padding: var(--spacing-xl);
   border-bottom: 1rpx solid var(--border-light);
   transition: all var(--transition-base);
+}
+
+.menu-item.merchant {
+  background: var(--primary-light);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.menu-icon {
+  font-size: 36rpx;
+  margin-right: var(--spacing-lg);
 }
 
 .menu-item:last-child {

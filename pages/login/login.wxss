@@ -74,6 +74,59 @@
   color: var(--text-tertiary);
 }
 
+.role-section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.role-title {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+.role-options {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+}
+
+.role-option {
+  flex: 1;
+  padding: var(--spacing-xl);
+  background: var(--bg-light);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  border: 4rpx solid transparent;
+  transition: all var(--transition-base);
+}
+
+.role-option.active {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+.role-icon {
+  display: block;
+  font-size: 60rpx;
+  margin-bottom: var(--spacing-md);
+}
+
+.role-name {
+  display: block;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.role-desc {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+}
+
 .login-section {
   margin-bottom: var(--spacing-4xl);
 }

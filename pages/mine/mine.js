@@ -2,22 +2,36 @@ const app = getApp()
 
 Page({
   data: {
-    userInfo: null
+    userInfo: null,
+    isMerchant: false
   },
 
   onLoad() {
     this.loadUserInfo()
   },
 
+  onShow() {
+    this.loadUserInfo()
+  },
+
   loadUserInfo() {
     const userInfo = wx.getStorageSync('userInfo')
     if (userInfo) {
-      this.setData({ userInfo })
+      this.setData({ 
+        userInfo,
+        isMerchant: userInfo.role === 'merchant'
+      })
     } else {
       wx.navigateTo({
         url: '/pages/login/login'
       })
     }
+  },
+
+  handleMerchantOrder() {
+    wx.navigateTo({
+      url: '/pages/merchantOrder/merchantOrder'
+    })
   },
 
   handleAddress() {

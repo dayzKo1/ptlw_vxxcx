@@ -3,7 +3,8 @@ const app = getApp()
 Page({
   data: {
     userInfo: null,
-    isDev: false
+    isDev: false,
+    selectedRole: 'customer'
   },
 
   onLoad() {
@@ -15,15 +16,30 @@ Page({
     const userInfo = wx.getStorageSync('userInfo')
     if (userInfo) {
       app.globalData.userInfo = userInfo
-      wx.switchTab({
-        url: '/pages/index/index'
-      })
+      this.navigateByRole(userInfo.role)
     }
   },
 
   checkDevMode() {
     const isDev = wx.getStorageSync('isDevMode') || false
     this.setData({ isDev })
+  },
+
+  selectRole(e) {
+    const role = e.currentTarget.dataset.role
+    this.setData({ selectedRole: role })
+  },
+
+  navigateByRole(role) {
+    if (role === 'merchant') {
+      wx.redirectTo({
+        url: '/pages/merchantOrder/merchantOrder'
+      })
+    } else {
+      wx.switchTab({
+        url: '/pages/index/index'
+      })
+    }
   },
 
   handleLogin() {
@@ -67,16 +83,18 @@ Page({
       const loginRes = await wx.cloud.callFunction({
         name: 'login',
         data: {
-          userInfo: userInfo
+          userInfo: userInfo,
+          role: this.data.selectedRole
         }
       })
 
       if (loginRes.result.success) {
-        const { openid, sessionKey } = loginRes.result.data
+        const { openid, sessionKey, role } = loginRes.result.data
         
         const userData = {
           ...userInfo,
           openid: openid,
+          role: role,
           loginTime: new Date().getTime()
         }
 
@@ -91,9 +109,7 @@ Page({
         })
 
         setTimeout(() => {
-          wx.switchTab({
-            url: '/pages/index/index'
-          })
+          this.navigateByRole(role)
         }, 1500)
       } else {
         wx.hideLoading()
@@ -124,6 +140,7 @@ Page({
       const userData = {
         ...userInfo,
         openid: mockOpenid,
+        role: this.data.selectedRole,
         loginTime: new Date().getTime(),
         isMock: true
       }
@@ -139,9 +156,7 @@ Page({
       })
 
       setTimeout(() => {
-        wx.switchTab({
-          url: '/pages/index/index'
-        })
+        this.navigateByRole(userData.role)
       }, 1500)
     } catch (err) {
       console.error('模拟登录失败', err)

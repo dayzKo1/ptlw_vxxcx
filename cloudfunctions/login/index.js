@@ -7,7 +7,7 @@ cloud.init({
 const db = cloud.database()
 
 exports.main = async (event, context) => {
-  const { userInfo } = event
+  const { userInfo, role } = event
   const wxContext = cloud.getWXContext()
   
   try {
@@ -29,27 +29,35 @@ exports.main = async (event, context) => {
           city: userInfo.city,
           province: userInfo.province,
           country: userInfo.country,
+          role: role || 'customer',
           createTime: db.serverDate(),
           updateTime: db.serverDate()
         }
       })
     } else {
+      const updateData = {
+        nickName: userInfo.nickName,
+        avatarUrl: userInfo.avatarUrl,
+        updateTime: db.serverDate()
+      }
+      if (role) {
+        updateData.role = role
+      }
       await db.collection('users').where({
         openid: openid
       }).update({
-        data: {
-          nickName: userInfo.nickName,
-          avatarUrl: userInfo.avatarUrl,
-          updateTime: db.serverDate()
-        }
+        data: updateData
       })
     }
+    
+    const userData = userRes.data.length > 0 ? userRes.data[0] : null
     
     return {
       success: true,
       data: {
         openid: openid,
-        sessionKey: sessionKey
+        sessionKey: sessionKey,
+        role: role || (userData ? userData.role : 'customer') || 'customer'
       }
     }
   } catch (err) {

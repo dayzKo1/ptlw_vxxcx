@@ -1,0 +1,99 @@
+<view class="container">
+  <view class="header">
+    <view class="header-info">
+      <text class="header-title">商户管理后台</text>
+      <text class="header-subtitle">订单管理与店铺经营</text>
+    </view>
+    <view class="header-actions">
+      <button class="switch-btn" bindtap="goToCustomerMode">切换客户模式</button>
+    </view>
+  </view>
+
+  <view class="tabs">
+    <scroll-view scroll-x class="tabs-scroll">
+      <view class="tab-item {{currentTab === -1 ? 'active' : ''}}" bindtap="switchTab" data-tab="-1">
+        全部
+      </view>
+      <view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-tab="0">
+        待支付
+      </view>
+      <view class="tab-item {{currentTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-tab="1">
+        制作中
+      </view>
+      <view class="tab-item {{currentTab === 2 ? 'active' : ''}}" bindtap="switchTab" data-tab="2">
+        已出餐
+      </view>
+      <view class="tab-item {{currentTab === 3 ? 'active' : ''}}" bindtap="switchTab" data-tab="3">
+        已完成
+      </view>
+      <view class="tab-item {{currentTab === 4 ? 'active' : ''}}" bindtap="switchTab" data-tab="4">
+        已取消
+      </view>
+    </scroll-view>
+  </view>
+
+  <scroll-view class="order-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{loading}}" bindrefresherrefresh="onPullDownRefresh">
+    <view class="order-item" wx:for="{{orders}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+      <view class="order-header">
+        <view class="order-info">
+          <text class="order-no">订单号: {{item.orderNo}}</text>
+          <text class="order-time">{{item.timeText}}</text>
+        </view>
+        <view class="order-status status-{{item.status}}">
+          {{item.statusText}}
+        </view>
+      </view>
+      
+      <view class="order-table" wx:if="{{item.tableNumber}}">
+        <text class="table-label">桌号:</text>
+        <text class="table-number">{{item.tableNumber}}</text>
+      </view>
+
+      <view class="order-items">
+        <view class="dish-item" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
+          <text class="dish-name">{{dish.name}}</text>
+          <text class="dish-quantity">x{{dish.quantity}}</text>
+          <text class="dish-price">¥{{dish.price}}</text>
+        </view>
+      </view>
+
+      <view class="order-footer">
+        <view class="order-total">
+          <text class="total-label">共{{item.itemCount}}件商品</text>
+          <text class="total-price">合计: ¥{{item.totalPrice}}</text>
+        </view>
+        <view class="order-actions" catchtap="stopPropagation">
+          <block wx:if="{{item.status === 0}}">
+            <button class="action-btn cancel" catchtap="cancelOrder" data-id="{{item._id}}">取消订单</button>
+            <button class="action-btn primary" catchtap="updateStatus" data-id="{{item._id}}" data-status="1">确认接单</button>
+          </block>
+          <block wx:elif="{{item.status === 1}}">
+            <button class="action-btn primary" catchtap="updateStatus" data-id="{{item._id}}" data-status="2">出餐完成</button>
+          </block>
+          <block wx:elif="{{item.status === 2}}">
+            <button class="action-btn primary" catchtap="updateStatus" data-id="{{item._id}}" data-status="3">确认完成</button>
+          </block>
+        </view>
+      </view>
+
+      <view class="order-remark" wx:if="{{item.remark}}">
+        <text class="remark-label">备注:</text>
+        <text class="remark-text">{{item.remark}}</text>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{orders.length === 0 && !loading}}">
+      <text class="empty-text">暂无订单</text>
+    </view>
+
+    <view class="loading" wx:if="{{loading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!hasMore && orders.length > 0}}">
+      <text class="no-more-text">没有更多了</text>
+    </view>
+  </scroll-view>
+
+  <view class="logout-btn" bindtap="handleLogout">退出登录</view>
+</view>

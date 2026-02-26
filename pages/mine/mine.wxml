@@ -5,11 +5,17 @@
       <view class="user-detail">
         <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
         <text class="user-id">ID: {{userInfo.openid || '---'}}</text>
+        <text class="user-role" wx:if="{{isMerchant}}">商户身份</text>
       </view>
     </view>
   </view>
 
   <view class="menu-section">
+    <view class="menu-item merchant" wx:if="{{isMerchant}}" bindtap="handleMerchantOrder">
+      <text class="menu-icon">📋</text>
+      <text class="menu-text">订单管理</text>
+      <text class="menu-arrow">></text>
+    </view>
     <view class="menu-item" bindtap="handleAddress">
       <text class="menu-text">收货地址</text>
       <text class="menu-arrow">></text>
