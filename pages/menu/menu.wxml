@@ -35,8 +35,9 @@
   </view>
 
   <view class="menu-layout" wx:if="{{!showSearchResult}}">
-    <scroll-view scroll-y class="category-sidebar" scroll-into-view="{{currentCategory}}" scroll-with-animation>
+    <scroll-view scroll-y class="category-sidebar" scroll-into-view="category-{{currentCategoryId}}" scroll-with-animation>
       <view 
+        id="category-{{item._id}}"
         class="category-item {{item._id === currentCategoryId ? 'active' : ''}}" 
         wx:for="{{categories}}" 
         wx:key="_id"
@@ -48,8 +49,7 @@
         <text>{{item.name}}</text>
       </view>
     </scroll-view>
-
-    <scroll-view scroll-y class="dish-list" bindscrolltolower="loadMore">
+    <scroll-view scroll-y class="dish-list" scroll-into-view="category-{{currentCategoryId}}" scroll-with-animation scroll-into-view-alignment="top">
       <view class="category-section" id="category-{{item._id}}" wx:for="{{categoryDishes}}" wx:key="_id">
         <view class="category-header">
           <text>{{item.emoji || '🍽️'}} {{item.name}}</text>
