@@ -13,7 +13,9 @@ Page({
     searchKeyword: '',
     showSearchResult: false,
     searchResults: [],
-    showCartDrawer: false
+    showCartDrawer: false,
+    showDishModal: false,
+    selectedDish: null
   },
 
   onLoad() {
@@ -229,9 +231,34 @@ Page({
 
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
-    wx.navigateTo({
-      url: `/pages/dishDetail/dishDetail?id=${id}`
+    const allDishes = this.data.categoryDishes.flatMap(cat => cat.dishes)
+    const selectedDish = allDishes.find(d => d._id === id)
+    
+    if (selectedDish) {
+      this.setData({
+        selectedDish,
+        showDishModal: true
+      })
+    }
+  },
+
+  closeDishModal() {
+    this.setData({
+      showDishModal: false,
+      selectedDish: null
     })
+  },
+
+  addToCartFromModal() {
+    const selectedDish = this.data.selectedDish
+    if (!selectedDish) return
+
+    const id = selectedDish._id
+    const cart = this.data.cart
+    cart[id] = (cart[id] || 0) + 1
+    this.updateCart(cart)
+    
+    this.closeDishModal()
   },
 
   stopPropagation() {

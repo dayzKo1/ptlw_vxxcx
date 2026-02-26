@@ -1,10 +1,10 @@
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 50%, #ffb347 100%);
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40rpx;
+  padding: var(--spacing-4xl);
   position: relative;
   overflow: hidden;
 }
@@ -16,7 +16,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle, rgba(255,255,255, 0.08) 0%, transparent 50%);
   animation: rotate 20s linear infinite;
 }
 
@@ -32,22 +32,22 @@
 .login-card {
   width: 100%;
   max-width: 600rpx;
-  background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
-  border-radius: 32rpx;
-  padding: 80rpx 40rpx;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.15);
+  background: var(--bg-white);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4xl) var(--spacing-2xl);
+  box-shadow: var(--shadow-lg);
   position: relative;
   z-index: 1;
 }
 
 .logo-section {
   text-align: center;
-  margin-bottom: 80rpx;
+  margin-bottom: var(--spacing-4xl);
 }
 
 .logo {
-  font-size: 160rpx;
-  margin-bottom: 24rpx;
+  font-size: 140rpx;
+  margin-bottom: var(--spacing-xl);
   animation: bounce 2s ease-in-out infinite;
 }
 
@@ -62,37 +62,37 @@
 
 .app-name {
   display: block;
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #333333;
-  margin-bottom: 12rpx;
+  font-size: var(--font-size-4xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
 }
 
 .app-desc {
   display: block;
-  font-size: 28rpx;
-  color: #999999;
+  font-size: var(--font-size-lg);
+  color: var(--text-tertiary);
 }
 
 .login-section {
-  margin-bottom: 60rpx;
+  margin-bottom: var(--spacing-4xl);
 }
 
 .login-btn {
   width: 100%;
-  height: 100rpx;
-  background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
-  color: #ffffff;
-  border-radius: 50rpx;
+  height: 96rpx;
+  background: #07c160;
+  color: var(--bg-white);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
   border: none;
-  box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
-  transition: all 0.3s ease;
-  margin-bottom: 32rpx;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .login-btn::after {
@@ -101,52 +101,52 @@
 
 .login-btn:active {
   transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .login-icon {
-  font-size: 40rpx;
-  margin-right: 16rpx;
+  font-size: 36rpx;
+  margin-right: var(--spacing-lg);
 }
 
 .login-text {
-  font-size: 32rpx;
+  font-size: var(--font-size-xl);
 }
 
 .agreement {
   text-align: center;
-  font-size: 24rpx;
-  color: #999999;
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
 }
 
 .agreement-text {
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 .agreement-link {
-  color: #ff6b6b;
-  margin: 0 4rpx;
+  color: var(--primary-color);
+  margin: 0 var(--spacing-xs);
 }
 
 .dev-section {
-  margin-bottom: 24rpx;
+  margin-bottom: var(--spacing-xl);
 }
 
 .dev-login-btn {
   width: 100%;
-  height: 100rpx;
-  background: linear-gradient(135deg, #ff8e53 0%, #ffb347 100%);
-  color: #ffffff;
-  border-radius: 50rpx;
+  height: 96rpx;
+  background: var(--primary-light);
+  color: var(--bg-white);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
   border: none;
-  box-shadow: 0 8rpx 24rpx rgba(255, 142, 83, 0.3);
-  transition: all 0.3s ease;
-  margin-bottom: 24rpx;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  margin-bottom: var(--spacing-xl);
 }
 
 .dev-login-btn::after {
@@ -155,32 +155,32 @@
 
 .dev-login-btn:active {
   transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(255, 142, 83, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .dev-login-icon {
-  font-size: 40rpx;
-  margin-right: 16rpx;
+  font-size: 36rpx;
+  margin-right: var(--spacing-lg);
 }
 
 .dev-login-text {
-  font-size: 32rpx;
+  font-size: var(--font-size-xl);
 }
 
 .dev-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24rpx;
-  padding: 16rpx;
-  background: #f8f8f8;
-  border-radius: 16rpx;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--bg-light);
+  border-radius: var(--radius-lg);
 }
 
 .dev-toggle-text {
-  font-size: 28rpx;
-  color: #666666;
-  margin-right: 16rpx;
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-right: var(--spacing-lg);
 }
 
 .dev-switch {
@@ -192,6 +192,6 @@
 }
 
 .tips-text {
-  font-size: 24rpx;
+  font-size: var(--font-size-sm);
   color: #cccccc;
 }

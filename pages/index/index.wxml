@@ -6,10 +6,10 @@
     </view>
   </view>
 
-  <view class="table-selector-section">
+  <view class="table-selector-section" wx:if="{{tableNumber}}">
     <view class="table-info-card">
       <text class="table-info-label">📍 当前桌号</text>
-      <text class="table-info-value">{{tableNumber || '0'}}</text>
+      <text class="table-info-value">{{tableNumber}}</text>
     </view>
   </view>
 

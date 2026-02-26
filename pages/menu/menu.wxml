@@ -150,7 +150,40 @@
     </scroll-view>
 
     <view class="cart-drawer-footer">
+      <view class="drawer-total">
+        <text class="drawer-total-label">合计</text>
+        <text class="drawer-total-price">¥{{cartTotal}}</text>
+      </view>
       <button class="drawer-checkout-btn" bindtap="goToCheckout">去结算</button>
+    </view>
+  </view>
+
+  <view class="dish-modal-mask {{showDishModal ? 'show' : ''}}" bindtap="closeDishModal"></view>
+  <view class="dish-modal {{showDishModal ? 'show' : ''}}">
+    <view class="dish-modal-content">
+      <view class="dish-modal-header">
+        <text class="dish-modal-title">商品详情</text>
+        <text class="close-modal" bindtap="closeDishModal">✕</text>
+      </view>
+      
+      <scroll-view scroll-y class="dish-modal-body">
+        <view class="modal-dish-image">{{selectedDish.emoji || '🍽️'}}</view>
+        <view class="modal-dish-info">
+          <text class="modal-dish-name">{{selectedDish.name}}</text>
+          <text class="modal-dish-desc">{{selectedDish.description}}</text>
+          <view class="modal-dish-tags" wx:if="{{selectedDish.isHot || selectedDish.isNew}}">
+            <text class="modal-dish-tag" wx:if="{{selectedDish.isHot}}">🔥 热门</text>
+            <text class="modal-dish-tag" wx:if="{{selectedDish.isNew}}">✨ 新品</text>
+          </view>
+          <view class="modal-dish-price">
+            <text class="modal-price">¥{{selectedDish.price}}</text>
+          </view>
+        </view>
+      </scroll-view>
+      
+      <view class="dish-modal-footer">
+        <button class="modal-add-btn" bindtap="addToCartFromModal">加入购物车</button>
+      </view>
     </view>
   </view>
 </view>

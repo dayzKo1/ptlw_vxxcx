@@ -21,6 +21,9 @@
         <view class="action-btn edit-btn" catchtap="editAddress" data-id="{{item._id}}">
           <text>编辑</text>
         </view>
+        <view class="action-btn default-btn" catchtap="setDefaultAddress" data-id="{{item._id}}" wx:if="{{!item.isDefault}}">
+          <text>设为默认</text>
+        </view>
         <view class="action-btn delete-btn" catchtap="deleteAddress" data-id="{{item._id}}">
           <text>删除</text>
         </view>

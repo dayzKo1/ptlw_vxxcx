@@ -51,6 +51,52 @@ Page({
     }
   },
 
+  async setDefaultAddress(e) {
+    const id = e.currentTarget.dataset.id
+    const address = this.data.addresses.find(addr => addr._id === id)
+    
+    if (address && address.isDefault) {
+      wx.showToast({
+        title: '该地址已是默认地址',
+        icon: 'none'
+      })
+      return
+    }
+    
+    wx.showLoading({
+      title: '设置中...'
+    })
+    
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'setDefaultAddress',
+        data: { addressId: id }
+      })
+      
+      wx.hideLoading()
+      
+      if (res.result.success) {
+        wx.showToast({
+          title: '设置成功',
+          icon: 'success'
+        })
+        this.loadAddresses()
+      } else {
+        wx.showToast({
+          title: res.result.message || '设置失败',
+          icon: 'none'
+        })
+      }
+    } catch (err) {
+      wx.hideLoading()
+      console.error('设置默认地址失败', err)
+      wx.showToast({
+        title: '设置失败，请重试',
+        icon: 'none'
+      })
+    }
+  },
+
   deleteAddress(e) {
     const id = e.currentTarget.dataset.id
     wx.showModal({

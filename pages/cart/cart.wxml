@@ -6,8 +6,11 @@
   </view>
 
   <view class="cart-content" wx:else>
-    <view class="cart-header">
-      <text class="table-number">📍 桌号：{{tableNumber || '0'}}</text>
+    <view class="cart-header" wx:if="{{tableNumber}}">
+      <text class="table-number">📍 桌号：{{tableNumber}}</text>
+      <text class="clear-btn" bindtap="clearCart">🗑️ 清空</text>
+    </view>
+    <view class="cart-header" wx:else>
       <text class="clear-btn" bindtap="clearCart">🗑️ 清空</text>
     </view>
 
