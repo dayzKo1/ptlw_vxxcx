@@ -1,44 +1,57 @@
 <view class="container">
+  <!-- 轮播图 -->
   <view class="banner-section">
-    <view class="banner-item" wx:for="{{banners}}" wx:key="_id">
-      <view class="banner-image-placeholder">{{item.emoji || '🎉'}}</view>
-      <text class="banner-title">{{item.title}}</text>
-    </view>
+    <swiper 
+      class="banner-swiper" 
+      indicator-dots 
+      autoplay 
+      circular 
+      indicator-color="rgba(255, 255, 255, 0.5)" 
+      indicator-active-color="#fff"
+    >
+      <swiper-item wx:for="{{banners}}" wx:key="_id">
+        <view class="banner-item">
+          <image 
+            class="banner-image" 
+            src="{{item.image}}" 
+            mode="aspectFill"
+          />
+          <view class="banner-content">
+            <text class="banner-title">{{item.title}}</text>
+            <text class="banner-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
   </view>
 
+  <!-- 桌号卡片 -->
   <view class="table-selector-section" wx:if="{{tableNumber}}">
     <view class="table-info-card">
-      <text class="table-info-label">📍 当前桌号</text>
+      <text class="table-info-label">当前桌号</text>
       <text class="table-info-value">{{tableNumber}}</text>
     </view>
   </view>
 
+  <!-- 点餐模式 -->
   <view class="order-mode-section">
     <view class="mode-item" bindtap="goToMenu" data-mode="dine-in">
-      <view class="mode-icon">🍽️</view>
+      <view class="mode-icon dine-in-icon">
+        <text class="mode-icon-text">堂</text>
+      </view>
       <view class="mode-info">
         <text class="mode-title">在店堂食</text>
         <text class="mode-desc">扫码点餐，堂食享受</text>
       </view>
-      <view class="mode-arrow">→</view>
     </view>
     <view class="mode-item" bindtap="goToMenu" data-mode="delivery">
-      <view class="mode-icon">🛵</view>
+      <view class="mode-icon delivery-icon">
+        <text class="mode-icon-text">外</text>
+      </view>
       <view class="mode-info">
         <text class="mode-title">外卖配送</text>
         <text class="mode-desc">在线下单，配送上门</text>
       </view>
-      <view class="mode-arrow">→</view>
-    </view>
-  </view>
-
-  <view class="header">
-    <view class="shop-logo">🏪</view>
-    <view class="shop-info">
-      <text class="shop-name">{{shopInfo.name}}</text>
-      <text class="shop-address" bindtap="openLocation">📍 {{shopInfo.address}} {{distance ? '· ' + distance : ''}}</text>
-      <text class="shop-phone" bindtap="makeCall">📞 {{shopInfo.phone}}</text>
-      <text class="shop-hours">⏰ 营业时间：{{shopInfo.businessHours}}</text>
     </view>
   </view>
 </view>

@@ -20,7 +20,30 @@ Page({
   loadBanners() {
     this.setData({
       banners: [
-        { _id: '1', title: '新店开业，全场8折', emoji: '🎉' }
+        { 
+          _id: '1', 
+          title: '新店开业', 
+          desc: '全场8折优惠',
+          image: '/images/banner/banner1.png' 
+        },
+        { 
+          _id: '2', 
+          title: '招牌推荐', 
+          desc: '精选人气菜品',
+          image: '/images/banner/banner2.png' 
+        },
+        { 
+          _id: '3', 
+          title: '限时特惠', 
+          desc: '会员专享福利',
+          image: '/images/banner/banner3.png' 
+        },
+        { 
+          _id: '4', 
+          title: '品质保证', 
+          desc: '新鲜食材，用心烹饪',
+          image: '/images/banner/banner4.png' 
+        }
       ]
     })
   },
@@ -52,8 +75,8 @@ Page({
   openLocation() {
     const address = this.data.shopInfo.address
     wx.openLocation({
-      latitude: 0,
-      longitude: 0,
+      latitude: this.data.shopInfo.latitude || 0,
+      longitude: this.data.shopInfo.longitude || 0,
       name: this.data.shopInfo.name,
       address: address,
       scale: 18
@@ -92,10 +115,6 @@ Page({
       },
       fail: (err) => {
         console.error('获取位置失败', err)
-        wx.showToast({
-          title: '获取位置失败',
-          icon: 'none'
-        })
       }
     })
   },

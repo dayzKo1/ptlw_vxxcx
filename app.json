@@ -36,9 +36,15 @@
       },
       {
         "pagePath": "pages/menu/menu",
-        "text": "点餐",
+        "text": "点单",
         "iconPath": "images/menu.png",
         "selectedIconPath": "images/menu-active.png"
+      },
+      {
+        "pagePath": "pages/order/order",
+        "text": "订单",
+        "iconPath": "images/order.png",
+        "selectedIconPath": "images/order-active.png"
       },
       {
         "pagePath": "pages/mine/mine",

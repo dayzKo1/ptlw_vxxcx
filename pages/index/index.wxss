@@ -1,115 +1,82 @@
 .container {
   padding: var(--spacing-md);
   padding-bottom: var(--spacing-md);
-  background: linear-gradient(180deg, var(--bg-light) 0%, var(--bg-white) 100%);
+  background: var(--bg-color);
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-.header {
-  background: var(--primary-color);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl) var(--spacing-2xl);
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-  box-shadow: var(--shadow-sm);
-  position: relative;
+/* 轮播图 */
+.banner-section {
+  margin-bottom: var(--spacing-lg);
   overflow: hidden;
-  transition: all var(--transition-base);
+  border-radius: var(--radius-xl);
 }
 
-.header:active {
-  transform: scale(0.99);
+.banner-swiper {
+  width: 100%;
+  height: 75vh;
 }
 
-.header::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  right: -50%;
+.banner-item {
   width: 100%;
   height: 100%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.08) 0%,
-    transparent 60%
-  );
-}
-
-.shop-logo {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: var(--radius-lg);
-  margin-right: var(--spacing-lg);
-  background: rgba(255, 255, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40rpx;
   position: relative;
-  z-index: 1;
-  transition: transform var(--transition-base);
-  backdrop-filter: blur(10rpx);
-}
-
-.shop-logo:active {
-  transform: scale(0.95);
-}
-
-.shop-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.shop-name {
-  font-size: var(--font-size-lg);
-  font-weight: bold;
-  color: var(--bg-white);
-  margin-bottom: var(--spacing-xs);
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-}
-
-.shop-address,
-.shop-phone,
-.shop-hours {
-  font-size: var(--font-size-sm);
-  color: rgba(255, 255, 255, 0.95);
-  margin-bottom: var(--spacing-xs);
-  display: flex;
-  align-items: center;
-  transition: all var(--transition-base);
-}
-
-.shop-address:active,
-.shop-phone:active {
-  opacity: 0.7;
-}
-
-.banner-section {
-  margin-bottom: var(--spacing-md);
   overflow: hidden;
+  border-radius: var(--radius-xl);
 }
 
+.banner-image {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-xl);
+}
+
+.banner-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-2xl);
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+.banner-title {
+  display: block;
+  font-size: var(--font-size-xl);
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+.banner-desc {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 桌号卡片 */
 .table-selector-section {
   margin-bottom: var(--spacing-md);
 }
 
 .table-info-card {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
   border-radius: var(--radius-xl);
   padding: var(--spacing-2xl);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 112, 0.2);
   transition: all var(--transition-base);
 }
 
 .table-info-card:active {
   transform: scale(0.99);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 112, 0.2);
 }
 
 .table-info-label {
@@ -121,11 +88,12 @@
 .table-info-value {
   font-size: var(--font-size-xl);
   color: var(--bg-white);
-  font-weight: bold;
+  font-weight: 700;
   flex: 1;
   text-align: center;
 }
 
+/* 点餐模式 */
 .order-mode-section {
   margin-bottom: var(--spacing-md);
   display: flex;
@@ -142,6 +110,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-sm);
+  border: 1rpx solid var(--border-light);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
@@ -155,14 +124,14 @@
   left: 0;
   right: 0;
   height: 4rpx;
-  background: var(--primary-color);
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
   transform: scaleX(0);
   transition: transform var(--transition-base);
 }
 
 .mode-item:active {
   transform: scale(0.98);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
 .mode-item:active::before {
@@ -173,13 +142,27 @@
   width: 88rpx;
   height: 88rpx;
   border-radius: var(--radius-lg);
-  background: var(--primary-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 44rpx;
   margin-bottom: var(--spacing-md);
   flex-shrink: 0;
+}
+
+.dine-in-icon {
+  background: linear-gradient(135deg, #FF6B70 0%, #FF8A8E 100%);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 112, 0.25);
+}
+
+.delivery-icon {
+  background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+  box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.25);
+}
+
+.mode-icon-text {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #fff;
 }
 
 .mode-info {
@@ -202,51 +185,93 @@
   color: var(--text-tertiary);
 }
 
-.mode-arrow {
-  display: none;
-}
-
-.banner-item {
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--primary-color);
+/* 店铺信息 */
+.header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-3xl) var(--spacing-2xl);
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  overflow: hidden;
+  padding: var(--spacing-xl) var(--spacing-2xl);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  min-height: 220rpx;
+  margin-bottom: var(--spacing-md);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 112, 0.15);
+  position: relative;
+  overflow: hidden;
   transition: all var(--transition-base);
 }
 
-.banner-item:active {
+.header:active {
   transform: scale(0.99);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 112, 0.15);
 }
 
-.banner-item::after {
+.header::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 60%
+  );
 }
 
-.banner-image-placeholder {
-  font-size: 88rpx;
-  margin-bottom: 0;
-  text-align: center;
+.shop-logo {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: var(--radius-lg);
+  margin-right: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  transition: transform var(--transition-base);
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.banner-title {
-  display: block;
-  font-size: var(--font-size-xl);
+.shop-logo:active {
+  transform: scale(0.95);
+}
+
+.shop-logo-img {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+}
+
+.shop-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.shop-name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
   color: var(--bg-white);
-  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 
+.shop-address,
+.shop-phone,
+.shop-hours {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  transition: all var(--transition-base);
+}
+
+.shop-address:active,
+.shop-phone:active {
+  opacity: 0.7;
+}

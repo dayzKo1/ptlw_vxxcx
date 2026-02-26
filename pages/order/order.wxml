@@ -5,48 +5,48 @@
       bindtap="switchTab" 
       data-tab="0"
     >
-      <text>⏳ 待处理</text>
+      <text>待处理</text>
     </view>
     <view 
       class="tab-item {{currentTab === 1 ? 'active' : ''}}" 
       bindtap="switchTab" 
       data-tab="1"
     >
-      <text>🔥 进行中</text>
+      <text>进行中</text>
     </view>
     <view 
       class="tab-item {{currentTab === 2 ? 'active' : ''}}" 
       bindtap="switchTab" 
       data-tab="2"
     >
-      <text>✅ 已完成</text>
+      <text>已完成</text>
     </view>
   </view>
 
   <scroll-view scroll-y class="order-list" bindscrolltolower="loadMore">
     <view class="empty-state" wx:if="{{orders.length === 0}}">
-      <view class="empty-icon"><text>📋</text></view>
+      <view class="empty-icon"></view>
       <text class="empty-text">暂无订单</text>
     </view>
 
     <view class="order-item" wx:for="{{orders}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
       <view class="order-header">
-        <text class="order-no">📝 订单号：{{item.orderNo}}</text>
-        <text class="order-status">{{item.statusEmoji || '🔴'}} {{item.statusText}}</text>
+        <text class="order-no">订单号：{{item.orderNo}}</text>
+        <text class="order-status">{{item.statusText}}</text>
       </view>
       <view class="order-info">
-        <text class="table-number">📍 桌号：{{item.tableNumber}}</text>
-        <text class="order-time">🕐 {{item.timeText}}</text>
+        <text class="table-number">桌号：{{item.tableNumber}}</text>
+        <text class="order-time">{{item.timeText}}</text>
       </view>
       <view class="order-items">
         <view class="item-preview" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
-          <view class="dish-image-placeholder">{{dish.emoji || '🍽️'}}</view>
+          <view class="dish-image-placeholder"></view>
           <text class="dish-name">{{dish.name}}</text>
           <text class="dish-quantity">x{{dish.quantity}}</text>
         </view>
       </view>
       <view class="order-footer">
-        <text class="total-price">💰 合计：¥{{item.totalPrice}}</text>
+        <text class="total-price">合计：¥{{item.totalPrice}}</text>
         <view class="action-btns">
           <button 
             class="action-btn pay-btn" 
@@ -54,7 +54,7 @@
             catchtap="payOrder" 
             data-id="{{item._id}}"
           >
-            💳 去支付
+            去支付
           </button>
           <button 
             class="action-btn cancel-btn" 
@@ -62,7 +62,7 @@
             catchtap="cancelOrder" 
             data-id="{{item._id}}"
           >
-            ❌ 取消订单
+            取消订单
           </button>
           <button 
             class="action-btn reorder-btn" 
@@ -70,7 +70,7 @@
             catchtap="reorder" 
             data-id="{{item._id}}"
           >
-            🔄 再来一单
+            再来一单
           </button>
         </view>
       </view>
