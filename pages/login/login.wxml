@@ -6,22 +6,6 @@
       <text class="app-desc">扫码点餐，轻松用餐</text>
     </view>
 
-    <view class="role-section">
-      <text class="role-title">选择身份</text>
-      <view class="role-options">
-        <view class="role-option {{selectedRole === 'customer' ? 'active' : ''}}" bindtap="selectRole" data-role="customer">
-          <text class="role-icon">👤</text>
-          <text class="role-name">客户</text>
-          <text class="role-desc">浏览菜品、下单点餐</text>
-        </view>
-        <view class="role-option {{selectedRole === 'merchant' ? 'active' : ''}}" bindtap="selectRole" data-role="merchant">
-          <text class="role-icon">🏪</text>
-          <text class="role-name">商户</text>
-          <text class="role-desc">管理订单、经营店铺</text>
-        </view>
-      </view>
-    </view>
-
     <view class="login-section">
       <button class="login-btn" bindtap="handleLogin" open-type="getUserInfo">
         <text class="login-icon">📱</text>
@@ -29,6 +13,17 @@
       </button>
 
       <view class="dev-section" wx:if="{{isDev}}">
+        <view class="dev-role-section">
+          <text class="dev-role-title">开发模式 - 选择身份</text>
+          <view class="role-options">
+            <view class="role-option {{selectedRole === 'customer' ? 'active' : ''}}" bindtap="selectRole" data-role="customer">
+              <text class="role-name">客户</text>
+            </view>
+            <view class="role-option {{selectedRole === 'merchant' ? 'active' : ''}}" bindtap="selectRole" data-role="merchant">
+              <text class="role-name">商户</text>
+            </view>
+          </view>
+        </view>
         <button class="dev-login-btn" bindtap="handleDevLogin">
           <text class="dev-login-icon">🔧</text>
           <text class="dev-login-text">开发环境模拟登录</text>

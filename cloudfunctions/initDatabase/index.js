@@ -11,6 +11,7 @@ exports.main = async (event, context) => {
     await initDishes()
     await initTables()
     await initShopInfo()
+    await initMerchantWhitelist()
 
     return {
       success: true,
@@ -200,6 +201,24 @@ async function initShopInfo() {
       phone: '138-XXXX-XXXX',
       businessHours: '10:00-22:00',
       description: '用心做好每一道菜',
+      createTime: new Date().getTime(),
+      updateTime: new Date().getTime()
+    }
+  })
+}
+
+async function initMerchantWhitelist() {
+  const existRes = await db.collection('merchantWhitelist').limit(1).get()
+  if (existRes.data.length > 0) {
+    console.log('商户白名单已存在，跳过初始化')
+    return
+  }
+  
+  await db.collection('merchantWhitelist').add({
+    data: {
+      openid: '请在数据库中添加商户openid',
+      nickname: '示例商户',
+      status: 1,
       createTime: new Date().getTime(),
       updateTime: new Date().getTime()
     }

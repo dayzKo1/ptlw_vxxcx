@@ -6,13 +6,31 @@ cloud.init({
 
 const db = cloud.database()
 
+const MERCHANT_WHITELIST = [
+  // 在此添加商户白名单 openid
+  // 示例: 'oXXXX-xxxxxxxxxxxxxxxx'
+]
+
 exports.main = async (event, context) => {
-  const { userInfo, role } = event
+  const { userInfo } = event
   const wxContext = cloud.getWXContext()
   
   try {
     const openid = wxContext.OPENID
     const sessionKey = wxContext.SESSION_KEY
+    
+    let role = 'customer'
+    
+    const whitelistRes = await db.collection('merchantWhitelist').where({
+      openid: openid,
+      status: 1
+    }).get()
+    
+    if (whitelistRes.data.length > 0) {
+      role = 'merchant'
+    } else if (MERCHANT_WHITELIST.includes(openid)) {
+      role = 'merchant'
+    }
     
     const userRes = await db.collection('users').where({
       openid: openid
@@ -29,35 +47,35 @@ exports.main = async (event, context) => {
           city: userInfo.city,
           province: userInfo.province,
           country: userInfo.country,
-          role: role || 'customer',
+          role: role,
           createTime: db.serverDate(),
           updateTime: db.serverDate()
         }
       })
     } else {
-      const updateData = {
-        nickName: userInfo.nickName,
-        avatarUrl: userInfo.avatarUrl,
-        updateTime: db.serverDate()
+      const existingUser = userRes.data[0]
+      if (existingUser.role === 'merchant') {
+        role = 'merchant'
       }
-      if (role) {
-        updateData.role = role
-      }
+      
       await db.collection('users').where({
         openid: openid
       }).update({
-        data: updateData
+        data: {
+          nickName: userInfo.nickName,
+          avatarUrl: userInfo.avatarUrl,
+          role: role,
+          updateTime: db.serverDate()
+        }
       })
     }
-    
-    const userData = userRes.data.length > 0 ? userRes.data[0] : null
     
     return {
       success: true,
       data: {
         openid: openid,
         sessionKey: sessionKey,
-        role: role || (userData ? userData.role : 'customer') || 'customer'
+        role: role
       }
     }
   } catch (err) {

@@ -83,8 +83,7 @@ Page({
       const loginRes = await wx.cloud.callFunction({
         name: 'login',
         data: {
-          userInfo: userInfo,
-          role: this.data.selectedRole
+          userInfo: userInfo
         }
       })
 
