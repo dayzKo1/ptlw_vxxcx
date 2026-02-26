@@ -1,54 +1,32 @@
 <view class="container">
-  <!-- 店铺信息头部 -->
-  <view class="shop-header">
-    <view class="shop-logo">
-      <image src="/images/default-avatar.png" mode="aspectFill" class="shop-logo-img" />
-    </view>
-    <view class="shop-info">
-      <text class="shop-name">{{shopInfo.name}}</text>
-      <view class="shop-detail" bindtap="openLocation">
-        <text class="shop-address">{{shopInfo.address}}</text>
-        <text class="shop-distance" wx:if="{{distance}}">· {{distance}}</text>
-      </view>
-    </view>
-    <view class="shop-phone" bindtap="makeCall">
-      <text class="phone-icon">电话</text>
-    </view>
-  </view>
-
   <view class="header-section">
-    <view class="delivery-mode-switch">
-      <view 
-        class="mode-item {{deliveryMode === 'pickup' ? 'active' : ''}}" 
-        bindtap="switchDeliveryMode" 
-        data-mode="pickup"
-      >
-        <text class="mode-text">自取</text>
+    <view class="header-top">
+      <view class="shop-info" bindtap="openLocation">
+        <text class="shop-name">{{shopInfo.name || '美味餐厅'}}</text>
+        <view class="shop-location">
+          <text class="shop-distance">{{distance || '点击获取位置'}}</text>
+        </view>
       </view>
-      <view 
-        class="mode-item {{deliveryMode === 'delivery' ? 'active' : ''}}" 
-        bindtap="switchDeliveryMode" 
-        data-mode="delivery"
-      >
-        <text class="mode-text">配送</text>
-      </view>
-    </view>
-    
-    <view class="search-bar">
-      <view class="search-input-wrapper">
-        <input 
-          class="search-input" 
-          placeholder="搜索菜品名称" 
-          value="{{searchKeyword}}"
-          bindinput="onSearchInput"
-          confirm-type="search"
-        />
-        <text class="clear-icon" wx:if="{{searchKeyword}}" bindtap="clearSearch">✕</text>
+      <view class="delivery-mode-switch">
+        <view 
+          class="mode-item {{deliveryMode === 'pickup' ? 'active' : ''}}" 
+          bindtap="switchDeliveryMode" 
+          data-mode="pickup"
+        >
+          <text class="mode-text">自取</text>
+        </view>
+        <view 
+          class="mode-item {{deliveryMode === 'delivery' ? 'active' : ''}}" 
+          bindtap="switchDeliveryMode" 
+          data-mode="delivery"
+        >
+          <text class="mode-text">配送</text>
+        </view>
       </view>
     </view>
   </view>
 
-  <view class="menu-layout" wx:if="{{!showSearchResult}}">
+  <view class="menu-layout">
     <scroll-view scroll-y class="category-sidebar" scroll-into-view="category-{{currentCategoryId}}" scroll-with-animation>
       <view 
         id="category-{{item._id}}"
@@ -87,38 +65,6 @@
             </view>
           </view>
         </view>
-      </view>
-    </scroll-view>
-  </view>
-
-  <view class="search-result" wx:if="{{showSearchResult}}">
-    <view class="search-result-header">
-      <text class="search-result-title">搜索结果</text>
-      <text class="search-result-count">共{{searchResults.length}}个商品</text>
-    </view>
-    <scroll-view scroll-y class="search-result-list">
-      <view class="dish-item" wx:for="{{searchResults}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-        <view class="dish-image-placeholder">{{item.emoji || '🍽️'}}</view>
-        <view class="dish-info">
-          <text class="dish-name">{{item.name}}</text>
-          <text class="dish-desc">{{item.description}}</text>
-          <view class="dish-tags" wx:if="{{item.isHot || item.isNew}}">
-            <text class="dish-tag" wx:if="{{item.isHot}}">🔥 热门</text>
-            <text class="dish-tag" wx:if="{{item.isNew}}">✨ 新品</text>
-          </view>
-          <view class="dish-bottom">
-            <text class="dish-price">¥{{item.price}}</text>
-            <view class="quantity-control" catchtap="stopPropagation">
-              <view class="minus-btn" wx:if="{{item.quantity > 0}}" bindtap="minusDish" data-id="{{item._id}}">-</view>
-              <text class="quantity" wx:if="{{item.quantity > 0}}">{{item.quantity}}</text>
-              <view class="plus-btn" bindtap="plusDish" data-id="{{item._id}}">+</view>
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="empty-result" wx:if="{{searchResults.length === 0}}">
-        <text class="empty-icon">🔍</text>
-        <text class="empty-text">未找到相关商品</text>
       </view>
     </scroll-view>
   </view>

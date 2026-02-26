@@ -23,7 +23,7 @@ Page({
         { 
           _id: '1', 
           title: '新店开业', 
-          desc: '全场8折优惠',
+          desc: '全场优惠',
           image: '/images/banner/banner1.png' 
         },
         { 

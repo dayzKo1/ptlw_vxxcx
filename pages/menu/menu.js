@@ -10,17 +10,77 @@ Page({
     cartTotal: 0,
     cartItems: [],
     deliveryMode: 'pickup',
-    searchKeyword: '',
-    showSearchResult: false,
-    searchResults: [],
     showCartDrawer: false,
     showDishModal: false,
-    selectedDish: null
+    selectedDish: null,
+    shopInfo: {},
+    distance: ''
   },
 
   onLoad() {
+    this.loadShopInfo()
     this.loadCategories()
     this.loadCart()
+    this.getLocation()
+  },
+
+  loadShopInfo() {
+    const shopInfo = app.globalData.shopInfo || { name: '美味餐厅' }
+    this.setData({ shopInfo })
+  },
+
+  getLocation() {
+    wx.getLocation({
+      type: 'gcj02',
+      success: (res) => {
+        const { latitude, longitude } = res
+        const distance = this.calculateDistance(
+          latitude,
+          longitude,
+          this.data.shopInfo.latitude || 0,
+          this.data.shopInfo.longitude || 0
+        )
+        this.setData({ distance })
+      },
+      fail: (err) => {
+        console.error('获取位置失败', err)
+      }
+    })
+  },
+
+  calculateDistance(lat1, lon1, lat2, lon2) {
+    if (!lat2 || !lon2) {
+      return ''
+    }
+
+    const R = 6371
+    const dLat = this.toRad(lat2 - lat1)
+    const dLon = this.toRad(lon2 - lon1)
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    const distance = R * c
+
+    if (distance < 1) {
+      return Math.round(distance * 1000) + 'm'
+    } else {
+      return distance.toFixed(1) + 'km'
+    }
+  },
+
+  toRad(deg) {
+    return deg * (Math.PI / 180)
+  },
+
+  openLocation() {
+    wx.openLocation({
+      latitude: this.data.shopInfo.latitude || 0,
+      longitude: this.data.shopInfo.longitude || 0,
+      name: this.data.shopInfo.name || '美味餐厅',
+      address: this.data.shopInfo.address || '',
+      scale: 18
+    })
   },
 
   onShow() {
@@ -112,57 +172,6 @@ Page({
   switchDeliveryMode(e) {
     const mode = e.currentTarget.dataset.mode
     this.setData({ deliveryMode: mode })
-  },
-
-  onSearchInput(e) {
-    const keyword = e.detail.value.trim()
-    this.setData({ searchKeyword: keyword })
-    
-    if (keyword) {
-      this.searchDishes(keyword)
-    } else {
-      this.setData({ 
-        showSearchResult: false,
-        searchResults: []
-      })
-    }
-  },
-
-  async searchDishes(keyword) {
-    try {
-      const db = wx.cloud.database()
-      const res = await db.collection('dishes')
-        .where({
-          status: 1,
-          name: db.RegExp({
-            regexp: keyword,
-            options: 'i'
-          })
-        })
-        .orderBy('sort', 'asc')
-        .limit(20)
-        .get()
-      
-      const searchResults = res.data.map(dish => ({
-        ...dish,
-        quantity: this.data.cart[dish._id] || 0
-      }))
-      
-      this.setData({ 
-        showSearchResult: true,
-        searchResults 
-      })
-    } catch (err) {
-      console.error('搜索失败', err)
-    }
-  },
-
-  clearSearch() {
-    this.setData({ 
-      searchKeyword: '',
-      showSearchResult: false,
-      searchResults: []
-    })
   },
 
   selectCategory(e) {

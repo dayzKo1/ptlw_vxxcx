@@ -59,8 +59,10 @@ Page({
 
       const orders = res.data.map(order => ({
         ...order,
+        orderNo: order.orderNo || order.orderNumber || order._id.slice(-8),
         statusText: this.getStatusText(order.status),
-        timeText: this.formatTime(order.createTime)
+        timeText: this.formatTime(order.createTime),
+        itemCount: order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0
       }))
 
       this.setData({
@@ -71,13 +73,14 @@ Page({
     } catch (err) {
       console.error('加载订单失败', err)
       const mockOrders = [
-        { _id: '1', orderNumber: '20240224001', totalPrice: 128, status: 0, items: [{ name: '招牌红烧肉', quantity: 2, price: 68 }], createTime: Date.now() - 3600000 },
-        { _id: '2', orderNumber: '20240224002', totalPrice: 58, status: 1, items: [{ name: '宫保鸡丁', quantity: 1, price: 38 }, { name: '米饭', quantity: 2, price: 10 }], createTime: Date.now() - 7200000 }
+        { _id: '1', orderNo: '20240224001', totalPrice: 128, status: 0, tableNumber: 'A01', items: [{ name: '招牌红烧肉', quantity: 2, price: 68 }], createTime: Date.now() - 3600000 },
+        { _id: '2', orderNo: '20240224002', totalPrice: 58, status: 1, tableNumber: 'B02', items: [{ name: '宫保鸡丁', quantity: 1, price: 38 }, { name: '米饭', quantity: 2, price: 10 }], createTime: Date.now() - 7200000 }
       ]
       const orders = mockOrders.map(order => ({
         ...order,
         statusText: this.getStatusText(order.status),
-        timeText: this.formatTime(order.createTime)
+        timeText: this.formatTime(order.createTime),
+        itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0)
       }))
       this.setData({ orders, hasMore: false })
     } finally {
