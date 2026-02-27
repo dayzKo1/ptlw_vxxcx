@@ -87,11 +87,6 @@
   margin-bottom: var(--spacing-lg);
 }
 
-.menu-icon {
-  font-size: 36rpx;
-  margin-right: var(--spacing-lg);
-}
-
 .menu-item:last-child {
   border-bottom: none;
 }

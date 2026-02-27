@@ -101,12 +101,6 @@ Page({
     })
   },
 
-  handleTableQRCode() {
-    wx.navigateTo({
-      url: '/packageMerchant/tableQRCode/tableQRCode'
-    })
-  },
-
   handleSettings() {
     wx.navigateTo({
       url: '/packageUser/settings/settings'

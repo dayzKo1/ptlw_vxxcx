@@ -1,5 +1,5 @@
 const app = getApp()
-const api = require('/utils/merchant-api.js')
+const api = require('../../utils/merchant-api.js')
 
 Page({
   data: {
@@ -28,6 +28,7 @@ Page({
     // UI状态
     loading: false,
     refreshing: false,
+    generating: false,
     showDishModal: false,
     showTableModal: false,
     editingDish: null,
@@ -381,6 +382,91 @@ Page({
       } catch (err) {
         wx.hideLoading()
         wx.showToast({ title: '删除失败', icon: 'none' })
+      }
+    }
+  },
+
+  // ==================== 桌号二维码操作 ====================
+
+  async handleTableGenerateQR(e) {
+    const { table } = e.detail
+
+    wx.showLoading({ title: '生成中...' })
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'generateTableQRCode',
+        data: { tableNumber: table.tableNumber }
+      })
+
+      wx.hideLoading()
+      if (res.result.success) {
+        wx.showToast({ title: '生成成功', icon: 'success' })
+        this.refreshData()
+      } else {
+        wx.showToast({ title: res.result.message || '生成失败', icon: 'none' })
+      }
+    } catch (err) {
+      wx.hideLoading()
+      console.error('生成二维码失败', err)
+      wx.showToast({ title: '生成失败', icon: 'none' })
+    }
+  },
+
+  async handleTableDownloadQR(e) {
+    const { table } = e.detail
+    const url = table.qrCode
+
+    if (!url) {
+      wx.showToast({ title: '请先生成二维码', icon: 'none' })
+      return
+    }
+
+    wx.showLoading({ title: '下载中...' })
+    try {
+      const res = await wx.downloadFile({ url })
+      await wx.saveImageToPhotosAlbum({ filePath: res.tempFilePath })
+      wx.hideLoading()
+      wx.showToast({ title: '已保存到相册', icon: 'success' })
+    } catch (err) {
+      wx.hideLoading()
+      if (err.errMsg && err.errMsg.includes('auth deny')) {
+        wx.showModal({
+          title: '提示',
+          content: '需要您授权保存图片到相册',
+          showCancel: false
+        })
+      } else {
+        wx.showToast({ title: '保存失败', icon: 'none' })
+      }
+    }
+  },
+
+  async handleBatchGenerateQR() {
+    const res = await wx.showModal({
+      title: '确认',
+      content: '确定要为所有桌号生成二维码吗？'
+    })
+
+    if (res.confirm) {
+      this.setData({ generating: true })
+      try {
+        const res = await wx.cloud.callFunction({ name: 'batchGenerateTableQRCode' })
+
+        if (res.result.success) {
+          wx.showToast({
+            title: `成功生成${res.result.successCount}个二维码`,
+            icon: 'success',
+            duration: 2000
+          })
+          this.refreshData()
+        } else {
+          wx.showToast({ title: '批量生成失败', icon: 'none' })
+        }
+      } catch (err) {
+        console.error('批量生成二维码失败', err)
+        wx.showToast({ title: '批量生成失败', icon: 'none' })
+      } finally {
+        this.setData({ generating: false })
       }
     }
   },

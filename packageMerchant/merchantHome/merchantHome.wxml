@@ -73,12 +73,21 @@
       <view class="sub-tab {{tableStatus === 'occupied' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="occupied">使用中</view>
     </scroll-view>
 
+    <!-- 批量操作按钮 -->
+    <view class="batch-actions">
+      <button class="batch-btn" bindtap="handleBatchGenerateQR" disabled="{{generating}}">
+        {{generating ? '生成中...' : '批量生成二维码'}}
+      </button>
+    </view>
+
     <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
       <block wx:if="{{tables.length > 0}}">
         <table-card wx:for="{{tables}}" wx:key="_id" table="{{item}}"
                     bindedit="showEditTableModal"
                     bindtoggle="handleTableToggle"
-                    binddelete="handleTableDelete" />
+                    binddelete="handleTableDelete"
+                    bindgenerateqr="handleTableGenerateQR"
+                    binddownloadqr="handleTableDownloadQR" />
       </block>
       <empty-state wx:else text="暂无桌号" btnText="添加桌号" bindaction="showAddTableModal" />
     </scroll-view>

@@ -9,7 +9,25 @@
     <text class="info-label">使用时间：</text>
     <text class="info-text">{{table.timeText}}</text>
   </view>
+  
+  <!-- 二维码区域 -->
+  <view class="qrcode-section">
+    <view class="qrcode-status">
+      <text class="qrcode-label">二维码：</text>
+      <text class="qrcode-status-text {{table.qrCode ? 'generated' : 'pending'}}">
+        {{table.qrCode ? '已生成' : '未生成'}}
+      </text>
+    </view>
+    <view class="qrcode-preview" wx:if="{{table.qrCode}}" bindtap="onPreviewQR" data-url="{{table.qrCode}}">
+      <image class="qrcode-img" src="{{table.qrCode}}" mode="aspectFit"></image>
+    </view>
+  </view>
+  
   <view class="table-actions">
+    <button class="action-btn qrcode-btn" catchtap="onGenerateQR">
+      {{table.qrCode ? '重新生成' : '生成二维码'}}
+    </button>
+    <button class="action-btn download-btn" wx:if="{{table.qrCode}}" catchtap="onDownloadQR">下载</button>
     <button class="action-btn {{table.status === 1 ? 'idle-btn' : 'occupy-btn'}}" catchtap="onToggleStatus">
       {{table.status === 1 ? '设为空闲' : '设为使用中'}}
     </button>

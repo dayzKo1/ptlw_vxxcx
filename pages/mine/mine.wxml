@@ -12,16 +12,11 @@
 
   <view class="menu-section">
     <view class="menu-item merchant" wx:if="{{isMerchant}}" bindtap="handleMerchantHome">
-      <text class="menu-icon">🏪</text>
       <text class="menu-text">商户后台</text>
       <text class="menu-arrow">></text>
     </view>
     <view class="menu-item" bindtap="handleAddress">
       <text class="menu-text">收货地址</text>
-      <text class="menu-arrow">></text>
-    </view>
-    <view class="menu-item" bindtap="handleTableQRCode">
-      <text class="menu-text">桌号二维码</text>
       <text class="menu-arrow">></text>
     </view>
     <view class="menu-item" bindtap="handleSettings">

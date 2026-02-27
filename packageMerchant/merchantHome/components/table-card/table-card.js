@@ -19,8 +19,22 @@ Component({
       this.triggerEvent('delete', { table: this.properties.table })
     },
 
-    onShowQR() {
-      this.triggerEvent('showqr', { table: this.properties.table })
+    onGenerateQR() {
+      this.triggerEvent('generateqr', { table: this.properties.table })
+    },
+
+    onPreviewQR(e) {
+      const url = e.currentTarget.dataset.url
+      if (url) {
+        wx.previewImage({
+          urls: [url],
+          current: url
+        })
+      }
+    },
+
+    onDownloadQR() {
+      this.triggerEvent('downloadqr', { table: this.properties.table })
     }
   }
 })
