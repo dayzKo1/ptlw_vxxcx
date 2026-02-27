@@ -33,7 +33,7 @@ Page({
   navigateByRole(role) {
     if (role === 'merchant') {
       wx.redirectTo({
-        url: '/pages/merchantHome/merchantHome'
+        url: '/packageMerchant/merchantHome/merchantHome'
       })
     } else {
       wx.switchTab({

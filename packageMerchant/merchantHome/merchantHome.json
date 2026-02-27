@@ -8,7 +8,6 @@
     "table-card": "./components/table-card/table-card",
     "dish-modal": "./components/dish-modal/dish-modal",
     "table-modal": "./components/table-modal/table-modal",
-    "empty-state": "./components/empty-state/empty-state",
-    "loading": "/components/loading/loading"
+    "empty-state": "./components/empty-state/empty-state"
   }
 }

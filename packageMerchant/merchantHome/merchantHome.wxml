@@ -93,5 +93,3 @@
 
 <table-modal show="{{showTableModal}}" table="{{editingTable}}"
              bindclose="hideTableModal" bindsubmit="handleTableSubmit" />
-
-<loading show="{{loading}}" text="加载中..." />

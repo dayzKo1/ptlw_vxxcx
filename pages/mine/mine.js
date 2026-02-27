@@ -91,31 +91,31 @@ Page({
 
   handleMerchantHome() {
     wx.navigateTo({
-      url: '/pages/merchantHome/merchantHome'
+      url: '/packageMerchant/merchantHome/merchantHome'
     })
   },
 
   handleAddress() {
     wx.navigateTo({
-      url: '/pages/addressList/addressList'
+      url: '/packageUser/addressList/addressList'
     })
   },
 
   handleTableQRCode() {
     wx.navigateTo({
-      url: '/pages/tableQRCode/tableQRCode'
+      url: '/packageMerchant/tableQRCode/tableQRCode'
     })
   },
 
   handleSettings() {
     wx.navigateTo({
-      url: '/pages/settings/settings'
+      url: '/packageUser/settings/settings'
     })
   },
 
   handleAbout() {
     wx.navigateTo({
-      url: '/pages/about/about'
+      url: '/packageUser/about/about'
     })
   },
 

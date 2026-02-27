@@ -1,5 +1,5 @@
 const app = getApp()
-const api = require('../../utils/merchant-api.js')
+const api = require('/utils/merchant-api.js')
 
 Page({
   data: {

@@ -24,25 +24,25 @@ Page({
           _id: '1', 
           title: '新店开业', 
           desc: '全场优惠',
-          image: '/images/banner/banner1.png' 
+          image: '/images/banner/banner1.jpg' 
         },
         { 
           _id: '2', 
           title: '招牌推荐', 
           desc: '精选人气菜品',
-          image: '/images/banner/banner2.png' 
+          image: '/images/banner/banner2.jpg' 
         },
         { 
           _id: '3', 
           title: '限时特惠', 
           desc: '会员专享福利',
-          image: '/images/banner/banner3.png' 
+          image: '/images/banner/banner3.jpg' 
         },
         { 
           _id: '4', 
           title: '品质保证', 
           desc: '新鲜食材，用心烹饪',
-          image: '/images/banner/banner4.png' 
+          image: '/images/banner/banner4.jpg' 
         }
       ]
     })

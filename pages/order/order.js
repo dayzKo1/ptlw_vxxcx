@@ -115,7 +115,7 @@ Page({
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
     wx.navigateTo({
-      url: `/pages/orderDetail/orderDetail?id=${id}`
+      url: `/packageOrder/orderDetail/orderDetail?id=${id}`
     })
   },
 
@@ -230,7 +230,7 @@ Page({
 
             setTimeout(() => {
               wx.switchTab({
-                url: '/pages/cart/cart'
+                url: '/pages/menu/menu'
               })
             }, 1500)
           } catch (err) {
