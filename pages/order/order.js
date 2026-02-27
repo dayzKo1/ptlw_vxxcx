@@ -91,10 +91,11 @@ Page({
   getStatusText(status) {
     const statusMap = {
       0: '待支付',
-      1: '制作中',
-      2: '已出餐',
-      3: '已完成',
-      4: '已取消'
+      1: '待接单',
+      2: '制作中',
+      3: '已出餐',
+      4: '已完成',
+      5: '已取消'
     }
     return statusMap[status] || '未知'
   },

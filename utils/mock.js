@@ -9,9 +9,12 @@ function isDevMode() {
 var mockOrders = [
   {
     _id: 'order_001',
-    orderNo: '20260227001',
+    orderNo: 'T01-001',
+    orderType: 'T',
+    orderTypeText: '桌号订单',
+    sequence: 1,
     status: 0,
-    tableNumber: 'A01',
+    tableNumber: '1',
     items: [
       { dishId: 'd1', name: '招牌红烧肉', quantity: 1, price: 68 },
       { dishId: 'd2', name: '米饭', quantity: 2, price: 5 }
@@ -22,9 +25,12 @@ var mockOrders = [
   },
   {
     _id: 'order_002',
-    orderNo: '20260227002',
+    orderNo: 'P001',
+    orderType: 'P',
+    orderTypeText: '自取订单',
+    sequence: 1,
     status: 1,
-    tableNumber: 'A02',
+    tableNumber: '',
     items: [
       { dishId: 'd3', name: '宫保鸡丁', quantity: 1, price: 48 },
       { dishId: 'd4', name: '酸辣土豆丝', quantity: 1, price: 28 },
@@ -36,22 +42,29 @@ var mockOrders = [
   },
   {
     _id: 'order_003',
-    orderNo: '20260227003',
+    orderNo: 'T02-001',
+    orderType: 'T',
+    orderTypeText: '桌号订单',
+    sequence: 1,
     status: 2,
-    tableNumber: 'B01',
+    tableNumber: '2',
     items: [
       { dishId: 'd5', name: '水煮鱼', quantity: 1, price: 88 },
       { dishId: 'd6', name: '蒜蓉西兰花', quantity: 1, price: 32 }
     ],
     totalPrice: 120,
     remark: '鱼要新鲜的',
+    autoAccepted: true,
     createTime: Date.now() - 5400000
   },
   {
     _id: 'order_004',
-    orderNo: '20260227004',
+    orderNo: 'D001',
+    orderType: 'D',
+    orderTypeText: '外卖订单',
+    sequence: 1,
     status: 3,
-    tableNumber: 'B02',
+    tableNumber: '',
     items: [
       { dishId: 'd7', name: '麻婆豆腐', quantity: 2, price: 36 },
       { dishId: 'd2', name: '米饭', quantity: 3, price: 5 }
@@ -62,9 +75,12 @@ var mockOrders = [
   },
   {
     _id: 'order_005',
-    orderNo: '20260227005',
-    status: 0,
-    tableNumber: 'C01',
+    orderNo: 'T03-001',
+    orderType: 'T',
+    orderTypeText: '桌号订单',
+    sequence: 1,
+    status: 1,
+    tableNumber: '3',
     items: [
       { dishId: 'd8', name: '糖醋排骨', quantity: 1, price: 58 },
       { dishId: 'd9', name: '番茄蛋汤', quantity: 1, price: 22 }
@@ -75,22 +91,29 @@ var mockOrders = [
   },
   {
     _id: 'order_006',
-    orderNo: '20260227006',
-    status: 1,
-    tableNumber: 'C02',
+    orderNo: 'P002',
+    orderType: 'P',
+    orderTypeText: '自取订单',
+    sequence: 2,
+    status: 2,
+    tableNumber: '',
     items: [
       { dishId: 'd10', name: '回锅肉', quantity: 1, price: 52 },
       { dishId: 'd11', name: '干煸四季豆', quantity: 1, price: 28 }
     ],
     totalPrice: 80,
     remark: '',
+    autoAccepted: true,
     createTime: Date.now() - 2700000
   },
   {
     _id: 'order_007',
-    orderNo: '20260227007',
-    status: 4,
-    tableNumber: 'A03',
+    orderNo: 'T04-001',
+    orderType: 'T',
+    orderTypeText: '桌号订单',
+    sequence: 1,
+    status: 5,
+    tableNumber: '4',
     items: [
       { dishId: 'd12', name: '鱼香肉丝', quantity: 1, price: 42 }
     ],
@@ -100,9 +123,12 @@ var mockOrders = [
   },
   {
     _id: 'order_008',
-    orderNo: '20260227008',
-    status: 2,
-    tableNumber: 'D01',
+    orderNo: 'T05-001',
+    orderType: 'T',
+    orderTypeText: '桌号订单',
+    sequence: 1,
+    status: 4,
+    tableNumber: '5',
     items: [
       { dishId: 'd1', name: '招牌红烧肉', quantity: 2, price: 68 },
       { dishId: 'd5', name: '水煮鱼', quantity: 1, price: 88 },

@@ -25,10 +25,11 @@ function formatShortTime(timestamp) {
 function getStatusText(status) {
   const statusMap = {
     0: '待支付',
-    1: '制作中',
-    2: '已出餐',
-    3: '已完成',
-    4: '已取消'
+    1: '待接单',
+    2: '制作中',
+    3: '已出餐',
+    4: '已完成',
+    5: '已取消'
   }
   return statusMap[status] || '未知'
 }
@@ -36,10 +37,11 @@ function getStatusText(status) {
 function getStatusDesc(status) {
   const descMap = {
     0: '请尽快完成支付',
-    1: '商家正在为您准备美食',
-    2: '美食已准备好，请耐心等待',
-    3: '订单已完成，感谢您的光临',
-    4: '订单已取消'
+    1: '等待商家接单',
+    2: '商家正在为您准备美食',
+    3: '美食已准备好，请耐心等待',
+    4: '订单已完成，感谢您的光临',
+    5: '订单已取消'
   }
   return descMap[status] || ''
 }

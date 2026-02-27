@@ -6,19 +6,21 @@ const mock = require('./mock.js')
 
 // 订单状态映射
 const ORDER_STATUS = {
-  PENDING: 0,    // 待支付
-  COOKING: 1,    // 制作中
-  SERVED: 2,     // 已出餐
-  COMPLETED: 3,  // 已完成
-  CANCELLED: 4   // 已取消
+  PENDING: 0,       // 待支付
+  WAITING: 1,       // 待接单（支付成功后，等待商户接单）
+  COOKING: 2,       // 制作中（已接单）
+  SERVED: 3,        // 已出餐
+  COMPLETED: 4,     // 已完成
+  CANCELLED: 5      // 已取消
 }
 
 const ORDER_STATUS_TEXT = {
   0: '待支付',
-  1: '制作中',
-  2: '已出餐',
-  3: '已完成',
-  4: '已取消'
+  1: '待接单',
+  2: '制作中',
+  3: '已出餐',
+  4: '已完成',
+  5: '已取消'
 }
 
 // 辣度选项
@@ -126,6 +128,7 @@ function processOrders(orders) {
   return orders.map(order => ({
     ...order,
     orderNo: order.orderNo || (order._id || '').slice(-8),
+    orderTypeText: order.orderTypeText || (order.orderType === 'T' ? '桌号订单' : order.orderType === 'P' ? '自取订单' : order.orderType === 'D' ? '外卖订单' : ''),
     statusText: ORDER_STATUS_TEXT[order.status] || '未知',
     timeText: formatTime(order.createTime),
     itemCount: order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0
@@ -256,6 +259,20 @@ function getCategories() {
   })
 }
 
+// ==================== 店铺设置相关 ====================
+
+function getShopInfo() {
+  return callCloudFunction('manageShop', { action: 'get' })
+}
+
+function updateShopInfo(shopData) {
+  return callCloudFunction('manageShop', { action: 'update', shopData })
+}
+
+function toggleAutoAccept() {
+  return callCloudFunction('manageShop', { action: 'toggleAutoAccept' })
+}
+
 // ==================== 工具函数 ====================
 
 function formatTime(timestamp) {
@@ -285,32 +302,37 @@ module.exports = {
   ORDER_STATUS,
   ORDER_STATUS_TEXT,
   SPICY_OPTIONS,
-  
+
   // 统计
   getStats,
-  
+
   // 订单
   getOrders,
   updateOrderStatus,
   cancelOrder,
-  
+
   // 菜品
   getDishes,
   createDish,
   updateDish,
   toggleDishStatus,
   deleteDish,
-  
+
   // 桌号
   getTables,
   createTable,
   updateTable,
   toggleTableStatus,
   deleteTable,
-  
+
   // 分类
   getCategories,
-  
+
+  // 店铺设置
+  getShopInfo,
+  updateShopInfo,
+  toggleAutoAccept,
+
   // 工具
   isDevMode,
   formatTime,

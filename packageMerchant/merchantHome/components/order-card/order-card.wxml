@@ -1,13 +1,16 @@
 <view class="order-item" bindtap="onTap">
   <view class="order-header">
     <view class="order-info">
-      <text class="order-no">订单号: {{order.orderNo}}</text>
+      <view class="order-no-row">
+        <text class="order-no">{{order.orderNo}}</text>
+        <text class="order-type-tag" wx:if="{{order.orderType}}">{{order.orderType === 'T' ? '桌号' : order.orderType === 'P' ? '自取' : '外卖'}}</text>
+      </view>
       <text class="order-time">{{order.timeText}}</text>
     </view>
     <view class="order-status status-{{order.status}}">{{order.statusText}}</view>
   </view>
 
-  <view class="order-table" wx:if="{{order.tableNumber}}">
+  <view class="order-table" wx:if="{{order.tableNumber && order.orderType === 'T'}}">
     <text class="table-label">桌号:</text>
     <text class="table-number">{{order.tableNumber}}</text>
   </view>
@@ -26,21 +29,34 @@
       <text class="total-price">¥{{order.totalPrice}}</text>
     </view>
     <view class="order-actions" catchtap="stopPropagation">
+      <!-- 待支付状态：商户无操作按钮 -->
       <block wx:if="{{order.status === 0}}">
+        <text class="action-text disabled">等待支付</text>
+      </block>
+      <!-- 待接单状态：可取消或接单 -->
+      <block wx:elif="{{order.status === 1}}">
         <text class="action-text cancel" catchtap="onCancel">取消</text>
         <text class="action-text primary" catchtap="onAccept">接单</text>
       </block>
-      <block wx:elif="{{order.status === 1}}">
+      <!-- 制作中状态：可出餐或取消 -->
+      <block wx:elif="{{order.status === 2}}">
+        <text class="action-text cancel" catchtap="onCancel">取消</text>
         <text class="action-text primary" catchtap="onServe">出餐</text>
       </block>
-      <block wx:elif="{{order.status === 2}}">
+      <!-- 已出餐状态：可完成 -->
+      <block wx:elif="{{order.status === 3}}">
         <text class="action-text primary" catchtap="onComplete">完成</text>
       </block>
+      <!-- 已完成/已取消状态：无操作按钮 -->
     </view>
   </view>
 
   <view class="order-remark" wx:if="{{order.remark}}">
     <text class="remark-label">备注:</text>
     <text class="remark-text">{{order.remark}}</text>
+  </view>
+
+  <view class="auto-accepted-tag" wx:if="{{order.autoAccepted}}">
+    <text>自动接单</text>
   </view>
 </view>

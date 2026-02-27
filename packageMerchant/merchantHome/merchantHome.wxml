@@ -11,6 +11,15 @@
     </view>
   </view>
 
+  <!-- 自动接单开关 -->
+  <view class="auto-accept-bar">
+    <view class="auto-accept-info">
+      <text class="auto-accept-label">自动接单</text>
+      <text class="auto-accept-desc">{{shopInfo.autoAcceptOrder ? '支付后自动开始制作' : '需手动接单'}}</text>
+    </view>
+    <switch checked="{{shopInfo.autoAcceptOrder}}" color="#FF6B6B" bindchange="toggleAutoAccept" />
+  </view>
+
   <!-- 统计卡片 -->
   <stats-card stats="{{stats}}" />
 
@@ -24,7 +33,7 @@
   <!-- 订单管理 -->
   <view class="content-area" wx:if="{{currentTab === 'order'}}">
     <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="sub-tab {{orderStatus === item.value ? 'active' : ''}}" 
+      <view class="sub-tab {{orderStatus === item.value ? 'active' : ''}}"
             wx:for="{{orderStatusList}}" wx:key="value"
             bindtap="switchOrderStatus" data-status="{{item.value}}">
         {{item.label}}

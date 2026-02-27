@@ -43,8 +43,11 @@
 {
   _id: "订单ID",
   _openid: "用户OpenID",
-  orderNo: "订单号",
-  tableNumber: "桌号",
+  orderNo: "订单号",           // 新规则：T桌号-序号 / P序号 / D序号
+  orderType: "T/P/D",          // 订单类型：T=桌号, P=自取, D=外卖
+  orderTypeText: "桌号订单",    // 订单类型描述
+  sequence: 1,                 // 当日序号
+  tableNumber: "桌号",         // 桌号订单时有值
   items: [
     {
       dishId: "菜品ID",
@@ -56,9 +59,12 @@
   ],
   totalPrice: 56.00,
   remark: "备注信息",
+  deliveryMode: "pickup/delivery",
+  addressId: "配送地址ID",
   status: 0,
   transactionId: "微信支付交易号",
   payTime: 1234567890000,
+  autoAccepted: false,         // 是否自动接单
   createTime: 1234567890000,
   updateTime: 1234567890000
 }
@@ -66,10 +72,16 @@
 
 订单状态说明：
 - 0: 待支付
-- 1: 制作中
-- 2: 已出餐
-- 3: 已完成
-- 4: 已取消
+- 1: 待接单（支付成功后等待商户接单）
+- 2: 制作中（已接单）
+- 3: 已出餐
+- 4: 已完成
+- 5: 已取消
+
+订单号规则：
+- 桌号订单：`T桌号-序号`，如 `T05-001`（5号桌当日第1单）
+- 自取订单：`P序号`，如 `P001`（当日第1个自取单）
+- 外卖订单：`D序号`，如 `D001`（当日第1个外卖单）
 
 ## 4. tables（桌号集合）
 
@@ -95,7 +107,27 @@
   phone: "联系电话",
   businessHours: "营业时间",
   description: "店铺描述",
+  autoAcceptOrder: false,      // 是否自动接单
   createTime: 1234567890000,
   updateTime: 1234567890000
 }
 ```
+
+## 6. orderCounters（订单计数器集合）
+
+用于生成有序订单号，每个类型每天独立计数。
+
+```javascript
+{
+  _id: "table_20260227_5",     // key: 类型_日期_桌号
+  value: 1,                    // 当前序号
+  date: "20260227",
+  createTime: 1234567890000,
+  updateTime: 1234567890000
+}
+```
+
+计数器 key 规则：
+- 桌号订单：`table_YYYYMMDD_桌号`
+- 自取订单：`pickup_YYYYMMDD`
+- 外卖订单：`delivery_YYYYMMDD`

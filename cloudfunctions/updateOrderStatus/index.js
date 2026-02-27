@@ -7,10 +7,20 @@ const db = cloud.database()
 
 // 订单状态文本映射
 const STATUS_TEXT = {
-  1: '制作中',
-  2: '已出餐',
-  3: '已完成',
-  4: '已取消'
+  1: '待接单',
+  2: '制作中',
+  3: '已出餐',
+  4: '已完成',
+  5: '已取消'
+}
+
+// 允许的状态转换
+const VALID_TRANSITIONS = {
+  1: [2, 5],  // 待接单 -> 制作中 或 已取消
+  2: [3, 5],  // 制作中 -> 已出餐 或 已取消
+  3: [4],     // 已出餐 -> 已完成
+  4: [],      // 已完成 -> 无
+  5: []       // 已取消 -> 无
 }
 
 exports.main = async (event, context) => {
@@ -44,20 +54,43 @@ exports.main = async (event, context) => {
     }
 
     const order = orderRes.data
-    const userOpenid = order.openid
+    const currentStatus = order.status
+    const userOpenid = order._openid
+
+    // 验证状态转换是否合法（跳过待支付状态的特殊处理）
+    if (currentStatus !== 0 && VALID_TRANSITIONS[currentStatus]) {
+      if (!VALID_TRANSITIONS[currentStatus].includes(status)) {
+        return {
+          success: false,
+          message: `订单状态不允许从"${STATUS_TEXT[currentStatus]}"变为"${STATUS_TEXT[status]}"`
+        }
+      }
+    }
 
     // 更新订单状态
+    const updateData = {
+      status: status,
+      updateTime: new Date().getTime()
+    }
+
+    // 如果是接单操作，记录接单时间
+    if (status === 2 && currentStatus === 1) {
+      updateData.acceptTime = new Date().getTime()
+    }
+
+    // 如果是出餐操作，记录出餐时间
+    if (status === 3 && currentStatus === 2) {
+      updateData.serveTime = new Date().getTime()
+    }
+
     await db.collection('orders').doc(orderId).update({
-      data: {
-        status: status,
-        updateTime: new Date().getTime()
-      }
+      data: updateData
     })
 
     // 发送订阅消息通知（如果用户已订阅）
     if (userOpenid && STATUS_TEXT[status]) {
       try {
-        await sendOrderStatusNotification(userOpenid, orderId, status, order.tableNumber)
+        await sendOrderStatusNotification(userOpenid, orderId, status, order)
       } catch (notifyErr) {
         console.error('发送通知失败', notifyErr)
         // 通知失败不影响订单更新
@@ -66,7 +99,8 @@ exports.main = async (event, context) => {
 
     return {
       success: true,
-      message: '订单状态更新成功'
+      message: '订单状态更新成功',
+      data: { status, statusText: STATUS_TEXT[status] }
     }
   } catch (err) {
     console.error('更新订单状态失败', err)
@@ -78,35 +112,29 @@ exports.main = async (event, context) => {
 }
 
 // 发送订单状态变更通知
-async function sendOrderStatusNotification(userOpenid, orderId, status, tableNumber) {
+async function sendOrderStatusNotification(userOpenid, orderId, status, order) {
   const statusText = STATUS_TEXT[status] || '已更新'
 
-  // 获取订单详情用于消息模板
-  const orderRes = await db.collection('orders').doc(orderId).get()
-  const order = orderRes.data
+  const tableNumber = order.tableNumber
+  const orderNo = order.orderNo || orderId
 
-  if (!order) return
+  // 构建桌号/订单类型描述
+  let orderTypeDesc = '外卖订单'
+  if (order.orderType === 'T') {
+    orderTypeDesc = `${tableNumber}号桌`
+  } else if (order.orderType === 'P') {
+    orderTypeDesc = '自取订单'
+  }
 
   const templateData = {
-    thing1: { value: statusText }, // 订单状态
-    thing2: { value: order.orderNo || orderId }, // 订单号
-    thing3: { value: tableNumber ? `${tableNumber}号桌` : '外卖订单' }, // 桌号/配送类型
-    time4: { value: formatTime(new Date()) } // 更新时间
+    thing1: { value: statusText },
+    thing2: { value: orderNo },
+    thing3: { value: orderTypeDesc },
+    time4: { value: formatTime(new Date()) }
   }
 
   // 注意：需要在微信公众平台配置订阅消息模板
-  // 模板 ID 需要根据实际情况配置
-  // 这里仅作为示例，实际使用需要替换为真实的模板 ID
-  /*
-  await cloud.openapi.subscribeMessage.send({
-    touser: userOpenid,
-    templateId: 'YOUR_TEMPLATE_ID',
-    data: templateData,
-    page: '/pages/order/orderDetail/orderDetail?id=' + orderId
-  })
-  */
-
-  console.log(`订单 ${orderId} 状态已更新为 ${statusText}，可发送订阅消息通知`)
+  console.log(`订单 ${orderNo} 状态已更新为 ${statusText}，可发送订阅消息通知`)
 }
 
 // 格式化时间

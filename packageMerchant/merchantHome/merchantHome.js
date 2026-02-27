@@ -5,26 +5,28 @@ Page({
   data: {
     currentTab: 'order',
     userInfo: null,
+    shopInfo: {},
     stats: {},
     orders: [],
     dishes: [],
     tables: [],
     categories: [],
-    
+
     // 筛选状态
     orderStatus: -1,
     dishStatus: 'all',
     tableStatus: 'all',
-    
+
     // 状态配置
     orderStatusList: [
       { value: -1, label: '全部' },
       { value: 0, label: '待支付' },
-      { value: 1, label: '制作中' },
-      { value: 2, label: '已出餐' },
-      { value: 3, label: '已完成' }
+      { value: 1, label: '待接单' },
+      { value: 2, label: '制作中' },
+      { value: 3, label: '已出餐' },
+      { value: 4, label: '已完成' }
     ],
-    
+
     // UI状态
     loading: false,
     refreshing: false,
@@ -71,15 +73,20 @@ Page({
 
   async initData() {
     this.setData({ loading: true })
-    
+
     try {
-      const [stats, categories] = await Promise.all([
+      const [stats, categories, shopInfo] = await Promise.all([
         api.getStats(),
-        api.getCategories()
+        api.getCategories(),
+        api.getShopInfo()
       ])
-      
-      this.setData({ stats, categories })
-      
+
+      this.setData({
+        stats,
+        categories,
+        shopInfo: shopInfo.success ? shopInfo.data : {}
+      })
+
       await this.loadCurrentTabData()
     } catch (err) {
       console.error('初始化数据失败', err)
@@ -478,6 +485,34 @@ Page({
       api.getStats().then(stats => this.setData({ stats })),
       this.loadCurrentTabData()
     ])
+  },
+
+  // ==================== 自动接单 ====================
+
+  async toggleAutoAccept(e) {
+    const newValue = e.detail.value
+
+    wx.showLoading({ title: '处理中...' })
+    try {
+      const res = await api.toggleAutoAccept()
+      wx.hideLoading()
+
+      if (res.success) {
+        this.setData({
+          'shopInfo.autoAcceptOrder': newValue
+        })
+        wx.showToast({
+          title: res.message || (newValue ? '已开启自动接单' : '已关闭自动接单'),
+          icon: 'success'
+        })
+      } else {
+        wx.showToast({ title: res.message || '操作失败', icon: 'none' })
+      }
+    } catch (err) {
+      wx.hideLoading()
+      console.error('切换自动接单失败', err)
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
   },
 
   goToCustomerMode() {
