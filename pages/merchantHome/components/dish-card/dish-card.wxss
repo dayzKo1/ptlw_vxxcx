@@ -1,0 +1,149 @@
+.dish-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.dish-item:active {
+  transform: scale(0.98);
+}
+
+.dish-image {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  background: #f5f5f5;
+}
+
+.dish-image image {
+  width: 100%;
+  height: 100%;
+}
+
+.status-badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  font-size: 18rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 10rpx;
+  font-weight: 500;
+}
+
+.status-badge.online {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  color: #388E3C;
+}
+
+.status-badge.offline {
+  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+  color: #D32F2F;
+}
+
+.dish-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dish-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.dish-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.dish-tags {
+  display: flex;
+  gap: 6rpx;
+}
+
+.tag {
+  font-size: 16rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 6rpx;
+}
+
+.tag.hot {
+  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+  color: #D32F2F;
+}
+
+.tag.new {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  color: #1976D2;
+}
+
+.dish-category {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.dish-price-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 10rpx;
+}
+
+.dish-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #FF6B6B;
+}
+
+.spicy-level {
+  font-size: 20rpx;
+  color: #FF6B6B;
+  background: #FFF3E0;
+  padding: 2rpx 10rpx;
+  border-radius: 10rpx;
+}
+
+.dish-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  font-size: 20rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 20rpx;
+  border: none;
+  font-weight: 500;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.offline-btn {
+  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+  color: #D32F2F;
+}
+
+.online-btn {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  color: #388E3C;
+}
+
+.delete-btn {
+  background: #f5f5f5;
+  color: #999;
+}

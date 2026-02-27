@@ -1,0 +1,9 @@
+<view class="stats-row">
+  <view class="stat-item" wx:for="{{stats}}" wx:key="label">
+    <text class="stat-value">{{item.value}}</text>
+    <text class="stat-label">{{item.label}}</text>
+    <text class="stat-trend {{item.trend > 0 ? 'up' : item.trend < 0 ? 'down' : ''}}" wx:if="{{item.trend}}">
+      {{item.trend > 0 ? '↑' : item.trend < 0 ? '↓' : ''}} {{Math.abs(item.trend)}}%
+    </text>
+  </view>
+</view>
