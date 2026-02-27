@@ -8,8 +8,6 @@
     "pages/order/order",
     "pages/orderDetail/orderDetail",
     "pages/merchantHome/merchantHome",
-    "pages/merchantOrder/merchantOrder",
-    "pages/merchantDish/merchantDish",
     "pages/category/category",
     "pages/dishDetail/dishDetail",
     "pages/tableQRCode/tableQRCode",
