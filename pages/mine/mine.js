@@ -89,6 +89,12 @@ Page({
     }
   },
 
+  handleMerchantHome() {
+    wx.navigateTo({
+      url: '/pages/merchantHome/merchantHome'
+    })
+  },
+
   handleMerchantOrder() {
     wx.navigateTo({
       url: '/pages/merchantOrder/merchantOrder'
