@@ -1,4 +1,5 @@
 const app = getApp()
+const mock = require('../../utils/mock.js')
 
 Page({
   data: {
@@ -10,17 +11,23 @@ Page({
       pendingOrders: 0,
       cookingOrders: 0,
       dishCount: 0,
-      onlineDishCount: 0
+      onlineDishCount: 0,
+      tableCount: 0,
+      activeTableCount: 0
     },
     orders: [],
     dishes: [],
+    tables: [],
     categories: [],
     orderStatus: -1,
     dishStatus: 'all',
+    tableStatus: 'all',
     loading: false,
     refreshing: false,
     showDishModal: false,
+    showTableModal: false,
     editingDish: null,
+    editingTable: null,
     formData: {
       name: '',
       price: '',
@@ -30,7 +37,9 @@ Page({
       spicyLevel: 0,
       isHot: false,
       isNew: false,
-      sort: 0
+      sort: 0,
+      tableNumber: '',
+      qrCode: ''
     },
     spicyOptions: ['不辣', '微辣', '中辣', '特辣', '变态辣'],
     categoryPickerIndex: 0,
@@ -45,8 +54,10 @@ Page({
     this.loadStats()
     if (this.data.currentTab === 'order') {
       this.loadOrders()
-    } else {
+    } else if (this.data.currentTab === 'dish') {
       this.loadDishes()
+    } else if (this.data.currentTab === 'table') {
+      this.loadTables()
     }
     this.loadCategories()
   },
@@ -77,6 +88,27 @@ Page({
     const _ = db.command
     const today = new Date()
     today.setHours(0, 0, 0, 0)
+    
+    if (mock.isDevMode()) {
+      const todayOrders = mock.orders.filter(function(o) { return o.createTime >= today.getTime() }).length
+      const pendingOrders = mock.orders.filter(function(o) { return o.status === 0 }).length
+      const cookingOrders = mock.orders.filter(function(o) { return o.status === 1 }).length
+      const dishCount = mock.dishes.length
+      const onlineDishCount = mock.dishes.filter(function(d) { return d.status === 1 }).length
+      const tableCount = mock.tables.length
+      const activeTableCount = mock.tables.filter(function(t) { return t.status === 1 }).length
+      
+      this.setData({
+        'stats.todayOrders': todayOrders,
+        'stats.pendingOrders': pendingOrders,
+        'stats.cookingOrders': cookingOrders,
+        'stats.dishCount': dishCount,
+        'stats.onlineDishCount': onlineDishCount,
+        'stats.tableCount': tableCount,
+        'stats.activeTableCount': activeTableCount
+      })
+      return
+    }
     
     db.collection('orders').where({
       createTime: _.gte(today.getTime())
@@ -115,10 +147,34 @@ Page({
         self.setData({ 'stats.onlineDishCount': res.total })
       }
     })
+
+    db.collection('tables').count({
+      success: function(res) {
+        self.setData({ 'stats.tableCount': res.total })
+      }
+    })
+
+    db.collection('tables').where({
+      status: 1
+    }).count({
+      success: function(res) {
+        self.setData({ 'stats.activeTableCount': res.total })
+      }
+    })
   },
 
   loadCategories() {
     const self = this
+    
+    if (mock.isDevMode()) {
+      const defaultCategoryId = mock.categories.length > 0 ? mock.categories[0]._id : ''
+      this.setData({
+        categories: mock.categories,
+        'formData.categoryId': defaultCategoryId
+      })
+      return
+    }
+    
     const db = wx.cloud.database()
     db.collection('categories').where({ status: 1 }).orderBy('sort', 'asc').get({
       success: function(res) {
@@ -146,13 +202,36 @@ Page({
     this.setData({ currentTab: tab })
     if (tab === 'order') {
       this.loadOrders()
-    } else {
+    } else if (tab === 'dish') {
       this.loadDishes()
+    } else if (tab === 'table') {
+      this.loadTables()
     }
   },
 
   loadOrders() {
     const self = this
+    
+    if (mock.isDevMode()) {
+      let orders = mock.orders
+      if (this.data.orderStatus >= 0) {
+        orders = orders.filter(function(o) { return o.status === self.data.orderStatus })
+      }
+      
+      const processedOrders = orders.map(function(order) {
+        return {
+          ...order,
+          orderNo: order.orderNo || order._id.slice(-8),
+          statusText: self.getStatusText(order.status),
+          timeText: self.formatTime(order.createTime),
+          itemCount: order.items ? order.items.reduce(function(sum, item) { return sum + item.quantity }, 0) : 0
+        }
+      })
+      
+      this.setData({ orders: processedOrders, loading: false, refreshing: false })
+      return
+    }
+    
     const db = wx.cloud.database()
     const _ = db.command
 
@@ -186,6 +265,30 @@ Page({
     const self = this
 
     this.setData({ loading: true })
+    
+    if (mock.isDevMode()) {
+      let dishes = mock.dishes
+      
+      if (self.data.dishStatus === 'online') {
+        dishes = dishes.filter(function(d) { return d.status === 1 })
+      } else if (self.data.dishStatus === 'offline') {
+        dishes = dishes.filter(function(d) { return d.status === 0 })
+      }
+
+      const categoryMap = {}
+      self.data.categories.forEach(function(c) { categoryMap[c._id] = c.name })
+      dishes = dishes.map(function(d) {
+        return {
+          ...d,
+          categoryName: categoryMap[d.categoryId] || '未分类',
+          statusText: d.status === 1 ? '上架' : '下架'
+        }
+      })
+
+      self.setData({ dishes: dishes, loading: false, refreshing: false })
+      return
+    }
+    
     wx.cloud.callFunction({
       name: 'manageDish',
       data: { action: 'getList' },
