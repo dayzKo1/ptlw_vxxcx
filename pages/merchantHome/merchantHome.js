@@ -88,7 +88,7 @@ Page({
     const _ = db.command
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    
+
     if (mock.isDevMode()) {
       const todayOrders = mock.orders.filter(function(o) { return o.createTime >= today.getTime() }).length
       const pendingOrders = mock.orders.filter(function(o) { return o.status === 0 }).length
@@ -97,8 +97,8 @@ Page({
       const onlineDishCount = mock.dishes.filter(function(d) { return d.status === 1 }).length
       const tableCount = mock.tables.length
       const activeTableCount = mock.tables.filter(function(t) { return t.status === 1 }).length
-      
-      this.setData({
+
+      self.setData({
         'stats.todayOrders': todayOrders,
         'stats.pendingOrders': pendingOrders,
         'stats.cookingOrders': cookingOrders,
@@ -165,10 +165,10 @@ Page({
 
   loadCategories() {
     const self = this
-    
+
     if (mock.isDevMode()) {
       const defaultCategoryId = mock.categories.length > 0 ? mock.categories[0]._id : ''
-      this.setData({
+      self.setData({
         categories: mock.categories,
         'formData.categoryId': defaultCategoryId
       })
@@ -265,10 +265,10 @@ Page({
     const self = this
 
     this.setData({ loading: true })
-    
+
     if (mock.isDevMode()) {
       let dishes = mock.dishes
-      
+
       if (self.data.dishStatus === 'online') {
         dishes = dishes.filter(function(d) { return d.status === 1 })
       } else if (self.data.dishStatus === 'offline') {
@@ -288,13 +288,13 @@ Page({
       self.setData({ dishes: dishes, loading: false, refreshing: false })
       return
     }
-    
+
     wx.cloud.callFunction({
       name: 'manageDish',
       data: { action: 'getList' },
       success: function(res) {
         let dishes = res.result.data || []
-        
+
         if (self.data.dishStatus === 'online') {
           dishes = dishes.filter(function(d) { return d.status === 1 })
         } else if (self.data.dishStatus === 'offline') {
@@ -312,6 +312,60 @@ Page({
         })
 
         self.setData({ dishes: dishes, loading: false, refreshing: false })
+      },
+      fail: function() {
+        self.setData({ loading: false, refreshing: false })
+        wx.showToast({ title: '加载失败', icon: 'none' })
+      }
+    })
+  },
+
+  loadTables() {
+    const self = this
+
+    this.setData({ loading: true })
+
+    if (mock.isDevMode()) {
+      let tables = mock.tables
+
+      if (self.data.tableStatus === 'occupied') {
+        tables = tables.filter(function(t) { return t.status === 1 })
+      } else if (self.data.tableStatus === 'idle') {
+        tables = tables.filter(function(t) { return t.status === 0 })
+      }
+
+      const processedTables = tables.map(function(t) {
+        return {
+          ...t,
+          statusText: t.status === 1 ? '使用中' : '空闲',
+          timeText: t.orderTime ? self.formatTime(t.orderTime) : ''
+        }
+      })
+
+      self.setData({ tables: processedTables, loading: false, refreshing: false })
+      return
+    }
+
+    const db = wx.cloud.database()
+    const _ = db.command
+
+    let condition = {}
+    if (self.data.tableStatus === 'occupied') {
+      condition = { status: 1 }
+    } else if (self.data.tableStatus === 'idle') {
+      condition = { status: 0 }
+    }
+
+    db.collection('tables').where(condition).orderBy('tableNumber', 'asc').get({
+      success: function(res) {
+        const processedTables = res.data.map(function(t) {
+          return {
+            ...t,
+            statusText: t.status === 1 ? '使用中' : '空闲',
+            timeText: t.orderTime ? self.formatTime(t.orderTime) : ''
+          }
+        })
+        self.setData({ tables: processedTables, loading: false, refreshing: false })
       },
       fail: function() {
         self.setData({ loading: false, refreshing: false })
@@ -344,6 +398,12 @@ Page({
     const status = e.currentTarget.dataset.status
     this.setData({ dishStatus: status })
     this.loadDishes()
+  },
+
+  switchTableStatus(e) {
+    const status = e.currentTarget.dataset.status
+    this.setData({ tableStatus: status })
+    this.loadTables()
   },
 
   goToOrderDetail(e) {
@@ -660,6 +720,239 @@ Page({
     })
   },
 
+  showAddTableModal() {
+    this.setData({
+      showTableModal: true,
+      editingTable: null,
+      formData: {
+        tableNumber: '',
+        qrCode: ''
+      }
+    })
+  },
+
+  showEditTableModal(e) {
+    const table = e.currentTarget.dataset.table
+    this.setData({
+      showTableModal: true,
+      editingTable: table,
+      formData: {
+        tableNumber: table.tableNumber || '',
+        qrCode: table.qrCode || ''
+      }
+    })
+  },
+
+  hideTableModal() {
+    this.setData({ showTableModal: false, editingTable: null })
+  },
+
+  submitTableForm() {
+    if (this.data.editingTable) {
+      this.updateTable()
+    } else {
+      this.createTable()
+    }
+  },
+
+  createTable() {
+    const self = this
+    const formData = this.data.formData
+    if (!formData.tableNumber) {
+      wx.showToast({ title: '请填写桌号', icon: 'none' })
+      return
+    }
+
+    wx.showLoading({ title: '创建中...' })
+
+    if (mock.isDevMode()) {
+      setTimeout(function() {
+        const newTable = {
+          _id: 'table_' + Date.now(),
+          tableNumber: formData.tableNumber,
+          qrCode: formData.qrCode,
+          status: 0,
+          createTime: Date.now()
+        }
+        mock.tables.push(newTable)
+        wx.hideLoading()
+        wx.showToast({ title: '创建成功', icon: 'success' })
+        self.hideTableModal()
+        self.loadTables()
+        self.loadStats()
+      }, 500)
+      return
+    }
+
+    wx.cloud.callFunction({
+      name: 'manageTable',
+      data: {
+        action: 'create',
+        tableData: {
+          tableNumber: formData.tableNumber,
+          qrCode: formData.qrCode
+        }
+      },
+      success: function() {
+        wx.hideLoading()
+        wx.showToast({ title: '创建成功', icon: 'success' })
+        self.hideTableModal()
+        self.loadTables()
+        self.loadStats()
+      },
+      fail: function() {
+        wx.hideLoading()
+        wx.showToast({ title: '创建失败', icon: 'none' })
+      }
+    })
+  },
+
+  updateTable() {
+    const self = this
+    const formData = this.data.formData
+    const editingTable = this.data.editingTable
+    if (!formData.tableNumber) {
+      wx.showToast({ title: '请填写桌号', icon: 'none' })
+      return
+    }
+
+    wx.showLoading({ title: '更新中...' })
+
+    if (mock.isDevMode()) {
+      setTimeout(function() {
+        const index = mock.tables.findIndex(function(t) { return t._id === editingTable._id })
+        if (index >= 0) {
+          mock.tables[index].tableNumber = formData.tableNumber
+          mock.tables[index].qrCode = formData.qrCode
+        }
+        wx.hideLoading()
+        wx.showToast({ title: '更新成功', icon: 'success' })
+        self.hideTableModal()
+        self.loadTables()
+      }, 500)
+      return
+    }
+
+    wx.cloud.callFunction({
+      name: 'manageTable',
+      data: {
+        action: 'update',
+        tableId: editingTable._id,
+        tableData: {
+          tableNumber: formData.tableNumber,
+          qrCode: formData.qrCode
+        }
+      },
+      success: function() {
+        wx.hideLoading()
+        wx.showToast({ title: '更新成功', icon: 'success' })
+        self.hideTableModal()
+        self.loadTables()
+      },
+      fail: function() {
+        wx.hideLoading()
+        wx.showToast({ title: '更新失败', icon: 'none' })
+      }
+    })
+  },
+
+  toggleTableStatus(e) {
+    const self = this
+    const { id, status } = e.currentTarget.dataset
+    const newStatus = status === 1 ? 0 : 1
+
+    wx.showModal({
+      title: '确认操作',
+      content: newStatus === 1 ? '确定将该桌台设为使用中吗？' : '确定将该桌台设为空闲吗？',
+      success: function(res) {
+        if (res.confirm) {
+          wx.showLoading({ title: '处理中...' })
+
+          if (mock.isDevMode()) {
+            setTimeout(function() {
+              const table = mock.tables.find(function(t) { return t._id === id })
+              if (table) {
+                table.status = newStatus
+                if (newStatus === 1) {
+                  table.orderTime = Date.now()
+                } else {
+                  table.orderTime = null
+                }
+              }
+              wx.hideLoading()
+              wx.showToast({ title: newStatus === 1 ? '已设为使用中' : '已设为空闲', icon: 'success' })
+              self.loadTables()
+              self.loadStats()
+            }, 500)
+            return
+          }
+
+          wx.cloud.callFunction({
+            name: 'manageTable',
+            data: {
+              action: 'toggleStatus',
+              tableId: id,
+              status: newStatus
+            },
+            success: function() {
+              wx.hideLoading()
+              wx.showToast({ title: newStatus === 1 ? '设置成功' : '设置成功', icon: 'success' })
+              self.loadTables()
+              self.loadStats()
+            },
+            fail: function() {
+              wx.hideLoading()
+              wx.showToast({ title: '操作失败', icon: 'none' })
+            }
+          })
+        }
+      }
+    })
+  },
+
+  deleteTable(e) {
+    const self = this
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后无法恢复，确定要删除该桌号吗？',
+      success: function(res) {
+        if (res.confirm) {
+          wx.showLoading({ title: '删除中...' })
+
+          if (mock.isDevMode()) {
+            setTimeout(function() {
+              const index = mock.tables.findIndex(function(t) { return t._id === id })
+              if (index >= 0) {
+                mock.tables.splice(index, 1)
+              }
+              wx.hideLoading()
+              wx.showToast({ title: '删除成功', icon: 'success' })
+              self.loadTables()
+              self.loadStats()
+            }, 500)
+            return
+          }
+
+          wx.cloud.callFunction({
+            name: 'manageTable',
+            data: { action: 'delete', tableId: id },
+            success: function() {
+              wx.hideLoading()
+              wx.showToast({ title: '删除成功', icon: 'success' })
+              self.loadTables()
+              self.loadStats()
+            },
+            fail: function() {
+              wx.hideLoading()
+              wx.showToast({ title: '删除失败', icon: 'none' })
+            }
+          })
+        }
+      }
+    })
+  },
+
   goToCustomerMode() {
     wx.switchTab({ url: '/pages/index/index' })
   },
@@ -686,6 +979,8 @@ Page({
     this.loadStats()
     if (this.data.currentTab === 'order') {
       this.loadOrders()
+    } else if (this.data.currentTab === 'table') {
+      this.loadTables()
     } else {
       this.loadDishes()
     }

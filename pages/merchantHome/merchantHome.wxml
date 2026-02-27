@@ -31,16 +31,17 @@
   <view class="main-tabs">
     <view class="main-tab {{currentTab === 'order' ? 'active' : ''}}" bindtap="switchTab" data-tab="order">订单管理</view>
     <view class="main-tab {{currentTab === 'dish' ? 'active' : ''}}" bindtap="switchTab" data-tab="dish">菜品管理</view>
+    <view class="main-tab {{currentTab === 'table' ? 'active' : ''}}" bindtap="switchTab" data-tab="table">桌号管理</view>
   </view>
 
   <view class="content-area" wx:if="{{currentTab === 'order'}}">
-    <scroll-view class="sub-tabs" scroll-x>
+    <view class="sub-tabs">
       <view class="sub-tab {{orderStatus === -1 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="-1">全部</view>
       <view class="sub-tab {{orderStatus === 0 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="0">待支付</view>
       <view class="sub-tab {{orderStatus === 1 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="1">制作中</view>
       <view class="sub-tab {{orderStatus === 2 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="2">已出餐</view>
       <view class="sub-tab {{orderStatus === 3 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="3">已完成</view>
-    </scroll-view>
+    </view>
 
     <scroll-view class="order-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
       <view class="order-item" wx:for="{{orders}}" wx:key="_id" bindtap="goToOrderDetail" data-id="{{item._id}}">
@@ -140,6 +141,42 @@
     </view>
   </view>
 
+  <view class="content-area" wx:if="{{currentTab === 'table'}}">
+    <view class="sub-tabs">
+      <view class="sub-tab {{tableStatus === 'all' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="all">全部</view>
+      <view class="sub-tab {{tableStatus === 'idle' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="idle">空闲</view>
+      <view class="sub-tab {{tableStatus === 'occupied' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="occupied">使用中</view>
+    </view>
+
+    <scroll-view class="table-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <view class="table-item" wx:for="{{tables}}" wx:key="_id">
+        <view class="table-header" bindtap="showEditTableModal" data-table="{{item}}">
+          <view class="table-number">{{item.tableNumber}}</view>
+          <view class="status-badge {{item.status === 1 ? 'occupied' : 'idle'}}">{{item.statusText}}</view>
+        </view>
+        <view class="table-info" wx:if="{{item.timeText}}">
+          <text class="info-label">使用时间：</text>
+          <text class="info-text">{{item.timeText}}</text>
+        </view>
+        <view class="table-actions">
+          <button class="action-btn {{item.status === 1 ? 'idle-btn' : 'occupy-btn'}}" catchtap="toggleTableStatus" data-id="{{item._id}}" data-status="{{item.status}}">
+            {{item.status === 1 ? '设为空闲' : '设为使用中'}}
+          </button>
+          <button class="action-btn delete-btn" catchtap="deleteTable" data-id="{{item._id}}">删除</button>
+        </view>
+      </view>
+
+      <view class="empty" wx:if="{{tables.length === 0 && !loading}}">
+        <text class="empty-text">暂无桌号</text>
+        <button class="add-first-btn" bindtap="showAddTableModal">添加桌号</button>
+      </view>
+    </scroll-view>
+
+    <view class="fab" bindtap="showAddTableModal">
+      <text class="fab-icon">+</text>
+    </view>
+  </view>
+
   <view class="logout-btn" bindtap="handleLogout">退出登录</view>
 </view>
 
@@ -206,6 +243,28 @@
   <view class="modal-footer">
     <button class="modal-btn cancel" bindtap="hideDishModal">取消</button>
     <button class="modal-btn confirm" bindtap="submitDishForm">确定</button>
+  </view>
+</view>
+
+<view class="modal-mask" wx:if="{{showTableModal}}" bindtap="hideTableModal"></view>
+<view class="modal-container" wx:if="{{showTableModal}}">
+  <view class="modal-header">
+    <text class="modal-title">{{editingTable ? '编辑桌号' : '添加桌号'}}</text>
+    <text class="modal-close" bindtap="hideTableModal">×</text>
+  </view>
+  <scroll-view class="modal-content" scroll-y>
+    <view class="form-item">
+      <text class="form-label required">桌号</text>
+      <input class="form-input" placeholder="请输入桌号" value="{{formData.tableNumber}}" data-field="tableNumber" bindinput="onInputChange" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">二维码链接 (可选)</text>
+      <input class="form-input" placeholder="请输入二维码链接" value="{{formData.qrCode}}" data-field="qrCode" bindinput="onInputChange" />
+    </view>
+  </scroll-view>
+  <view class="modal-footer">
+    <button class="modal-btn cancel" bindtap="hideTableModal">取消</button>
+    <button class="modal-btn confirm" bindtap="submitTableForm">确定</button>
   </view>
 </view>
 

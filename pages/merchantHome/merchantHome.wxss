@@ -109,13 +109,15 @@
   display: flex;
   background: #fff;
   padding: 0 20rpx;
-  white-space: nowrap;
 }
 
 .sub-tab {
-  padding: 20rpx 30rpx;
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
   font-size: 26rpx;
   color: #666;
+  white-space: nowrap;
 }
 
 .sub-tab.active {
@@ -123,7 +125,7 @@
   font-weight: bold;
 }
 
-.order-list, .dish-list {
+.order-list, .dish-list, .table-list {
   height: calc(100vh - 380rpx);
   padding: 20rpx;
 }
@@ -315,6 +317,16 @@
   color: #F44336;
 }
 
+.status-badge.occupied {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.status-badge.idle {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
 .dish-info {
   flex: 1;
   min-width: 0;
@@ -391,6 +403,63 @@
 .delete-btn {
   background: #f5f5f5 !important;
   color: #999 !important;
+}
+
+.idle-btn {
+  background: #E8F5E9 !important;
+  color: #4CAF50 !important;
+}
+
+.occupy-btn {
+  background: #FFF3E0 !important;
+  color: #FF9800 !important;
+}
+
+.table-list {
+  height: calc(100vh - 380rpx);
+  padding: 20rpx;
+}
+
+.table-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.table-number {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.table-info {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  padding: 12rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+}
+
+.info-label {
+  color: #999;
+}
+
+.info-text {
+  color: #333;
+}
+
+.table-actions {
+  display: flex;
+  gap: 16rpx;
 }
 
 .empty {
