@@ -95,6 +95,12 @@ Page({
     })
   },
 
+  handleMerchantDish() {
+    wx.navigateTo({
+      url: '/pages/merchantDish/merchantDish'
+    })
+  },
+
   handleAddress() {
     wx.navigateTo({
       url: '/pages/addressList/addressList'

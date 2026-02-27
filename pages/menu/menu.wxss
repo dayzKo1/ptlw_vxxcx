@@ -326,11 +326,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 120rpx;
   background: var(--bg-white);
   display: flex;
   align-items: center;
-  padding: 0 var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-xl);
   padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
   z-index: 1000;
   border-top: 1rpx solid var(--border-color);
@@ -351,14 +350,14 @@
 }
 
 .cart-icon {
-  width: 76rpx;
-  height: 76rpx;
+  width: 72rpx;
+  height: 72rpx;
   background: var(--primary-color);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 38rpx;
+  font-size: 36rpx;
   transition: transform var(--transition-base);
   flex-shrink: 0;
 }
@@ -420,8 +419,8 @@
 }
 
 .checkout-btn {
-  width: 200rpx;
-  height: 76rpx;
+  width: 180rpx;
+  height: 72rpx;
   background: var(--primary-color);
   color: var(--bg-white);
   font-size: 28rpx;
