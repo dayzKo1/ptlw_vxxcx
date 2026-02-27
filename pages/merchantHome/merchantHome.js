@@ -18,6 +18,7 @@ Page({
     orderStatus: -1,
     dishStatus: 'all',
     loading: false,
+    refreshing: false,
     showDishModal: false,
     editingDish: null,
     formData: {
@@ -152,7 +153,6 @@ Page({
 
   loadOrders() {
     const self = this
-    this.setData({ loading: true })
     const db = wx.cloud.database()
     const _ = db.command
 
@@ -161,6 +161,7 @@ Page({
       condition = { status: this.data.orderStatus }
     }
 
+    this.setData({ loading: true })
     db.collection('orders').where(condition).orderBy('createTime', 'desc').limit(50).get({
       success: function(res) {
         const orders = res.data.map(function(order) {
@@ -172,10 +173,10 @@ Page({
             itemCount: order.items ? order.items.reduce(function(sum, item) { return sum + item.quantity }, 0) : 0
           }
         })
-        self.setData({ orders: orders, loading: false })
+        self.setData({ orders: orders, loading: false, refreshing: false })
       },
       fail: function() {
-        self.setData({ loading: false })
+        self.setData({ loading: false, refreshing: false })
         wx.showToast({ title: '加载失败', icon: 'none' })
       }
     })
@@ -183,8 +184,8 @@ Page({
 
   loadDishes() {
     const self = this
-    this.setData({ loading: true })
 
+    this.setData({ loading: true })
     wx.cloud.callFunction({
       name: 'manageDish',
       data: { action: 'getList' },
@@ -207,10 +208,10 @@ Page({
           }
         })
 
-        self.setData({ dishes: dishes, loading: false })
+        self.setData({ dishes: dishes, loading: false, refreshing: false })
       },
       fail: function() {
-        self.setData({ loading: false })
+        self.setData({ loading: false, refreshing: false })
         wx.showToast({ title: '加载失败', icon: 'none' })
       }
     })
@@ -578,12 +579,12 @@ Page({
   },
 
   onPullDownRefresh() {
+    this.setData({ refreshing: true })
     this.loadStats()
     if (this.data.currentTab === 'order') {
       this.loadOrders()
     } else {
       this.loadDishes()
     }
-    wx.stopPullDownRefresh()
   }
 })

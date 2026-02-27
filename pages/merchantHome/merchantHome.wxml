@@ -42,7 +42,7 @@
       <view class="sub-tab {{orderStatus === 3 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="3">已完成</view>
     </scroll-view>
 
-    <scroll-view class="order-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{loading}}" bindrefresherrefresh="onPullDownRefresh">
+    <scroll-view class="order-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
       <view class="order-item" wx:for="{{orders}}" wx:key="_id" bindtap="goToOrderDetail" data-id="{{item._id}}">
         <view class="order-header">
           <view class="order-info">
@@ -107,7 +107,7 @@
       <view class="sub-tab {{dishStatus === 'offline' ? 'active' : ''}}" bindtap="switchDishStatus" data-status="offline">已下架</view>
     </view>
 
-    <scroll-view class="dish-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{loading}}" bindrefresherrefresh="onPullDownRefresh">
+    <scroll-view class="dish-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
       <view class="dish-item" wx:for="{{dishes}}" wx:key="_id">
         <view class="dish-image" bindtap="showEditDishModal" data-dish="{{item}}">
           <image src="{{item.image || '/images/default-dish.png'}}" mode="aspectFill"></image>
