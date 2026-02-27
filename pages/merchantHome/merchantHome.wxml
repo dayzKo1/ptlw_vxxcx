@@ -93,10 +93,6 @@
       <view class="empty" wx:if="{{orders.length === 0 && !loading}}">
         <text class="empty-text">暂无订单</text>
       </view>
-
-      <view class="loading" wx:if="{{loading}}">
-        <text class="loading-text">加载中...</text>
-      </view>
     </scroll-view>
   </view>
 
@@ -136,10 +132,6 @@
       <view class="empty" wx:if="{{dishes.length === 0 && !loading}}">
         <text class="empty-text">暂无菜品</text>
         <button class="add-first-btn" bindtap="showAddDishModal">添加菜品</button>
-      </view>
-
-      <view class="loading" wx:if="{{loading}}">
-        <text class="loading-text">加载中...</text>
       </view>
     </scroll-view>
 
@@ -216,3 +208,5 @@
     <button class="modal-btn confirm" bindtap="submitDishForm">确定</button>
   </view>
 </view>
+
+<loading show="{{loading}}" text="加载中..."></loading>

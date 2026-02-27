@@ -16,6 +16,9 @@
     "pages/about/about",
     "pages/settings/settings"
   ],
+  "usingComponents": {
+    "loading": "/components/loading/loading"
+  },
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#FF6B6B",

@@ -1,0 +1,9 @@
+<view class="loading-container" wx:if="{{show}}">
+  <view class="loading-mask" wx:if="{{mask}}" catchtouchmove="preventTouchMove"></view>
+  <view class="loading-content" catchtouchmove="preventTouchMove">
+    <view class="loading-spinner">
+      <view class="spinner-ring"></view>
+    </view>
+    <text class="loading-text" wx:if="{{text}}">{{text}}</text>
+  </view>
+</view>

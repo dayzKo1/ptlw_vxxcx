@@ -12,9 +12,7 @@ Page({
   },
 
   async loadTables() {
-    wx.showLoading({
-      title: '加载中...'
-    })
+    this.setData({ loading: true })
 
     try {
       const res = await wx.cloud.callFunction({
@@ -33,16 +31,14 @@ Page({
         icon: 'none'
       })
     } finally {
-      wx.hideLoading()
+      this.setData({ loading: false })
     }
   },
 
   async generateQRCode(e) {
     const tableNumber = e.currentTarget.dataset.tableNumber
 
-    wx.showLoading({
-      title: '生成中...'
-    })
+    this.setData({ generating: true })
 
     try {
       const res = await wx.cloud.callFunction({
@@ -51,8 +47,6 @@ Page({
           tableNumber: tableNumber
         }
       })
-
-      wx.hideLoading()
 
       if (res.result.success) {
         wx.showToast({
@@ -67,12 +61,13 @@ Page({
         })
       }
     } catch (err) {
-      wx.hideLoading()
       console.error('生成二维码失败', err)
       wx.showToast({
         title: '生成失败',
         icon: 'none'
       })
+    } finally {
+      this.setData({ generating: false })
     }
   },
 
@@ -82,17 +77,12 @@ Page({
       content: '确定要为所有桌号生成二维码吗？',
       success: async (res) => {
         if (res.confirm) {
-          wx.showLoading({
-            title: '批量生成中...',
-            mask: true
-          })
+          this.setData({ loading: true })
 
           try {
             const res = await wx.cloud.callFunction({
               name: 'batchGenerateTableQRCode'
             })
-
-            wx.hideLoading()
 
             if (res.result.success) {
               wx.showToast({
@@ -110,12 +100,13 @@ Page({
               })
             }
           } catch (err) {
-            wx.hideLoading()
             console.error('批量生成二维码失败', err)
             wx.showToast({
               title: '批量生成失败',
               icon: 'none'
             })
+          } finally {
+            this.setData({ loading: false })
           }
         }
       }
@@ -130,50 +121,34 @@ Page({
     })
   },
 
-  downloadImage(e) {
+  async downloadImage(e) {
     const url = e.currentTarget.dataset.url
-    const tableNumber = e.currentTarget.dataset.tableNumber
 
-    wx.showLoading({
-      title: '下载中...'
-    })
+    this.setData({ loading: true })
 
-    wx.downloadFile({
-      url: url,
-      success: (res) => {
-        wx.hideLoading()
-        wx.saveImageToPhotosAlbum({
-          filePath: res.tempFilePath,
-          success: () => {
-            wx.showToast({
-              title: '已保存到相册',
-              icon: 'success'
-            })
-          },
-          fail: (err) => {
-            if (err.errMsg.includes('auth deny')) {
-              wx.showModal({
-                title: '提示',
-                content: '需要您授权保存图片到相册',
-                showCancel: false
-              })
-            } else {
-              wx.showToast({
-                title: '保存失败',
-                icon: 'none'
-              })
-            }
-          }
+    try {
+      const res = await wx.downloadFile({ url: url })
+      
+      await wx.saveImageToPhotosAlbum({ filePath: res.tempFilePath })
+      wx.showToast({
+        title: '已保存到相册',
+        icon: 'success'
+      })
+    } catch (err) {
+      if (err.errMsg && err.errMsg.includes('auth deny')) {
+        wx.showModal({
+          title: '提示',
+          content: '需要您授权保存图片到相册',
+          showCancel: false
         })
-      },
-      fail: (err) => {
-        wx.hideLoading()
-        console.error('下载失败', err)
+      } else {
         wx.showToast({
-          title: '下载失败',
+          title: '保存失败',
           icon: 'none'
         })
       }
-    })
+    } finally {
+      this.setData({ loading: false })
+    }
   }
 })
