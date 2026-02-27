@@ -6,6 +6,7 @@
     </view>
     <view class="header-actions">
       <button class="switch-btn" bindtap="goToCustomerMode">客户模式</button>
+      <button class="switch-btn" bindtap="handleLogout">退出</button>
     </view>
   </view>
 
@@ -174,8 +175,6 @@
       <text class="fab-icon">+</text>
     </view>
   </view>
-
-  <view class="logout-btn" bindtap="handleLogout">退出登录</view>
 </view>
 
 <view class="modal-mask" wx:if="{{showDishModal}}" bindtap="hideDishModal"></view>
