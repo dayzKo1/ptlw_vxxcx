@@ -22,40 +22,64 @@ Page({
     this.loadAddresses()
   },
 
-  loadCart() {
+  async loadCart() {
     const cart = wx.getStorageSync('cart') || {}
     const cartItems = []
     let goodsTotal = 0
 
-    const mockDishes = {
-      '1': { _id: '1', name: '招牌红烧肉', price: 68, emoji: '🥩' },
-      '2': { _id: '2', name: '宫保鸡丁', price: 38, emoji: '🍗' },
-      '3': { _id: '3', name: '清蒸鲈鱼', price: 88, emoji: '🐟' }
+    if (Object.keys(cart).length === 0) {
+      this.setData({
+        cartItems: [],
+        goodsTotal: '0.00',
+        deliveryFee: '0.00',
+        totalPrice: '0.00'
+      })
+      return
     }
 
-    Object.keys(cart).forEach(dishId => {
-      const quantity = cart[dishId]
-      if (quantity > 0) {
-        const dish = wx.getStorageSync(`dish_${dishId}`) || mockDishes[dishId]
-        if (dish) {
+    try {
+      const db = wx.cloud.database()
+      const dishIds = Object.keys(cart).filter(id => cart[id] > 0)
+      
+      const res = await db.collection('dishes')
+        .where({
+          _id: db.command.in(dishIds)
+        })
+        .get()
+
+      const dishMap = {}
+      res.data.forEach(dish => {
+        dishMap[dish._id] = dish
+      })
+
+      dishIds.forEach(dishId => {
+        const quantity = cart[dishId]
+        const dish = dishMap[dishId]
+        if (dish && quantity > 0) {
           cartItems.push({
             ...dish,
             quantity
           })
           goodsTotal += quantity * dish.price
         }
-      }
-    })
+      })
 
-    const deliveryFee = this.data.deliveryMode === 'delivery' ? 5 : 0
-    const totalPrice = goodsTotal + deliveryFee
+      const deliveryFee = this.data.deliveryMode === 'delivery' ? 5 : 0
+      const totalPrice = goodsTotal + deliveryFee
 
-    this.setData({
-      cartItems,
-      goodsTotal: goodsTotal.toFixed(2),
-      deliveryFee: deliveryFee.toFixed(2),
-      totalPrice: totalPrice.toFixed(2)
-    })
+      this.setData({
+        cartItems,
+        goodsTotal: goodsTotal.toFixed(2),
+        deliveryFee: deliveryFee.toFixed(2),
+        totalPrice: totalPrice.toFixed(2)
+      })
+    } catch (err) {
+      console.error('加载购物车失败', err)
+      wx.showToast({
+        title: '加载失败，请重试',
+        icon: 'none'
+      })
+    }
   },
 
   loadTableNumber() {

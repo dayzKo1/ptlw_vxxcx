@@ -7,7 +7,7 @@
     </view>
 
     <view class="login-section">
-      <button class="login-btn" bindtap="handleLogin" open-type="getUserInfo">
+      <button class="login-btn" bindtap="handleLogin">
         <text class="login-icon">📱</text>
         <text class="login-text">微信一键登录</text>
       </button>

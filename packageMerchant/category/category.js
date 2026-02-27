@@ -27,18 +27,13 @@ Page({
       this.setData({ category: res.data });
     } catch (err) {
       console.error("加载分类失败", err);
-      const categoryNames = {
-        1: { name: "热菜", emoji: "🔥", description: "热气腾腾的美味佳肴" },
-        2: { name: "凉菜", emoji: "🥗", description: "清爽开胃小菜" },
-        3: { name: "主食", emoji: "🍚", description: "管饱又美味" },
-      };
-      this.setData({
-        category: categoryNames[this.data.categoryId] || {
-          name: "菜品",
-          emoji: "🍽️",
-          description: "",
-        },
+      wx.showToast({
+        title: '分类不存在',
+        icon: 'none'
       });
+      setTimeout(() => {
+        wx.navigateBack();
+      }, 1500);
     }
   },
 
@@ -59,72 +54,10 @@ Page({
       this.setData({ dishes });
     } catch (err) {
       console.error("加载菜品失败", err);
-      const mockDishesMap = {
-        1: [
-          {
-            _id: "1",
-            name: "招牌红烧肉",
-            price: 68,
-            emoji: "🥩",
-            description: "精选五花肉，慢火红烧",
-            isHot: true,
-          },
-          {
-            _id: "2",
-            name: "宫保鸡丁",
-            price: 38,
-            emoji: "🍗",
-            description: "经典川菜，麻辣鲜香",
-            isHot: true,
-          },
-          {
-            _id: "3",
-            name: "清蒸鲈鱼",
-            price: 88,
-            emoji: "🐟",
-            description: "新鲜鲈鱼，清蒸最佳",
-          },
-        ],
-        2: [
-          {
-            _id: "4",
-            name: "凉拌黄瓜",
-            price: 18,
-            emoji: "🥒",
-            description: "清脆爽口",
-          },
-          {
-            _id: "5",
-            name: "皮蛋豆腐",
-            price: 22,
-            emoji: "🥚",
-            description: "嫩滑鲜美",
-          },
-        ],
-        3: [
-          {
-            _id: "6",
-            name: "白米饭",
-            price: 5,
-            emoji: "🍚",
-            description: "东北大米",
-          },
-          {
-            _id: "7",
-            name: "扬州炒饭",
-            price: 15,
-            emoji: "🍳",
-            description: "粒粒分明",
-          },
-        ],
-      };
-      const dishes = (mockDishesMap[this.data.categoryId] || []).map(
-        (dish) => ({
-          ...dish,
-          quantity: this.data.cart[dish._id] || 0,
-        }),
-      );
-      this.setData({ dishes });
+      wx.showToast({
+        title: '加载失败，请重试',
+        icon: 'none'
+      });
     }
   },
 

@@ -43,6 +43,19 @@ Page({
   },
 
   handleLogin() {
+    wx.showModal({
+      title: '授权登录',
+      content: '请授权头像和昵称以完成登录',
+      confirmText: '去授权',
+      success: (res) => {
+        if (res.confirm) {
+          this.getUserInfo()
+        }
+      }
+    })
+  },
+
+  getUserInfo() {
     wx.getUserProfile({
       desc: '用于完善用户资料',
       success: (res) => {
@@ -51,9 +64,15 @@ Page({
       },
       fail: (err) => {
         console.error('获取用户信息失败', err)
-        wx.showToast({
-          title: '需要授权才能使用',
-          icon: 'none'
+        wx.showModal({
+          title: '授权失败',
+          content: '需要授权头像和昵称才能使用小程序功能',
+          confirmText: '重试',
+          success: (modalRes) => {
+            if (modalRes.confirm) {
+              this.getUserInfo()
+            }
+          }
         })
       }
     })
