@@ -4,17 +4,37 @@
     "pages/index/index",
     "pages/menu/menu",
     "pages/mine/mine",
-    "pages/order/order",
-    "pages/orderDetail/orderDetail",
-    "pages/merchantHome/merchantHome",
-    "pages/category/category",
-    "pages/dishDetail/dishDetail",
-    "pages/tableQRCode/tableQRCode",
-    "pages/addressEdit/addressEdit",
-    "pages/addressList/addressList",
-    "pages/about/about",
-    "pages/settings/settings",
-    "pages/cart/cart"
+    "pages/order/order"
+  ],
+  "subpackages": [
+    {
+      "root": "packageOrder",
+      "name": "orderSubpkg",
+      "pages": [
+        "orderDetail/orderDetail",
+        "cart/cart"
+      ]
+    },
+    {
+      "root": "packageMerchant",
+      "name": "merchantSubpkg",
+      "pages": [
+        "merchantHome/merchantHome",
+        "category/category",
+        "dishDetail/dishDetail",
+        "tableQRCode/tableQRCode"
+      ]
+    },
+    {
+      "root": "packageUser",
+      "name": "userSubpkg",
+      "pages": [
+        "addressEdit/addressEdit",
+        "addressList/addressList",
+        "about/about",
+        "settings/settings"
+      ]
+    }
   ],
   "usingComponents": {
     "loading": "/components/loading/loading"
@@ -64,6 +84,7 @@
   "requiredPrivateInfos": [
     "getLocation"
   ],
+  "lazyCodeLoading": "requiredComponents",
   "permission": {
     "scope.userLocation": {
       "desc": "您的位置信息将用于显示您与店铺的距离"

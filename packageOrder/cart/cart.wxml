@@ -1,0 +1,111 @@
+<view class="container">
+  <view class="empty-cart" wx:if="{{cartItems.length === 0}}">
+    <view class="empty-icon"><text>🛒</text></view>
+    <text class="empty-text">购物车是空的</text>
+    <button class="go-order-btn" bindtap="goToMenu">去点餐</button>
+  </view>
+
+  <view class="cart-content" wx:else>
+    <view class="cart-header" wx:if="{{tableNumber}}">
+      <text class="table-number">📍 桌号：{{tableNumber}}</text>
+      <text class="clear-btn" bindtap="clearCart">🗑️ 清空</text>
+    </view>
+    <view class="cart-header" wx:else>
+      <text class="clear-btn" bindtap="clearCart">🗑️ 清空</text>
+    </view>
+
+    <view class="delivery-mode-section">
+      <view class="mode-title">配送方式</view>
+      <view class="mode-options">
+        <view 
+          class="mode-option {{deliveryMode === 'pickup' ? 'active' : ''}}" 
+          bindtap="switchDeliveryMode" 
+          data-mode="pickup"
+        >
+          <text class="mode-icon">🏃</text>
+          <text class="mode-text">自取</text>
+        </view>
+        <view 
+          class="mode-option {{deliveryMode === 'delivery' ? 'active' : ''}}" 
+          bindtap="switchDeliveryMode" 
+          data-mode="delivery"
+        >
+          <text class="mode-icon">🛵</text>
+          <text class="mode-text">配送</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="address-section" wx:if="{{deliveryMode === 'delivery'}}">
+      <view class="address-header">
+        <text class="address-title">配送地址</text>
+        <text class="add-address-btn" bindtap="addAddress">+ 添加地址</text>
+      </view>
+      <scroll-view scroll-x class="address-list">
+        <view 
+          class="address-item {{addressId === item._id ? 'active' : ''}}" 
+          wx:for="{{addresses}}" 
+          wx:key="_id"
+          bindtap="selectAddress"
+          data-id="{{item._id}}"
+        >
+          <view class="address-info">
+            <text class="address-name">{{item.name}} {{item.phone}}</text>
+            <text class="address-detail">{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</text>
+          </view>
+          <text class="address-check" wx:if="{{addressId === item._id}}">✓</text>
+        </view>
+        <view class="empty-address" wx:if="{{addresses.length === 0}}">
+          <text>暂无地址，请添加</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <scroll-view scroll-y class="cart-list">
+      <view class="cart-item" wx:for="{{cartItems}}" wx:key="_id">
+        <view class="dish-image-placeholder">{{item.emoji || '🍽️'}}</view>
+        <view class="dish-info">
+          <text class="dish-name">{{item.name}}</text>
+          <text class="dish-specs">{{item.specs}}</text>
+          <view class="dish-bottom">
+            <text class="dish-price">¥{{item.price}}</text>
+            <view class="quantity-control">
+              <view class="minus-btn" bindtap="minusDish" data-id="{{item._id}}">-</view>
+              <text class="quantity">{{item.quantity}}</text>
+              <view class="plus-btn" bindtap="plusDish" data-id="{{item._id}}">+</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="remark-section">
+      <text class="remark-label">📝 备注</text>
+      <textarea 
+        class="remark-input" 
+        placeholder="请输入备注信息，如：少辣、不要香菜等" 
+        value="{{remark}}"
+        bindinput="onRemarkInput"
+        maxlength="100"
+      ></textarea>
+    </view>
+
+    <view class="cart-footer">
+      <view class="total-info">
+        <view class="total-row">
+          <text class="total-label">商品金额</text>
+          <text class="total-value">¥{{goodsTotal}}</text>
+        </view>
+        <view class="total-row" wx:if="{{deliveryMode === 'delivery'}}">
+          <text class="total-label">配送费</text>
+          <text class="total-value">¥{{deliveryFee}}</text>
+        </view>
+        <view class="total-row total-row-main">
+          <text class="total-label">合计</text>
+          <text class="total-price">¥{{totalPrice}}</text>
+        </view>
+      </view>
+      <button class="submit-btn" bindtap="submitOrder">提交订单</button>
+    </view>
+  </view>
+</view>

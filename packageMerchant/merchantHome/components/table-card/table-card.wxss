@@ -1,0 +1,84 @@
+.table-item {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.table-number {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.table-status {
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 4rpx;
+}
+
+.table-status.occupied {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.table-status.idle {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.table-info {
+  font-size: 22rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  padding: 10rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.info-label {
+  color: #999;
+}
+
+.info-text {
+  color: #333;
+}
+
+.table-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  flex: 1;
+  font-size: 24rpx;
+  padding: 12rpx 0;
+  border-radius: 20rpx;
+  border: none;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.idle-btn {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.occupy-btn {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.delete-btn {
+  background: #f5f5f5;
+  color: #999;
+}

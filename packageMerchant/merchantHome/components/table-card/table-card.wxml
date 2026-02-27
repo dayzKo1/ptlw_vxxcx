@@ -1,0 +1,18 @@
+<view class="table-item">
+  <view class="table-header" bindtap="onEdit">
+    <view class="table-number">{{table.tableNumber}}</view>
+    <view class="table-status {{table.status === 1 ? 'occupied' : 'idle'}}">
+      {{table.status === 1 ? '使用中' : '空闲'}}
+    </view>
+  </view>
+  <view class="table-info" wx:if="{{table.timeText}}">
+    <text class="info-label">使用时间：</text>
+    <text class="info-text">{{table.timeText}}</text>
+  </view>
+  <view class="table-actions">
+    <button class="action-btn {{table.status === 1 ? 'idle-btn' : 'occupy-btn'}}" catchtap="onToggleStatus">
+      {{table.status === 1 ? '设为空闲' : '设为使用中'}}
+    </button>
+    <button class="action-btn delete-btn" catchtap="onDelete">删除</button>
+  </view>
+</view>

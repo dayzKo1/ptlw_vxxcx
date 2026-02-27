@@ -1,0 +1,97 @@
+<view class="page-container">
+  <!-- 顶部区域 -->
+  <view class="header">
+    <view class="header-info">
+      <text class="header-title">商户管理后台</text>
+      <text class="header-subtitle">欢迎，{{userInfo.nickName || '商户'}}</text>
+    </view>
+    <view class="header-actions">
+      <text class="header-link" bindtap="goToCustomerMode">客户模式</text>
+      <text class="header-link" bindtap="handleLogout">退出</text>
+    </view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <stats-card stats="{{stats}}" />
+
+  <!-- 主导航 -->
+  <view class="main-tabs">
+    <view class="main-tab {{currentTab === 'order' ? 'active' : ''}}" bindtap="switchTab" data-tab="order">订单管理</view>
+    <view class="main-tab {{currentTab === 'dish' ? 'active' : ''}}" bindtap="switchTab" data-tab="dish">菜品管理</view>
+    <view class="main-tab {{currentTab === 'table' ? 'active' : ''}}" bindtap="switchTab" data-tab="table">桌号管理</view>
+  </view>
+
+  <!-- 订单管理 -->
+  <view class="content-area" wx:if="{{currentTab === 'order'}}">
+    <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="sub-tab {{orderStatus === item.value ? 'active' : ''}}" 
+            wx:for="{{orderStatusList}}" wx:key="value"
+            bindtap="switchOrderStatus" data-status="{{item.value}}">
+        {{item.label}}
+      </view>
+    </scroll-view>
+
+    <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <block wx:if="{{orders.length > 0}}">
+        <order-card wx:for="{{orders}}" wx:key="_id" order="{{item}}"
+                    bindtap="goToOrderDetail"
+                    bindcancel="handleOrderCancel"
+                    bindaccept="handleOrderAccept"
+                    bindserve="handleOrderServe"
+                    bindcomplete="handleOrderComplete" />
+      </block>
+      <empty-state wx:else text="暂无订单" />
+    </scroll-view>
+  </view>
+
+  <!-- 菜品管理 -->
+  <view class="content-area" wx:if="{{currentTab === 'dish'}}">
+    <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="sub-tab {{dishStatus === 'all' ? 'active' : ''}}" bindtap="switchDishStatus" data-status="all">全部</view>
+      <view class="sub-tab {{dishStatus === 'online' ? 'active' : ''}}" bindtap="switchDishStatus" data-status="online">上架中</view>
+      <view class="sub-tab {{dishStatus === 'offline' ? 'active' : ''}}" bindtap="switchDishStatus" data-status="offline">已下架</view>
+    </scroll-view>
+
+    <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <block wx:if="{{dishes.length > 0}}">
+        <dish-card wx:for="{{dishes}}" wx:key="_id" dish="{{item}}"
+                   bindedit="showEditDishModal"
+                   bindtoggle="handleDishToggle"
+                   binddelete="handleDishDelete" />
+      </block>
+      <empty-state wx:else text="暂无菜品" btnText="添加菜品" bindaction="showAddDishModal" />
+    </scroll-view>
+
+    <view class="fab" bindtap="showAddDishModal">+</view>
+  </view>
+
+  <!-- 桌号管理 -->
+  <view class="content-area" wx:if="{{currentTab === 'table'}}">
+    <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="sub-tab {{tableStatus === 'all' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="all">全部</view>
+      <view class="sub-tab {{tableStatus === 'idle' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="idle">空闲</view>
+      <view class="sub-tab {{tableStatus === 'occupied' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="occupied">使用中</view>
+    </scroll-view>
+
+    <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <block wx:if="{{tables.length > 0}}">
+        <table-card wx:for="{{tables}}" wx:key="_id" table="{{item}}"
+                    bindedit="showEditTableModal"
+                    bindtoggle="handleTableToggle"
+                    binddelete="handleTableDelete" />
+      </block>
+      <empty-state wx:else text="暂无桌号" btnText="添加桌号" bindaction="showAddTableModal" />
+    </scroll-view>
+
+    <view class="fab" bindtap="showAddTableModal">+</view>
+  </view>
+</view>
+
+<!-- 弹窗组件 -->
+<dish-modal show="{{showDishModal}}" dish="{{editingDish}}" categories="{{categories}}"
+            bindclose="hideDishModal" bindsubmit="handleDishSubmit" />
+
+<table-modal show="{{showTableModal}}" table="{{editingTable}}"
+             bindclose="hideTableModal" bindsubmit="handleTableSubmit" />
+
+<loading show="{{loading}}" text="加载中..." />

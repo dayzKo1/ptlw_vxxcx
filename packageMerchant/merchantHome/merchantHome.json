@@ -1,0 +1,14 @@
+{
+  "navigationBarTitleText": "商户后台",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "stats-card": "./components/stats-card/stats-card",
+    "order-card": "./components/order-card/order-card",
+    "dish-card": "./components/dish-card/dish-card",
+    "table-card": "./components/table-card/table-card",
+    "dish-modal": "./components/dish-modal/dish-modal",
+    "table-modal": "./components/table-modal/table-modal",
+    "empty-state": "./components/empty-state/empty-state",
+    "loading": "/components/loading/loading"
+  }
+}
