@@ -35,8 +35,6 @@ Page({
       categoryId: '',
       image: '',
       spicyLevel: 0,
-      isHot: false,
-      isNew: false,
       sort: 0,
       tableNumber: '',
       qrCode: ''
@@ -482,8 +480,6 @@ Page({
         categoryId: defaultCategoryId,
         image: '',
         spicyLevel: 0,
-        isHot: false,
-        isNew: false,
         sort: 0
       },
       categoryPickerIndex: defaultIndex,
@@ -505,8 +501,6 @@ Page({
         categoryId: dish.categoryId || '',
         image: dish.image || '',
         spicyLevel: dish.spicyLevel || 0,
-        isHot: dish.isHot || false,
-        isNew: dish.isNew || false,
         sort: dish.sort || 0
       },
       categoryPickerIndex: categoryIndex >= 0 ? categoryIndex : 0,
@@ -599,8 +593,6 @@ Page({
           categoryId: formData.categoryId,
           image: formData.image,
           spicyLevel: formData.spicyLevel,
-          isHot: formData.isHot,
-          isNew: formData.isNew,
           sort: formData.sort
         }
       },
@@ -640,8 +632,6 @@ Page({
           categoryId: formData.categoryId,
           image: formData.image,
           spicyLevel: formData.spicyLevel,
-          isHot: formData.isHot,
-          isNew: formData.isNew,
           sort: formData.sort
         }
       },

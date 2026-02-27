@@ -113,8 +113,6 @@
         <view class="dish-info" bindtap="showEditDishModal" data-dish="{{item}}">
           <view class="dish-name-row">
             <text class="dish-name">{{item.name}}</text>
-            <text class="dish-tag hot" wx:if="{{item.isHot}}">热销</text>
-            <text class="dish-tag new" wx:if="{{item.isNew}}">新品</text>
           </view>
           <view class="dish-category">{{item.categoryName}}</view>
           <view class="dish-price-row">
@@ -230,14 +228,6 @@
     <view class="form-item">
       <text class="form-label">排序(数字越小越靠前)</text>
       <input class="form-input" type="number" placeholder="0" value="{{formData.sort}}" data-field="sort" bindinput="onInputChange" />
-    </view>
-    <view class="form-item switch-row">
-      <text class="form-label">热销推荐</text>
-      <switch checked="{{formData.isHot}}" data-field="isHot" bindchange="onSwitchChange" color="#FF6B6B" />
-    </view>
-    <view class="form-item switch-row">
-      <text class="form-label">新品推荐</text>
-      <switch checked="{{formData.isNew}}" data-field="isNew" bindchange="onSwitchChange" color="#FF6B6B" />
     </view>
   </scroll-view>
   <view class="modal-footer">
