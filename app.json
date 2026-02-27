@@ -3,7 +3,6 @@
     "pages/login/login",
     "pages/index/index",
     "pages/menu/menu",
-    "pages/checkout/checkout",
     "pages/mine/mine",
     "pages/order/order",
     "pages/orderDetail/orderDetail",
@@ -14,7 +13,8 @@
     "pages/addressEdit/addressEdit",
     "pages/addressList/addressList",
     "pages/about/about",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/cart/cart"
   ],
   "usingComponents": {
     "loading": "/components/loading/loading"

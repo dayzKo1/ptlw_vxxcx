@@ -285,7 +285,7 @@ Page({
       showCartDrawer: false
     })
     wx.navigateTo({
-      url: '/pages/checkout/checkout'
+      url: '/pages/cart/cart'
     })
   }
 })

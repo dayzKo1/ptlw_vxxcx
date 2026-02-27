@@ -82,12 +82,10 @@ Page({
 
   loadStats() {
     const self = this
-    const db = wx.cloud.database()
-    const _ = db.command
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
 
     if (mock.isDevMode()) {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
       const todayOrders = mock.orders.filter(function(o) { return o.createTime >= today.getTime() }).length
       const pendingOrders = mock.orders.filter(function(o) { return o.status === 0 }).length
       const cookingOrders = mock.orders.filter(function(o) { return o.status === 1 }).length
@@ -107,56 +105,27 @@ Page({
       })
       return
     }
-    
-    db.collection('orders').where({
-      createTime: _.gte(today.getTime())
-    }).count({
-      success: function(res) {
-        self.setData({ 'stats.todayOrders': res.total })
-      }
-    })
 
-    db.collection('orders').where({
-      status: 1
-    }).count({
+    // 调用 merchantStats 云函数获取统计数据
+    wx.cloud.callFunction({
+      name: 'merchantStats',
+      data: { type: 'overview' },
       success: function(res) {
-        self.setData({ 'stats.cookingOrders': res.total })
-      }
-    })
-
-    db.collection('orders').where({
-      status: 0
-    }).count({
-      success: function(res) {
-        self.setData({ 'stats.pendingOrders': res.total })
-      }
-    })
-
-    db.collection('dishes').count({
-      success: function(res) {
-        self.setData({ 'stats.dishCount': res.total })
-      }
-    })
-
-    db.collection('dishes').where({
-      status: 1
-    }).count({
-      success: function(res) {
-        self.setData({ 'stats.onlineDishCount': res.total })
-      }
-    })
-
-    db.collection('tables').count({
-      success: function(res) {
-        self.setData({ 'stats.tableCount': res.total })
-      }
-    })
-
-    db.collection('tables').where({
-      status: 1
-    }).count({
-      success: function(res) {
-        self.setData({ 'stats.activeTableCount': res.total })
+        if (res.result && res.result.success) {
+          const stats = res.result.data
+          self.setData({
+            'stats.todayOrders': stats.todayOrders,
+            'stats.todayIncome': stats.todayIncome,
+            'stats.pendingOrders': stats.pendingOrders,
+            'stats.dishCount': stats.dishCount,
+            'stats.onlineDishCount': stats.onlineDishCount,
+            'stats.tableCount': stats.tableCount,
+            'stats.activeTableCount': stats.activeTableCount
+          })
+        }
+      },
+      fail: function() {
+        console.error('获取统计数据失败')
       }
     })
   },

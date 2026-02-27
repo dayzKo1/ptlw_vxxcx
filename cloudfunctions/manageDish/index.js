@@ -6,9 +6,25 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
+// 验证商户权限
+async function checkMerchantPermission(wxContext) {
+  const whitelist = await db.collection('merchantWhitelist')
+    .where({ openid: wxContext.OPENID, status: 1 })
+    .get()
+  return whitelist.data.length > 0
+}
+
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const { action, dishId, dishData, categoryId, status } = event
+
+  // 写操作需要商户权限
+  if (['create', 'update', 'delete', 'toggleStatus'].includes(action)) {
+    const hasPermission = await checkMerchantPermission(wxContext)
+    if (!hasPermission) {
+      return { success: false, message: '无权限访问' }
+    }
+  }
 
   switch (action) {
     case 'create':
