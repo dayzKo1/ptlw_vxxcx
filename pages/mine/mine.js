@@ -95,18 +95,6 @@ Page({
     })
   },
 
-  handleMerchantOrder() {
-    wx.navigateTo({
-      url: '/pages/merchantOrder/merchantOrder'
-    })
-  },
-
-  handleMerchantDish() {
-    wx.navigateTo({
-      url: '/pages/merchantDish/merchantDish'
-    })
-  },
-
   handleAddress() {
     wx.navigateTo({
       url: '/pages/addressList/addressList'
