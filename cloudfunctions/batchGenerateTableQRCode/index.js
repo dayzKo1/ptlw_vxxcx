@@ -6,6 +6,21 @@ cloud.init({
 const db = cloud.database()
 
 exports.main = async (event, context) => {
+  const wxContext = cloud.getWXContext()
+  const openid = wxContext.OPENID
+
+  // 验证商户权限
+  const whitelistRes = await db.collection('merchantWhitelist')
+    .where({ openid: openid, status: 1 })
+    .get()
+
+  if (whitelistRes.data.length === 0) {
+    return {
+      success: false,
+      message: '无权限访问'
+    }
+  }
+
   try {
     const tablesRes = await db.collection('tables')
       .where({ status: 1 })
@@ -64,11 +79,10 @@ exports.main = async (event, context) => {
       successCount: results.filter(r => r.success).length
     }
   } catch (err) {
-    console.error('批量生成桌号二维码失败', err)
+    console.error('批量生成二维码失败', err)
     return {
       success: false,
-      message: '批量生成桌号二维码失败',
-      error: err.message
+      message: '批量生成二维码失败'
     }
   }
 }

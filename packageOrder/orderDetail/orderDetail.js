@@ -15,22 +15,28 @@ Page({
     })
 
     try {
-      const db = wx.cloud.database()
-      const res = await db.collection('orders').doc(this.data.orderId).get()
-      
+      const res = await wx.cloud.callFunction({
+        name: 'getOrderDetail',
+        data: { orderId: this.data.orderId }
+      })
+
+      if (!res.result.success) {
+        throw new Error(res.result.message)
+      }
+
       const order = {
-        ...res.data,
-        statusText: this.getStatusText(res.data.status),
-        statusDesc: this.getStatusDesc(res.data.status),
-        createTimeText: this.formatTime(res.data.createTime),
-        payTimeText: res.data.payTime ? this.formatTime(res.data.payTime) : ''
+        ...res.result.data,
+        statusText: this.getStatusText(res.result.data.status),
+        statusDesc: this.getStatusDesc(res.result.data.status),
+        createTimeText: this.formatTime(res.result.data.createTime),
+        payTimeText: res.result.data.payTime ? this.formatTime(res.result.data.payTime) : ''
       }
 
       this.setData({ order })
     } catch (err) {
       console.error('加载订单详情失败', err)
       wx.showToast({
-        title: '加载失败',
+        title: err.message || '加载失败',
         icon: 'none'
       })
     } finally {

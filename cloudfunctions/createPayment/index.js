@@ -12,7 +12,16 @@ const MCH_ID = 'YOUR_MCH_ID'
 // =============================
 
 exports.main = async (event, context) => {
+  const wxContext = cloud.getWXContext()
+  const openid = wxContext.OPENID
   const { orderId } = event
+
+  if (!orderId) {
+    return {
+      success: false,
+      message: '缺少订单ID'
+    }
+  }
 
   // 检查商户号配置
   if (MCH_ID === 'YOUR_MCH_ID') {
@@ -30,6 +39,14 @@ exports.main = async (event, context) => {
       return {
         success: false,
         message: '订单不存在'
+      }
+    }
+
+    // 验证订单所有权
+    if (order._openid !== openid) {
+      return {
+        success: false,
+        message: '无权限支付该订单'
       }
     }
 

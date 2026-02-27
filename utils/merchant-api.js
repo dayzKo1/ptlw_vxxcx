@@ -109,9 +109,15 @@ function getOrders(status = -1) {
       return
     }
 
-    const condition = status >= 0 ? { status } : {}
-    dbQuery('orders', condition, { orderBy: { field: 'createTime', order: 'desc' }, limit: 50 })
-      .then(orders => resolve(processOrders(orders)))
+    callCloudFunction('getMerchantOrders', { status })
+      .then(res => {
+        if (res.success) {
+          resolve(processOrders(res.data.orders))
+        } else {
+          console.error('获取订单失败', res.message)
+          resolve([])
+        }
+      })
       .catch(() => resolve([]))
   })
 }
@@ -198,14 +204,19 @@ function getTables(status = 'all') {
       return
     }
 
-    const condition = status === 'occupied' ? { status: 1 } : 
-                      status === 'idle' ? { status: 0 } : {}
-    dbQuery('tables', condition, { orderBy: { field: 'tableNumber', order: 'asc' } })
-      .then(tables => resolve(tables.map(t => ({
-        ...t,
-        statusText: t.status === 1 ? '使用中' : '空闲',
-        timeText: t.orderTime ? formatTime(t.orderTime) : ''
-      }))))
+    callCloudFunction('getTables', { status })
+      .then(res => {
+        if (res.success) {
+          resolve(res.tables.map(t => ({
+            ...t,
+            statusText: t.status === 1 ? '使用中' : '空闲',
+            timeText: t.orderTime ? formatTime(t.orderTime) : ''
+          })))
+        } else {
+          console.error('获取桌号失败', res.message)
+          resolve([])
+        }
+      })
       .catch(() => resolve([]))
   })
 }

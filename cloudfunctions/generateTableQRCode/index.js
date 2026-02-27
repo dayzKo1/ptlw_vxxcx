@@ -9,7 +9,28 @@ const db = cloud.database()
 const _ = db.command
 
 exports.main = async (event, context) => {
+  const wxContext = cloud.getWXContext()
+  const openid = wxContext.OPENID
   const { tableNumber, page = 'pages/index/index' } = event
+
+  // 验证商户权限
+  const whitelistRes = await db.collection('merchantWhitelist')
+    .where({ openid: openid, status: 1 })
+    .get()
+
+  if (whitelistRes.data.length === 0) {
+    return {
+      success: false,
+      message: '无权限访问'
+    }
+  }
+
+  if (!tableNumber) {
+    return {
+      success: false,
+      message: '缺少桌号参数'
+    }
+  }
 
   try {
     const tablesRes = await db.collection('tables')

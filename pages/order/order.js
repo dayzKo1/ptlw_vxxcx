@@ -34,32 +34,34 @@ Page({
     })
 
     try {
-      const db = wx.cloud.database()
-      const _ = db.command
-
       let statusCondition
       switch (this.data.currentTab) {
         case 0:
           statusCondition = 0
           break
         case 1:
-          statusCondition = _.in([1, 2])
+          statusCondition = [1, 2]
           break
         case 2:
           statusCondition = 3
           break
       }
 
-      const res = await db.collection('orders')
-        .where({ status: statusCondition })
-        .orderBy('createTime', 'desc')
-        .skip((this.data.page - 1) * this.data.pageSize)
-        .limit(this.data.pageSize)
-        .get()
+      const res = await wx.cloud.callFunction({
+        name: 'getUserOrders',
+        data: {
+          status: statusCondition,
+          page: this.data.page,
+          pageSize: this.data.pageSize
+        }
+      })
 
-      const orders = res.data.map(order => ({
+      if (!res.result.success) {
+        throw new Error(res.result.message)
+      }
+
+      const orders = res.result.data.orders.map(order => ({
         ...order,
-        orderNo: order.orderNo || order.orderNumber || order._id.slice(-8),
         statusText: this.getStatusText(order.status),
         timeText: this.formatTime(order.createTime),
         itemCount: order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0
@@ -67,22 +69,16 @@ Page({
 
       this.setData({
         orders: this.data.page === 1 ? orders : [...this.data.orders, ...orders],
-        hasMore: orders.length === this.data.pageSize,
+        hasMore: res.result.data.hasMore,
         page: this.data.page + 1
       })
     } catch (err) {
       console.error('加载订单失败', err)
-      const mockOrders = [
-        { _id: '1', orderNo: '20240224001', totalPrice: 128, status: 0, tableNumber: 'A01', items: [{ name: '招牌红烧肉', quantity: 2, price: 68 }], createTime: Date.now() - 3600000 },
-        { _id: '2', orderNo: '20240224002', totalPrice: 58, status: 1, tableNumber: 'B02', items: [{ name: '宫保鸡丁', quantity: 1, price: 38 }, { name: '米饭', quantity: 2, price: 10 }], createTime: Date.now() - 7200000 }
-      ]
-      const orders = mockOrders.map(order => ({
-        ...order,
-        statusText: this.getStatusText(order.status),
-        timeText: this.formatTime(order.createTime),
-        itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0)
-      }))
-      this.setData({ orders, hasMore: false })
+      wx.showToast({
+        title: '加载失败',
+        icon: 'none'
+      })
+      this.setData({ hasMore: false })
     } finally {
       wx.hideLoading()
     }
@@ -213,9 +209,16 @@ Page({
       success: async (res) => {
         if (res.confirm) {
           try {
-            const db = wx.cloud.database()
-            const orderRes = await db.collection('orders').doc(id).get()
-            const order = orderRes.data
+            const orderRes = await wx.cloud.callFunction({
+              name: 'getOrderDetail',
+              data: { orderId: id }
+            })
+
+            if (!orderRes.result.success) {
+              throw new Error(orderRes.result.message)
+            }
+
+            const order = orderRes.result.data
 
             const cart = wx.getStorageSync('cart') || {}
             order.items.forEach(item => {

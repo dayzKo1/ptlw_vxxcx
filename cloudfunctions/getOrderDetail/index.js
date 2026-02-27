@@ -18,7 +18,6 @@ exports.main = async (event, context) => {
   }
 
   try {
-    // 获取订单信息
     const orderRes = await db.collection('orders').doc(orderId).get()
     
     if (!orderRes.data) {
@@ -30,7 +29,6 @@ exports.main = async (event, context) => {
 
     const order = orderRes.data
 
-    // 验证权限：订单所有者或商户可以取消
     const whitelistRes = await db.collection('merchantWhitelist')
       .where({ openid: openid, status: 1 })
       .get()
@@ -39,33 +37,22 @@ exports.main = async (event, context) => {
     if (order._openid !== openid && !isMerchant) {
       return {
         success: false,
-        message: '无权限取消该订单'
+        message: '无权限查看该订单'
       }
     }
-
-    // 只有待支付状态的订单可以取消
-    if (order.status !== 0) {
-      return {
-        success: false,
-        message: '当前订单状态不可取消'
-      }
-    }
-
-    await db.collection('orders').doc(orderId).update({
-      data: {
-        status: 4,
-        updateTime: new Date().getTime()
-      }
-    })
 
     return {
-      success: true
+      success: true,
+      data: {
+        ...order,
+        orderNo: order.orderNo || (order._id || '').slice(-8)
+      }
     }
   } catch (err) {
-    console.error('取消订单失败', err)
+    console.error('获取订单详情失败', err)
     return {
       success: false,
-      message: '取消订单失败'
+      message: '获取订单详情失败'
     }
   }
 }

@@ -7,10 +7,33 @@ const db = cloud.database()
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
+  const openid = wxContext.OPENID
   const { addressId, name, phone, province, city, district, detail, isDefault = false } = event
 
+  if (!addressId) {
+    return {
+      success: false,
+      message: '缺少地址ID'
+    }
+  }
+
   try {
-    const openid = wxContext.OPENID
+    // 验证地址所有权
+    const addressRes = await db.collection('addresses').doc(addressId).get()
+    
+    if (!addressRes.data) {
+      return {
+        success: false,
+        message: '地址不存在'
+      }
+    }
+
+    if (addressRes.data.openid !== openid) {
+      return {
+        success: false,
+        message: '无权限修改该地址'
+      }
+    }
 
     if (isDefault) {
       await db.collection('addresses')
