@@ -13,7 +13,7 @@
   </view>
 
   <view class="order-items">
-    <view class="dish-item" wx:for="{{order.items}}" wx:key="dishId">
+    <view class="dish-row" wx:for="{{order.items}}" wx:key="dishId">
       <text class="dish-name">{{item.name}}</text>
       <text class="dish-quantity">x{{item.quantity}}</text>
       <text class="dish-price">¥{{item.price}}</text>
@@ -23,18 +23,18 @@
   <view class="order-footer">
     <view class="order-total">
       <text class="total-label">共{{order.itemCount}}件</text>
-      <text class="total-price">合计: ¥{{order.totalPrice}}</text>
+      <text class="total-price">¥{{order.totalPrice}}</text>
     </view>
     <view class="order-actions" catchtap="stopPropagation">
       <block wx:if="{{order.status === 0}}">
-        <button class="action-btn cancel" catchtap="onCancel">取消</button>
-        <button class="action-btn primary" catchtap="onAccept">接单</button>
+        <text class="action-text cancel" catchtap="onCancel">取消</text>
+        <text class="action-text primary" catchtap="onAccept">接单</text>
       </block>
       <block wx:elif="{{order.status === 1}}">
-        <button class="action-btn primary" catchtap="onServe">出餐</button>
+        <text class="action-text primary" catchtap="onServe">出餐</text>
       </block>
       <block wx:elif="{{order.status === 2}}">
-        <button class="action-btn primary" catchtap="onComplete">完成</button>
+        <text class="action-text primary" catchtap="onComplete">完成</text>
       </block>
     </view>
   </view>

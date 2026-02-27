@@ -1,17 +1,13 @@
 .stats-row {
   display: flex;
   background: #fff;
-  padding: 24rpx 0;
-  margin-bottom: 16rpx;
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.05);
+  padding: 20rpx 0;
 }
 
 .stat-item {
   flex: 1;
   text-align: center;
   border-right: 1rpx solid #f0f0f0;
-  position: relative;
 }
 
 .stat-item:last-child {
@@ -19,7 +15,7 @@
 }
 
 .stat-value {
-  font-size: 40rpx;
+  font-size: 36rpx;
   font-weight: bold;
   color: #333;
   display: block;
@@ -28,20 +24,6 @@
 .stat-label {
   font-size: 22rpx;
   color: #999;
-  margin-top: 8rpx;
-  display: block;
-}
-
-.stat-trend {
-  font-size: 18rpx;
   margin-top: 4rpx;
   display: block;
-}
-
-.stat-trend.up {
-  color: #4CAF50;
-}
-
-.stat-trend.down {
-  color: #F44336;
 }

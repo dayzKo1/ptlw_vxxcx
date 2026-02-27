@@ -18,7 +18,7 @@
       <picker mode="selector" range="{{categories}}" range-key="name" value="{{categoryIndex}}" bindchange="onCategoryChange">
         <view class="form-picker">
           <text>{{categories[categoryIndex].name || '请选择分类'}}</text>
-          <text class="picker-arrow">›</text>
+          <text class="picker-arrow">></text>
         </view>
       </picker>
     </view>
@@ -41,7 +41,7 @@
       <picker mode="selector" range="{{spicyOptions}}" value="{{formData.spicyLevel}}" bindchange="onSpicyChange">
         <view class="form-picker">
           <text>{{spicyOptions[formData.spicyLevel]}}</text>
-          <text class="picker-arrow">›</text>
+          <text class="picker-arrow">></text>
         </view>
       </picker>
     </view>

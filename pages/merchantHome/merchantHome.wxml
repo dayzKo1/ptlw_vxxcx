@@ -1,260 +1,97 @@
-<view class="container">
+<view class="page-container">
+  <!-- 顶部区域 -->
   <view class="header">
     <view class="header-info">
       <text class="header-title">商户管理后台</text>
       <text class="header-subtitle">欢迎，{{userInfo.nickName || '商户'}}</text>
     </view>
     <view class="header-actions">
-      <button class="switch-btn" bindtap="goToCustomerMode">客户模式</button>
-      <button class="switch-btn" bindtap="handleLogout">退出</button>
+      <text class="header-link" bindtap="goToCustomerMode">客户模式</text>
+      <text class="header-link" bindtap="handleLogout">退出</text>
     </view>
   </view>
 
-  <view class="stats-row">
-    <view class="stat-item">
-      <text class="stat-value">{{stats.todayOrders}}</text>
-      <text class="stat-label">今日订单</text>
-    </view>
-    <view class="stat-item">
-      <text class="stat-value">{{stats.pendingOrders}}</text>
-      <text class="stat-label">待处理</text>
-    </view>
-    <view class="stat-item">
-      <text class="stat-value">{{stats.cookingOrders}}</text>
-      <text class="stat-label">制作中</text>
-    </view>
-    <view class="stat-item">
-      <text class="stat-value">{{stats.onlineDishCount}}/{{stats.dishCount}}</text>
-      <text class="stat-label">上架菜品</text>
-    </view>
-  </view>
+  <!-- 统计卡片 -->
+  <stats-card stats="{{stats}}" />
 
+  <!-- 主导航 -->
   <view class="main-tabs">
     <view class="main-tab {{currentTab === 'order' ? 'active' : ''}}" bindtap="switchTab" data-tab="order">订单管理</view>
     <view class="main-tab {{currentTab === 'dish' ? 'active' : ''}}" bindtap="switchTab" data-tab="dish">菜品管理</view>
     <view class="main-tab {{currentTab === 'table' ? 'active' : ''}}" bindtap="switchTab" data-tab="table">桌号管理</view>
   </view>
 
+  <!-- 订单管理 -->
   <view class="content-area" wx:if="{{currentTab === 'order'}}">
-    <view class="sub-tabs">
-      <view class="sub-tab {{orderStatus === -1 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="-1">全部</view>
-      <view class="sub-tab {{orderStatus === 0 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="0">待支付</view>
-      <view class="sub-tab {{orderStatus === 1 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="1">制作中</view>
-      <view class="sub-tab {{orderStatus === 2 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="2">已出餐</view>
-      <view class="sub-tab {{orderStatus === 3 ? 'active' : ''}}" bindtap="switchOrderStatus" data-status="3">已完成</view>
-    </view>
-
-    <scroll-view class="order-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
-      <view class="order-item" wx:for="{{orders}}" wx:key="_id" bindtap="goToOrderDetail" data-id="{{item._id}}">
-        <view class="order-header">
-          <view class="order-info">
-            <text class="order-no">订单号: {{item.orderNo}}</text>
-            <text class="order-time">{{item.timeText}}</text>
-          </view>
-          <view class="order-status status-{{item.status}}">{{item.statusText}}</view>
-        </view>
-        
-        <view class="order-table" wx:if="{{item.tableNumber}}">
-          <text class="table-label">桌号:</text>
-          <text class="table-number">{{item.tableNumber}}</text>
-        </view>
-
-        <view class="order-items">
-          <view class="dish-item" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
-            <text class="dish-name">{{dish.name}}</text>
-            <text class="dish-quantity">x{{dish.quantity}}</text>
-            <text class="dish-price">¥{{dish.price}}</text>
-          </view>
-        </view>
-
-        <view class="order-footer">
-          <view class="order-total">
-            <text class="total-label">共{{item.itemCount}}件</text>
-            <text class="total-price">合计: ¥{{item.totalPrice}}</text>
-          </view>
-          <view class="order-actions" catchtap="stopPropagation">
-            <block wx:if="{{item.status === 0}}">
-              <button class="action-btn cancel" catchtap="cancelOrder" data-id="{{item._id}}">取消</button>
-              <button class="action-btn primary" catchtap="updateOrderStatus" data-id="{{item._id}}" data-status="1">接单</button>
-            </block>
-            <block wx:elif="{{item.status === 1}}">
-              <button class="action-btn primary" catchtap="updateOrderStatus" data-id="{{item._id}}" data-status="2">出餐</button>
-            </block>
-            <block wx:elif="{{item.status === 2}}">
-              <button class="action-btn primary" catchtap="updateOrderStatus" data-id="{{item._id}}" data-status="3">完成</button>
-            </block>
-          </view>
-        </view>
-
-        <view class="order-remark" wx:if="{{item.remark}}">
-          <text class="remark-label">备注:</text>
-          <text class="remark-text">{{item.remark}}</text>
-        </view>
+    <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="sub-tab {{orderStatus === item.value ? 'active' : ''}}" 
+            wx:for="{{orderStatusList}}" wx:key="value"
+            bindtap="switchOrderStatus" data-status="{{item.value}}">
+        {{item.label}}
       </view>
+    </scroll-view>
 
-      <view class="empty" wx:if="{{orders.length === 0 && !loading}}">
-        <text class="empty-text">暂无订单</text>
-      </view>
+    <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <block wx:if="{{orders.length > 0}}">
+        <order-card wx:for="{{orders}}" wx:key="_id" order="{{item}}"
+                    bindtap="goToOrderDetail"
+                    bindcancel="handleOrderCancel"
+                    bindaccept="handleOrderAccept"
+                    bindserve="handleOrderServe"
+                    bindcomplete="handleOrderComplete" />
+      </block>
+      <empty-state wx:else text="暂无订单" />
     </scroll-view>
   </view>
 
+  <!-- 菜品管理 -->
   <view class="content-area" wx:if="{{currentTab === 'dish'}}">
-    <view class="sub-tabs">
+    <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="sub-tab {{dishStatus === 'all' ? 'active' : ''}}" bindtap="switchDishStatus" data-status="all">全部</view>
       <view class="sub-tab {{dishStatus === 'online' ? 'active' : ''}}" bindtap="switchDishStatus" data-status="online">上架中</view>
       <view class="sub-tab {{dishStatus === 'offline' ? 'active' : ''}}" bindtap="switchDishStatus" data-status="offline">已下架</view>
-    </view>
-
-    <scroll-view class="dish-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
-      <view class="dish-item" wx:for="{{dishes}}" wx:key="_id">
-        <view class="dish-image" bindtap="showEditDishModal" data-dish="{{item}}">
-          <image src="{{item.image || '/images/default-dish.png'}}" mode="aspectFill"></image>
-          <view class="status-badge {{item.status === 1 ? 'online' : 'offline'}}">{{item.statusText}}</view>
-        </view>
-        <view class="dish-info" bindtap="showEditDishModal" data-dish="{{item}}">
-          <view class="dish-name-row">
-            <text class="dish-name">{{item.name}}</text>
-          </view>
-          <view class="dish-category">{{item.categoryName}}</view>
-          <view class="dish-price-row">
-            <text class="dish-price">¥{{item.price}}</text>
-            <text class="spicy-level" wx:if="{{item.spicyLevel > 0}}">{{['不辣', '微辣', '中辣', '特辣', '变态辣'][item.spicyLevel]}}</text>
-          </view>
-        </view>
-        <view class="dish-actions">
-          <button class="action-btn {{item.status === 1 ? 'offline-btn' : 'online-btn'}}" catchtap="toggleDishStatus" data-id="{{item._id}}" data-status="{{item.status}}">
-            {{item.status === 1 ? '下架' : '上架'}}
-          </button>
-          <button class="action-btn delete-btn" catchtap="deleteDish" data-id="{{item._id}}">删除</button>
-        </view>
-      </view>
-
-      <view class="empty" wx:if="{{dishes.length === 0 && !loading}}">
-        <text class="empty-text">暂无菜品</text>
-        <button class="add-first-btn" bindtap="showAddDishModal">添加菜品</button>
-      </view>
     </scroll-view>
 
-    <view class="fab" bindtap="showAddDishModal">
-      <text class="fab-icon">+</text>
-    </view>
+    <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <block wx:if="{{dishes.length > 0}}">
+        <dish-card wx:for="{{dishes}}" wx:key="_id" dish="{{item}}"
+                   bindedit="showEditDishModal"
+                   bindtoggle="handleDishToggle"
+                   binddelete="handleDishDelete" />
+      </block>
+      <empty-state wx:else text="暂无菜品" btnText="添加菜品" bindaction="showAddDishModal" />
+    </scroll-view>
+
+    <view class="fab" bindtap="showAddDishModal">+</view>
   </view>
 
+  <!-- 桌号管理 -->
   <view class="content-area" wx:if="{{currentTab === 'table'}}">
-    <view class="sub-tabs">
+    <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="sub-tab {{tableStatus === 'all' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="all">全部</view>
       <view class="sub-tab {{tableStatus === 'idle' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="idle">空闲</view>
       <view class="sub-tab {{tableStatus === 'occupied' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="occupied">使用中</view>
-    </view>
-
-    <scroll-view class="table-list" scroll-y enable-back-to-top refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
-      <view class="table-item" wx:for="{{tables}}" wx:key="_id">
-        <view class="table-header" bindtap="showEditTableModal" data-table="{{item}}">
-          <view class="table-number">{{item.tableNumber}}</view>
-          <view class="status-badge {{item.status === 1 ? 'occupied' : 'idle'}}">{{item.statusText}}</view>
-        </view>
-        <view class="table-info" wx:if="{{item.timeText}}">
-          <text class="info-label">使用时间：</text>
-          <text class="info-text">{{item.timeText}}</text>
-        </view>
-        <view class="table-actions">
-          <button class="action-btn {{item.status === 1 ? 'idle-btn' : 'occupy-btn'}}" catchtap="toggleTableStatus" data-id="{{item._id}}" data-status="{{item.status}}">
-            {{item.status === 1 ? '设为空闲' : '设为使用中'}}
-          </button>
-          <button class="action-btn delete-btn" catchtap="deleteTable" data-id="{{item._id}}">删除</button>
-        </view>
-      </view>
-
-      <view class="empty" wx:if="{{tables.length === 0 && !loading}}">
-        <text class="empty-text">暂无桌号</text>
-        <button class="add-first-btn" bindtap="showAddTableModal">添加桌号</button>
-      </view>
     </scroll-view>
 
-    <view class="fab" bindtap="showAddTableModal">
-      <text class="fab-icon">+</text>
-    </view>
+    <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <block wx:if="{{tables.length > 0}}">
+        <table-card wx:for="{{tables}}" wx:key="_id" table="{{item}}"
+                    bindedit="showEditTableModal"
+                    bindtoggle="handleTableToggle"
+                    binddelete="handleTableDelete" />
+      </block>
+      <empty-state wx:else text="暂无桌号" btnText="添加桌号" bindaction="showAddTableModal" />
+    </scroll-view>
+
+    <view class="fab" bindtap="showAddTableModal">+</view>
   </view>
 </view>
 
-<view class="modal-mask" wx:if="{{showDishModal}}" bindtap="hideDishModal"></view>
-<view class="modal-container" wx:if="{{showDishModal}}">
-  <view class="modal-header">
-    <text class="modal-title">{{editingDish ? '编辑菜品' : '添加菜品'}}</text>
-    <text class="modal-close" bindtap="hideDishModal">×</text>
-  </view>
-  <scroll-view class="modal-content" scroll-y>
-    <view class="form-item">
-      <text class="form-label required">菜品名称</text>
-      <input class="form-input" placeholder="请输入菜品名称" value="{{formData.name}}" data-field="name" bindinput="onInputChange" />
-    </view>
-    <view class="form-item">
-      <text class="form-label required">菜品价格</text>
-      <input class="form-input" type="digit" placeholder="请输入价格" value="{{formData.price}}" data-field="price" bindinput="onInputChange" />
-    </view>
-    <view class="form-item">
-      <text class="form-label">所属分类</text>
-      <picker mode="selector" range="{{categories}}" range-key="name" value="{{categoryPickerIndex}}" bindchange="onCategoryChange">
-        <view class="form-picker">
-          <text>{{categoryPickerName}}</text>
-          <text class="picker-arrow">></text>
-        </view>
-      </picker>
-    </view>
-    <view class="form-item">
-      <text class="form-label">菜品描述</text>
-      <textarea class="form-textarea" placeholder="请输入菜品描述" value="{{formData.description}}" data-field="description" bindinput="onInputChange" />
-    </view>
-    <view class="form-item">
-      <text class="form-label">菜品图片</text>
-      <view class="image-upload" bindtap="chooseImage">
-        <image wx:if="{{formData.image}}" src="{{formData.image}}" mode="aspectFill" class="preview-image"></image>
-        <view wx:else class="upload-placeholder">
-          <text class="upload-icon">+</text>
-          <text class="upload-text">上传图片</text>
-        </view>
-      </view>
-    </view>
-    <view class="form-item">
-      <text class="form-label">辣度</text>
-      <picker mode="selector" range="{{spicyOptions}}" value="{{formData.spicyLevel}}" bindchange="onSpicyChange">
-        <view class="form-picker">
-          <text>{{spicyOptions[formData.spicyLevel]}}</text>
-          <text class="picker-arrow">></text>
-        </view>
-      </picker>
-    </view>
-    <view class="form-item">
-      <text class="form-label">排序(数字越小越靠前)</text>
-      <input class="form-input" type="number" placeholder="0" value="{{formData.sort}}" data-field="sort" bindinput="onInputChange" />
-    </view>
-  </scroll-view>
-  <view class="modal-footer">
-    <button class="modal-btn cancel" bindtap="hideDishModal">取消</button>
-    <button class="modal-btn confirm" bindtap="submitDishForm">确定</button>
-  </view>
-</view>
+<!-- 弹窗组件 -->
+<dish-modal show="{{showDishModal}}" dish="{{editingDish}}" categories="{{categories}}"
+            bindclose="hideDishModal" bindsubmit="handleDishSubmit" />
 
-<view class="modal-mask" wx:if="{{showTableModal}}" bindtap="hideTableModal"></view>
-<view class="modal-container" wx:if="{{showTableModal}}">
-  <view class="modal-header">
-    <text class="modal-title">{{editingTable ? '编辑桌号' : '添加桌号'}}</text>
-    <text class="modal-close" bindtap="hideTableModal">×</text>
-  </view>
-  <scroll-view class="modal-content" scroll-y>
-    <view class="form-item">
-      <text class="form-label required">桌号</text>
-      <input class="form-input" placeholder="请输入桌号" value="{{formData.tableNumber}}" data-field="tableNumber" bindinput="onInputChange" />
-    </view>
-    <view class="form-item">
-      <text class="form-label">二维码链接 (可选)</text>
-      <input class="form-input" placeholder="请输入二维码链接" value="{{formData.qrCode}}" data-field="qrCode" bindinput="onInputChange" />
-    </view>
-  </scroll-view>
-  <view class="modal-footer">
-    <button class="modal-btn cancel" bindtap="hideTableModal">取消</button>
-    <button class="modal-btn confirm" bindtap="submitTableForm">确定</button>
-  </view>
-</view>
+<table-modal show="{{showTableModal}}" table="{{editingTable}}"
+             bindclose="hideTableModal" bindsubmit="handleTableSubmit" />
 
-<loading show="{{loading}}" text="加载中..."></loading>
+<loading show="{{loading}}" text="加载中..." />

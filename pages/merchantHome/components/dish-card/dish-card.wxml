@@ -8,10 +8,8 @@
   <view class="dish-info" bindtap="onEdit">
     <view class="dish-name-row">
       <text class="dish-name">{{dish.name}}</text>
-      <view class="dish-tags">
-        <text class="tag hot" wx:if="{{dish.isHot}}">热销</text>
-        <text class="tag new" wx:if="{{dish.isNew}}">新品</text>
-      </view>
+      <text class="tag hot" wx:if="{{dish.isHot}}">热销</text>
+      <text class="tag new" wx:if="{{dish.isNew}}">新品</text>
     </view>
     <view class="dish-category">{{dish.categoryName || '未分类'}}</view>
     <view class="dish-price-row">
