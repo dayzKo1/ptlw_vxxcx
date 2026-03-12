@@ -21,7 +21,7 @@ Page({
     try {
       const db = wx.cloud.database()
       const res = await db.collection('dishes').doc(this.data.dishId).get()
-      
+
       const dish = res.data
       const images = dish.images && dish.images.length > 0 ? dish.images : [dish.image]
 
@@ -32,26 +32,17 @@ Page({
       })
 
       wx.setStorageSync(`dish_${this.data.dishId}`, dish)
+      wx.hideLoading()
     } catch (err) {
       console.error('加载菜品详情失败', err)
-      const mockDish = {
-        _id: this.data.dishId || '1',
-        name: '招牌红烧肉',
-        price: 68,
-        description: '精选五花肉，慢火红烧，口感软糯，肥而不腻',
-        ingredients: '五花肉、冰糖、生抽、老抽、料酒',
-        isHot: true,
-        isNew: false,
-        spicyLevel: 2,
-        image: ''
-      }
-      this.setData({
-        dish: mockDish,
-        images: ['🥩'],
-        totalPrice: (mockDish.price * this.data.quantity).toFixed(2)
-      })
-    } finally {
       wx.hideLoading()
+      wx.showToast({
+        title: '菜品不存在或已下架',
+        icon: 'none'
+      })
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 1500)
     }
   },
 

@@ -83,11 +83,8 @@ Page({
   },
 
   loadTableNumber() {
-    let tableNumber = wx.getStorageSync('tableNumber')
-    if (!tableNumber) {
-      tableNumber = '未选择'
-    }
-    this.setData({ tableNumber })
+    const tableNumber = wx.getStorageSync('tableNumber') || ''
+    this.setData({ tableNumber: tableNumber || '未选择' })
   },
 
   plusDish(e) {
@@ -128,11 +125,6 @@ Page({
     this.setData({
       remark: e.detail.value
     })
-  },
-
-  loadTableNumber() {
-    const tableNumber = wx.getStorageSync('tableNumber') || ''
-    this.setData({ tableNumber })
   },
 
   switchDeliveryMode(e) {

@@ -2,7 +2,8 @@ const app = getApp()
 
 Page({
   data: {
-    userInfo: null,
+    avatarUrl: '',
+    nickname: '',
     isDev: false,
     selectedRole: 'customer'
   },
@@ -42,54 +43,44 @@ Page({
     }
   },
 
-  handleLogin() {
-    wx.showModal({
-      title: '授权登录',
-      content: '请授权头像和昵称以完成登录',
-      confirmText: '去授权',
-      success: (res) => {
-        if (res.confirm) {
-          this.getUserInfo()
-        }
-      }
-    })
+  // 新版头像选择
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail
+    this.setData({ avatarUrl })
   },
 
-  getUserInfo() {
-    wx.getUserProfile({
-      desc: '用于完善用户资料',
-      success: (res) => {
-        const userInfo = res.userInfo
-        this.login(userInfo)
-      },
-      fail: (err) => {
-        console.error('获取用户信息失败', err)
-        wx.showModal({
-          title: '授权失败',
-          content: '需要授权头像和昵称才能使用小程序功能',
-          confirmText: '重试',
-          success: (modalRes) => {
-            if (modalRes.confirm) {
-              this.getUserInfo()
-            }
-          }
-        })
-      }
-    })
+  // 昵称输入
+  onNicknameInput(e) {
+    this.setData({ nickname: e.detail.value })
   },
 
-  handleDevLogin() {
-    const mockUserInfo = {
-      nickName: '开发测试用户',
-      avatarUrl: '',
-      gender: 1,
+  onNicknameBlur(e) {
+    this.setData({ nickname: e.detail.value })
+  },
+
+  // 新版登录
+  async handleLogin() {
+    const { avatarUrl, nickname } = this.data
+
+    if (!nickname || !nickname.trim()) {
+      wx.showToast({
+        title: '请输入昵称',
+        icon: 'none'
+      })
+      return
+    }
+
+    const userInfo = {
+      nickName: nickname.trim(),
+      avatarUrl: avatarUrl || '',
+      gender: 0,
       language: 'zh_CN',
-      city: '福州',
-      province: '福建',
+      city: '',
+      province: '',
       country: '中国'
     }
-    
-    this.mockLogin(mockUserInfo)
+
+    await this.login(userInfo)
   },
 
   async login(userInfo) {
@@ -108,7 +99,7 @@ Page({
 
       if (loginRes.result.success) {
         const { openid, sessionKey, role } = loginRes.result.data
-        
+
         const userData = {
           ...userInfo,
           openid: openid,
@@ -146,6 +137,21 @@ Page({
     }
   },
 
+  // 开发模式登录
+  handleDevLogin() {
+    const mockUserInfo = {
+      nickName: '开发测试用户',
+      avatarUrl: '',
+      gender: 1,
+      language: 'zh_CN',
+      city: '福州',
+      province: '福建',
+      country: '中国'
+    }
+
+    this.mockLogin(mockUserInfo)
+  },
+
   async mockLogin(userInfo) {
     wx.showLoading({
       title: '模拟登录中...',
@@ -154,7 +160,7 @@ Page({
 
     try {
       const mockOpenid = 'dev_' + Date.now()
-      
+
       const userData = {
         ...userInfo,
         openid: mockOpenid,
