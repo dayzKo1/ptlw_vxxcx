@@ -28,13 +28,20 @@
     </view>
     <view class="form-item">
       <text class="form-label">菜品图片</text>
-      <view class="image-upload" bindtap="onChooseImage">
-        <image wx:if="{{formData.image}}" src="{{formData.image}}" mode="aspectFill" class="preview-image"></image>
-        <view wx:else class="upload-placeholder">
-          <text class="upload-icon">+</text>
-          <text class="upload-text">上传图片</text>
+      <view class="image-upload-container">
+        <view class="image-upload" bindtap="onChooseImage">
+          <image wx:if="{{formData.image}}" src="{{formData.image}}" mode="aspectFill" class="preview-image" bindtap="onPreviewImage" data-url="{{formData.image}}"></image>
+          <view wx:else class="upload-placeholder">
+            <text class="upload-icon">+</text>
+            <text class="upload-text">上传图片</text>
+          </view>
+        </view>
+        <view class="image-actions" wx:if="{{formData.image}}">
+          <text class="image-action" bindtap="onChooseImage">更换</text>
+          <text class="image-action delete" bindtap="onDeleteImage">删除</text>
         </view>
       </view>
+      <text class="form-tip">建议尺寸: 750x750px，支持 jpg、png 格式</text>
     </view>
     <view class="form-item">
       <text class="form-label">辣度</text>

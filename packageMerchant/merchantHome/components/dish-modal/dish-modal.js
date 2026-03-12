@@ -120,9 +120,32 @@ Component({
             const fileID = await api.uploadImage(tempFilePath)
             this.setData({ 'formData.image': fileID })
             wx.hideLoading()
+            wx.showToast({ title: '上传成功', icon: 'success' })
           } catch (err) {
             wx.hideLoading()
             wx.showToast({ title: '上传失败', icon: 'none' })
+          }
+        }
+      })
+    },
+
+    onPreviewImage(e) {
+      const url = e.currentTarget.dataset.url
+      if (url) {
+        wx.previewImage({
+          current: url,
+          urls: [url]
+        })
+      }
+    },
+
+    onDeleteImage() {
+      wx.showModal({
+        title: '提示',
+        content: '确定要删除这张图片吗？',
+        success: (res) => {
+          if (res.confirm) {
+            this.setData({ 'formData.image': '' })
           }
         }
       })

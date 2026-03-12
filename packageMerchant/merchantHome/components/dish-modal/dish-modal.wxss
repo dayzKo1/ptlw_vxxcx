@@ -127,6 +127,12 @@
   color: #ccc;
 }
 
+.image-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .image-upload {
   width: 160rpx;
   height: 160rpx;
@@ -136,6 +142,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border: 2rpx dashed #ddd;
 }
 
 .preview-image {
@@ -158,6 +165,31 @@
   font-size: 22rpx;
   color: #999;
   margin-top: 8rpx;
+}
+
+.image-actions {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 16rpx;
+}
+
+.image-action {
+  font-size: 24rpx;
+  color: #FF6B6B;
+  padding: 8rpx 16rpx;
+  background: #FFF0F0;
+  border-radius: 8rpx;
+}
+
+.image-action.delete {
+  color: #999;
+  background: #f5f5f5;
+}
+
+.form-tip {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 12rpx;
 }
 
 .form-switches {
