@@ -41,6 +41,26 @@
   padding: 8rpx 0;
 }
 
+/* 打印机状态栏 */
+.printer-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF3E0;
+  padding: 16rpx 24rpx;
+  border-bottom: 1rpx solid #FFE0B2;
+}
+
+.printer-status-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+}
+
+.printer-status-text {
+  font-size: 26rpx;
+  color: #E65100;
+}
+
 /* 自动接单开关栏 */
 .auto-accept-bar {
   display: flex;

@@ -1,5 +1,7 @@
 const app = getApp()
 const api = require('../../utils/merchant-api.js')
+const printService = require('../../utils/print-service.js')
+const notification = require('../../utils/order-notification.js')
 
 Page({
   data: {
@@ -11,6 +13,7 @@ Page({
     dishes: [],
     tables: [],
     categories: [],
+    printerConnected: false,
 
     // 筛选状态
     orderStatus: -1,
@@ -39,10 +42,16 @@ Page({
 
   onLoad() {
     this.checkMerchantRole()
+    notification.init()
   },
 
   onShow() {
     this.initData()
+    this.checkPrinterStatus()
+  },
+
+  onUnload() {
+    notification.destroy()
   },
 
   onPullDownRefresh() {
@@ -530,5 +539,51 @@ Page({
         }
       }
     })
+  },
+
+  // ==================== 打印机相关 ====================
+
+  checkPrinterStatus() {
+    const connected = printService.isConnected()
+    this.setData({ printerConnected: connected })
+  },
+
+  goToPrinterSetting() {
+    wx.navigateTo({ url: '/packageMerchant/printerSetting/printerSetting' })
+  },
+
+  // 打印订单
+  async printOrder(order) {
+    const autoPrint = printService.getAutoPrint()
+    if (!autoPrint) return
+
+    try {
+      const result = await printService.printOrder(order, this.data.shopInfo)
+      if (!result.success) {
+        console.error('打印失败', result.message)
+      }
+    } catch (err) {
+      console.error('打印订单失败', err)
+    }
+  },
+
+  // 打印后厨单
+  async printKitchenTicket(order) {
+    const printKitchen = wx.getStorageSync('printKitchen') !== false
+    if (!printKitchen) return
+
+    try {
+      await printService.printKitchenTicket(order)
+    } catch (err) {
+      console.error('打印后厨单失败', err)
+    }
+  },
+
+  // 接单时自动打印
+  async acceptAndPrint(order) {
+    await this.updateOrderStatusWithConfirm(order._id, 2, '接单')
+    
+    // 打印后厨单
+    await this.printKitchenTicket(order)
   }
 })

@@ -1,7 +1,7 @@
 {
   "name": "cancelTimeoutOrders",
   "version": "1.0.0",
-  "description": "取消超时订单云函数",
+  "description": "定时取消超时未支付订单",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

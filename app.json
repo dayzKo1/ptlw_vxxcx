@@ -22,7 +22,8 @@
         "merchantHome/merchantHome",
         "category/category",
         "dishDetail/dishDetail",
-        "tableQRCode/tableQRCode"
+        "tableQRCode/tableQRCode",
+        "printerSetting/printerSetting"
       ]
     },
     {

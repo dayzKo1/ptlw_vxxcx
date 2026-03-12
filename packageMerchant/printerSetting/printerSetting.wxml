@@ -1,0 +1,82 @@
+<view class="container">
+  <!-- 当前打印机状态 -->
+  <view class="status-card">
+    <view class="status-header">
+      <text class="status-title">打印机状态</text>
+      <view class="status-badge {{connected ? 'connected' : 'disconnected'}}">
+        <text>{{connected ? '已连接' : '未连接'}}</text>
+      </view>
+    </view>
+    <view class="status-info" wx:if="{{connectedPrinter}}">
+      <text class="info-label">当前打印机:</text>
+      <text class="info-value">{{connectedPrinter}}</text>
+    </view>
+  </view>
+
+  <!-- 搜索打印机 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">搜索打印机</text>
+      <button class="search-btn" bindtap="searchPrinters" loading="{{searching}}" disabled="{{searching}}">
+        {{searching ? '搜索中...' : '搜索'}}
+      </button>
+    </view>
+
+    <!-- 设备列表 -->
+    <view class="device-list" wx:if="{{devices.length > 0}}">
+      <view class="device-item" wx:for="{{devices}}" wx:key="deviceId" bindtap="connectPrinter" data-device="{{item}}">
+        <view class="device-info">
+          <text class="device-name">{{item.name || item.localName || '未知设备'}}</text>
+          <text class="device-id">{{item.deviceId}}</text>
+        </view>
+        <view class="device-action">
+          <text class="action-text">连接</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-tip" wx:if="{{!searching && devices.length === 0 && searched}}">
+      <text>未找到打印机，请确保打印机已开启</text>
+    </view>
+  </view>
+
+  <!-- 打印设置 -->
+  <view class="section">
+    <view class="section-title">打印设置</view>
+    
+    <view class="setting-item">
+      <text class="setting-label">自动打印新订单</text>
+      <switch checked="{{autoPrint}}" bindchange="toggleAutoPrint" color="#FF6B6B" />
+    </view>
+
+    <view class="setting-item">
+      <text class="setting-label">打印后厨单</text>
+      <switch checked="{{printKitchen}}" bindchange="togglePrintKitchen" color="#FF6B6B" />
+    </view>
+
+    <view class="setting-item">
+      <text class="setting-label">订单通知语音</text>
+      <switch checked="{{voiceEnabled}}" bindchange="toggleVoice" color="#FF6B6B" />
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <button class="test-btn" bindtap="testPrint" disabled="{{!connected}}">
+      测试打印
+    </button>
+    <button class="disconnect-btn" bindtap="disconnectPrinter" wx:if="{{connected}}">
+      断开连接
+    </button>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="help-section">
+    <view class="help-title">使用说明</view>
+    <view class="help-item">1. 开启蓝牙打印机的电源</view>
+    <view class="help-item">2. 点击"搜索"按钮查找附近的打印机</view>
+    <view class="help-item">3. 在列表中选择您的打印机进行连接</view>
+    <view class="help-item">4. 连接成功后可点击"测试打印"验证</view>
+    <view class="help-item">5. 开启"自动打印"后，新订单将自动打印小票</view>
+  </view>
+</view>
