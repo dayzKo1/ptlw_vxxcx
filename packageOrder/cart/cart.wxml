@@ -14,20 +14,27 @@
       <text class="clear-btn" bindtap="clearCart">🗑️ 清空</text>
     </view>
 
-    <view class="delivery-mode-section">
+    <!-- 堂食模式提示（有桌号时显示） -->
+    <view class="dine-in-notice" wx:if="{{tableNumber && tableNumber !== '0' && tableNumber !== '未选择'}}">
+      <text class="notice-icon">🍽️</text>
+      <text class="notice-text">堂食订单 - 桌号 {{tableNumber}}</text>
+    </view>
+
+    <!-- 配送方式选择（无桌号时显示） -->
+    <view class="delivery-mode-section" wx:if="{{!tableNumber || tableNumber === '0' || tableNumber === '未选择'}}">
       <view class="mode-title">配送方式</view>
       <view class="mode-options">
-        <view 
-          class="mode-option {{deliveryMode === 'pickup' ? 'active' : ''}}" 
-          bindtap="switchDeliveryMode" 
+        <view
+          class="mode-option {{deliveryMode === 'pickup' ? 'active' : ''}}"
+          bindtap="switchDeliveryMode"
           data-mode="pickup"
         >
           <text class="mode-icon">🏃</text>
           <text class="mode-text">自取</text>
         </view>
-        <view 
-          class="mode-option {{deliveryMode === 'delivery' ? 'active' : ''}}" 
-          bindtap="switchDeliveryMode" 
+        <view
+          class="mode-option {{deliveryMode === 'delivery' ? 'active' : ''}}"
+          bindtap="switchDeliveryMode"
           data-mode="delivery"
         >
           <text class="mode-icon">🛵</text>
@@ -42,9 +49,9 @@
         <text class="add-address-btn" bindtap="addAddress">+ 添加地址</text>
       </view>
       <scroll-view scroll-x class="address-list">
-        <view 
-          class="address-item {{addressId === item._id ? 'active' : ''}}" 
-          wx:for="{{addresses}}" 
+        <view
+          class="address-item {{addressId === item._id ? 'active' : ''}}"
+          wx:for="{{addresses}}"
           wx:key="_id"
           bindtap="selectAddress"
           data-id="{{item._id}}"
@@ -81,9 +88,9 @@
 
     <view class="remark-section">
       <text class="remark-label">📝 备注</text>
-      <textarea 
-        class="remark-input" 
-        placeholder="请输入备注信息，如：少辣、不要香菜等" 
+      <textarea
+        class="remark-input"
+        placeholder="请输入备注信息，如：少辣、不要香菜等"
         value="{{remark}}"
         bindinput="onRemarkInput"
         maxlength="100"

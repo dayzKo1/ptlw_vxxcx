@@ -117,6 +117,28 @@
   background-color: var(--primary-bg);
 }
 
+/* 堂食模式提示 */
+.dine-in-notice {
+  background: linear-gradient(135deg, var(--primary-bg) 0%, #FFF5F5 100%);
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  margin: var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  border: 2rpx solid var(--primary-color);
+}
+
+.notice-icon {
+  font-size: 48rpx;
+  margin-right: var(--spacing-lg);
+}
+
+.notice-text {
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
 .delivery-mode-section {
   background: var(--bg-white);
   padding: var(--spacing-2xl);

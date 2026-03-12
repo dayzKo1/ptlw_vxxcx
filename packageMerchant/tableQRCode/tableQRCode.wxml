@@ -20,9 +20,9 @@
       </view>
 
       <view class="qr-code-area" wx:if="{{item.qrCode}}">
-        <image 
-          class="qr-code" 
-          src="{{item.qrCode}}" 
+        <image
+          class="qr-code"
+          src="{{item.qrCode}}"
           mode="aspectFit"
           bindtap="previewImage"
           data-url="{{item.qrCode}}"
@@ -30,19 +30,20 @@
       </view>
 
       <view class="table-actions">
-        <button 
-          class="btn-secondary" 
+        <button
+          class="btn-secondary"
           size="mini"
           bindtap="generateQRCode"
           data-table-number="{{item.tableNumber}}"
         >
           生成二维码
         </button>
-        <button 
-          class="btn-secondary" 
+        <button
+          class="btn-secondary"
           size="mini"
           wx:if="{{item.qrCode}}"
           bindtap="downloadImage"
+          data-fileid="{{item.qrCode}}"
           data-url="{{item.qrCode}}"
           data-table-number="{{item.tableNumber}}"
         >

@@ -122,24 +122,55 @@ Page({
   },
 
   async downloadImage(e) {
-    const url = e.currentTarget.dataset.url
+    const fileID = e.currentTarget.dataset.fileid || e.currentTarget.dataset.url
+
+    if (!fileID) {
+      wx.showToast({
+        title: '图片不存在',
+        icon: 'none'
+      })
+      return
+    }
 
     this.setData({ loading: true })
 
     try {
-      const res = await wx.downloadFile({ url: url })
-      
-      await wx.saveImageToPhotosAlbum({ filePath: res.tempFilePath })
-      wx.showToast({
-        title: '已保存到相册',
-        icon: 'success'
+      // 获取云存储文件临时链接
+      const tempUrlRes = await wx.cloud.getTempFileURL({
+        fileList: [fileID]
       })
+
+      if (tempUrlRes.fileList && tempUrlRes.fileList.length > 0) {
+        const tempUrl = tempUrlRes.fileList[0].tempFileURL
+        
+        // 下载图片
+        const downloadRes = await wx.downloadFile({ url: tempUrl })
+
+        // 保存到相册
+        await wx.saveImageToPhotosAlbum({ filePath: downloadRes.tempFilePath })
+        
+        wx.showToast({
+          title: '已保存到相册',
+          icon: 'success'
+        })
+      } else {
+        wx.showToast({
+          title: '获取图片链接失败',
+          icon: 'none'
+        })
+      }
     } catch (err) {
+      console.error('下载二维码失败', err)
       if (err.errMsg && err.errMsg.includes('auth deny')) {
         wx.showModal({
           title: '提示',
           content: '需要您授权保存图片到相册',
-          showCancel: false
+          confirmText: '去设置',
+          success: (modalRes) => {
+            if (modalRes.confirm) {
+              wx.openSetting()
+            }
+          }
         })
       } else {
         wx.showToast({

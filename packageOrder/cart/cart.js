@@ -85,6 +85,11 @@ Page({
   loadTableNumber() {
     const tableNumber = wx.getStorageSync('tableNumber') || ''
     this.setData({ tableNumber: tableNumber || '未选择' })
+    
+    // 有桌号时强制为堂食模式
+    if (tableNumber && tableNumber !== '0' && tableNumber !== '未选择') {
+      this.setData({ deliveryMode: 'dine-in' })
+    }
   },
 
   plusDish(e) {
