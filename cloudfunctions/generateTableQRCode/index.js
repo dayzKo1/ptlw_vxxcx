@@ -73,8 +73,7 @@ exports.main = async (event, context) => {
 
     return {
       success: true,
-      fileID: fileID,
-      downloadURL: `https://7465-tlw-3g0c4d0c3c8c4d-1317325436.tcb.qcloud.la/qrcodes/table-${tableNumber}-${Date.now()}.png`
+      fileID: fileID
     }
   } catch (err) {
     console.error('生成桌号二维码失败', err)

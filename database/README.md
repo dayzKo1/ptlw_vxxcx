@@ -161,9 +161,39 @@
 ```javascript
 {
   _id: "记录ID",
-  _openid: "商家用户OpenID",
-  role: "merchant",
+  openid: "商家用户OpenID",
+  nickname: "商家昵称",
+  status: 1,                   // 1=启用, 0=禁用
+  createTime: 1234567890000,
+  updateTime: 1234567890000
+}
+```
+
+## 9. config（系统配置集合）
+
+```javascript
+{
+  _id: "配置ID",
+  key: "配置键名",
+  value: "配置值",
   createTime: 1234567890000
+}
+```
+
+常用配置项：
+- `database_initialized`: 标记数据库是否已初始化
+
+## 10. users（用户集合）
+
+```javascript
+{
+  _id: "用户ID",
+  _openid: "用户OpenID",
+  nickName: "用户昵称",
+  avatarUrl: "头像URL",
+  role: "customer/merchant",   // 用户角色
+  createTime: 1234567890000,
+  updateTime: 1234567890000
 }
 ```
 
@@ -181,6 +211,8 @@
 6. `orderCounters` - 订单计数器
 7. `merchantWhitelist` - 商家白名单
 8. `orders` - 订单
+9. `config` - 系统配置
+10. `users` - 用户信息
 
 ---
 

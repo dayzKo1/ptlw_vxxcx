@@ -22,12 +22,19 @@ exports.main = async (event, context) => {
   }
 
   try {
+    // 查询所有桌号（不只是使用中的）
     const tablesRes = await db.collection('tables')
-      .where({ status: 1 })
       .orderBy('tableNumber', 'asc')
       .get()
 
     const tables = tablesRes.data
+    
+    if (tables.length === 0) {
+      return {
+        success: false,
+        message: '没有桌号数据，请先添加桌号'
+      }
+    }
     const results = []
 
     for (const table of tables) {
