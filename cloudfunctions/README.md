@@ -1,156 +1,167 @@
 # 云函数说明文档
 
-## 已有云函数
+## 用户相关
 
-### 1. login - 用户登录
+### login - 用户登录
 - **功能**: 用户登录/注册
 - **输入**: userInfo (用户信息)
 - **输出**: openid, sessionKey
-- **使用页面**: login.js
-
-### 2. createOrder - 创建订单
-- **功能**: 创建新订单
-- **输入**: tableNumber (桌号，无桌号时为0), items, totalPrice, remark, deliveryMode (pickup/delivery), addressId (配送地址ID，可选)
-- **输出**: orderId, orderNo
-- **使用页面**: cart.js
-- **说明**: 
-  - tableNumber: 桌号，扫码获取或默认为0
-  - deliveryMode: pickup(自取) 或 delivery(配送)
-  - addressId: 配送模式下需要提供地址ID
-
-### 3. createPayment - 创建支付
-- **功能**: 创建微信支付订单
-- **输入**: orderId
-- **输出**: payment (支付参数)
-- **使用页面**: order.js, orderDetail.js
-
-### 4. paymentCallback - 支付回调
-- **功能**: 处理微信支付回调
-- **输入**: returnCode, returnMsg, transactionId, outTradeNo, timeEnd, totalFee
-- **输出**: errcode, errmsg
-- **触发方式**: 微信支付服务器回调
-
-### 5. cancelOrder - 取消订单
-- **功能**: 取消订单
-- **输入**: orderId
-- **输出**: success
-- **使用页面**: order.js, orderDetail.js
-
-### 6. initDatabase - 初始化数据库
-- **功能**: 初始化数据库数据
-- **输入**: 无
-- **输出**: success
-- **使用方式**: 手动调用一次
 
 ---
 
-## 新增云函数
+## 订单相关
 
-### 7. updateOrderStatus - 更新订单状态
-- **功能**: 更新订单状态（待支付/制作中/已出餐/已完成/已取消）
+### createOrder - 创建订单
+- **功能**: 创建新订单
+- **输入**: tableNumber, items, totalPrice, remark, deliveryMode, addressId
+- **输出**: orderId, orderNo
+
+### createPayment - 创建支付
+- **功能**: 创建微信支付订单
+- **输入**: orderId
+- **输出**: payment (支付参数)
+
+### paymentCallback - 支付回调
+- **功能**: 处理微信支付回调
+- **触发方式**: 微信支付服务器回调
+
+### cancelOrder - 取消订单
+- **功能**: 取消订单
+- **输入**: orderId
+- **输出**: success
+
+### cancelTimeoutOrders - 取消超时订单
+- **功能**: 取消超时未支付的订单
+- **输入**: 无
+- **输出**: cancelledCount
+- **触发方式**: 定时触发器
+
+### getUserOrders - 获取用户订单
+- **功能**: 获取当前用户的订单列表
+- **输入**: status (可选), page, pageSize
+- **输出**: orders, total
+
+### getOrderDetail - 获取订单详情
+- **功能**: 获取订单详细信息
+- **输入**: orderId
+- **输出**: order
+
+### updateOrderStatus - 更新订单状态
+- **功能**: 更新订单状态
 - **输入**: orderId, status
 - **输出**: success, message
-- **使用场景**: 商家端更新订单状态
 
-### 8. getDishes - 获取菜品列表
-- **功能**: 获取菜品列表，支持分类筛选
-- **输入**: categoryId (可选), status (默认1)
-- **输出**: dishes
-- **使用页面**: menu.js, category.js
+---
 
-### 9. getCategories - 获取分类列表
-- **功能**: 获取菜品分类列表
-- **输入**: status (默认1)
-- **输出**: categories
-- **使用页面**: menu.js, category.js
+## 商家相关
 
-### 10. getTables - 获取桌号列表
+### getMerchantOrders - 获取商家订单
+- **功能**: 获取商家所有订单
+- **输入**: status (可选), page, pageSize
+- **输出**: orders, total
+
+### merchantStats - 商家统计数据
+- **功能**: 获取商家统计数据
+- **输入**: 无
+- **输出**: todayOrders, todayRevenue, pendingOrders
+
+### addMerchantWhitelist - 添加商家白名单
+- **功能**: 添加商家用户到白名单
+- **输入**: openid
+- **输出**: success
+
+---
+
+## 菜品管理
+
+### manageDish - 菜品管理
+- **功能**: 菜品增删改查
+- **输入**: action (add/update/delete/get), dishData
+- **输出**: success, dish/dishes
+
+---
+
+## 桌号管理
+
+### getTables - 获取桌号列表
 - **功能**: 获取可用桌号列表
 - **输入**: status (默认1)
 - **输出**: tables
-- **使用页面**: index.js
 
-### 11. addFavorite - 添加收藏
-- **功能**: 添加菜品到收藏
-- **输入**: dishId
-- **输出**: success, isFavorite, message
-- **使用页面**: dishDetail.js
+### manageTable - 桌号管理
+- **功能**: 桌号增删改查
+- **输入**: action (add/update/delete/get), tableData
+- **输出**: success, table/tables
 
-### 12. removeFavorite - 取消收藏
-- **功能**: 取消菜品收藏
-- **输入**: dishId
-- **输出**: success, isFavorite, message
-- **使用页面**: dishDetail.js
-
-### 13. getFavorites - 获取收藏列表
-- **功能**: 获取用户收藏列表
-- **输入**: page (默认1), pageSize (默认20)
-- **输出**: favorites, total, page, pageSize
-- **使用页面**: mine.js (我的页面)
-
-### 14. completeOrder - 订单出餐
-- **功能**: 商家确认订单已出餐
-- **输入**: orderId
-- **输出**: success, message
-- **使用场景**: 商家端操作
-
-### 15. updateOrderRemark - 更新订单备注
-- **功能**: 更新订单备注信息
-- **输入**: orderId, remark
-- **输出**: success, message
-- **使用场景**: 商家端操作
-
-### 16. addAddress - 添加收货地址
-- **功能**: 添加用户收货地址
-- **输入**: name, phone, province, city, district, detail, isDefault (可选)
-- **输出**: success, addressId, message
-- **使用页面**: mine.js (我的页面)
-
-### 17. deleteAddress - 删除收货地址
-- **功能**: 删除用户收货地址
-- **输入**: addressId
-- **输出**: success, message
-- **使用页面**: mine.js (我的页面)
-
-### 18. updateAddress - 更新收货地址
-- **功能**: 更新用户收货地址
-- **输入**: addressId, name, phone, province, city, district, detail, isDefault (可选)
-- **输出**: success, message
-- **使用页面**: mine.js (我的页面)
-
-### 19. getAddresses - 获取收货地址列表
-- **功能**: 获取用户所有收货地址
-- **输入**: 无
-- **输出**: success, addresses
-- **使用页面**: mine.js (我的页面), cart.js (购物车页面)
-
-### 20. setDefaultAddress - 设置默认地址
-- **功能**: 设置默认收货地址
-- **输入**: addressId
-- **输出**: success, message
-- **使用页面**: mine.js (我的页面)
-
-### 21. generateTableQRCode - 生成桌号二维码
+### generateTableQRCode - 生成桌号二维码
 - **功能**: 为指定桌号生成小程序码
-- **输入**: tableNumber, page (默认pages/index/index)
+- **输入**: tableNumber
 - **输出**: success, fileID, downloadURL
-- **使用页面**: tableQRCode.js (桌号二维码管理页面)
 
-### 22. batchGenerateTableQRCode - 批量生成桌号二维码
+### batchGenerateTableQRCode - 批量生成桌号二维码
 - **功能**: 为所有桌号批量生成小程序码
 - **输入**: 无
 - **输出**: success, results, total, successCount
-- **使用页面**: tableQRCode.js (桌号二维码管理页面)
+
+---
+
+## 地址管理
+
+### getAddresses - 获取地址列表
+- **功能**: 获取用户所有收货地址
+- **输入**: 无
+- **输出**: success, addresses
+
+### addAddress - 添加地址
+- **功能**: 添加用户收货地址
+- **输入**: name, phone, province, city, district, detail, isDefault
+- **输出**: success, addressId
+
+### updateAddress - 更新地址
+- **功能**: 更新用户收货地址
+- **输入**: addressId, name, phone, province, city, district, detail, isDefault
+- **输出**: success
+
+### deleteAddress - 删除地址
+- **功能**: 删除用户收货地址
+- **输入**: addressId
+- **输出**: success
+
+### setDefaultAddress - 设置默认地址
+- **功能**: 设置默认收货地址
+- **输入**: addressId
+- **输出**: success
+
+---
+
+## 店铺管理
+
+### manageShop - 店铺信息管理
+- **功能**: 店铺信息增删改查
+- **输入**: action (get/update), shopData
+- **输出**: success, shopInfo
+
+---
+
+## 数据库初始化
+
+### initDatabase - 初始化数据库
+- **功能**: 初始化数据库数据和集合
+- **输入**: 无
+- **输出**: success
 
 ---
 
 ## 订单状态说明
 
-- **0**: 待支付
-- **1**: 制作中
-- **2**: 已出餐
-- **3**: 已完成
-- **4**: 已取消
+| 状态码 | 状态 | 说明 |
+|-------|------|------|
+| 0 | 待支付 | 订单已创建，等待支付 |
+| 1 | 待接单 | 支付成功，等待商户接单 |
+| 2 | 制作中 | 商户已接单，正在制作 |
+| 3 | 已出餐 | 制作完成，等待取餐 |
+| 4 | 已完成 | 订单已完成 |
+| 5 | 已取消 | 订单已取消 |
 
 ---
 
@@ -166,9 +177,19 @@
 
 ---
 
+## 定时触发器配置
+
+### cancelTimeoutOrders
+建议配置定时触发器，每 5 分钟执行一次：
+```
+Cron 表达式: */5 * * * *
+```
+
+---
+
 ## 注意事项
 
 1. 所有云函数都包含错误处理
-2. 返回格式统一为 { success: boolean, message?: string, ...data }
+2. 返回格式统一为 `{ success: boolean, message?: string, ...data }`
 3. 数据库操作都使用 try-catch 包裹
 4. 使用 cloud.DYNAMIC_CURRENT_ENV 自动适配环境

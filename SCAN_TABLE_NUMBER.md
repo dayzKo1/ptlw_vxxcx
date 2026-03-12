@@ -26,133 +26,31 @@
 
 ### 2. 扫码进入小程序
 
-**app.js 中的 `loadTableNumber` 函数**：
-
-```javascript
-loadTableNumber(options) {
-  let tableNumber = null
-  
-  // 方式1: 从URL参数获取
-  if (options && options.query && options.query.table) {
-    tableNumber = options.query.table
-    console.log('从URL参数获取桌号:', tableNumber)
-  } 
-  // 方式2: 从场景参数获取（扫码进入）
-  else if (options && options.scene) {
-    const scene = decodeURIComponent(options.scene)
-    console.log('场景参数:', scene)
-    
-    const tableMatch = scene.match(/table=([^&]+)/)
-    if (tableMatch) {
-      tableNumber = tableMatch[1]
-      console.log('从场景参数获取桌号:', tableNumber)
-    }
-  }
-  
-  // 保存桌号
-  if (tableNumber) {
-    wx.setStorageSync('tableNumber', tableNumber)
-    this.globalData.tableNumber = tableNumber
-    console.log('桌号已保存:', tableNumber)
-  } else {
-    this.globalData.tableNumber = wx.getStorageSync('tableNumber') || ''
-    console.log('使用本地存储的桌号:', this.globalData.tableNumber)
-  }
-}
-```
+**app.js** 中解析场景参数，提取桌号并保存。
 
 ### 3. 页面显示桌号
 
-**首页 (index.js)**：
-```javascript
-loadTableNumber() {
-  const tableNumber = app.globalData.tableNumber || wx.getStorageSync('tableNumber') || ''
-  this.setData({ tableNumber })
-}
-```
-
-**首页 (index.wxml)**：
-```xml
-<view class="table-info-card">
-  <text class="table-info-label">📍 当前桌号</text>
-  <text class="table-info-value">{{tableNumber || '0'}}</text>
-</view>
-```
-
-**购物车页面 (cart.js)**：
-```javascript
-loadTableNumber() {
-  const tableNumber = wx.getStorageSync('tableNumber') || ''
-  this.setData({ tableNumber })
-}
-```
-
-**购物车页面 (cart.wxml)**：
-```xml
-<text class="table-number">📍 桌号：{{tableNumber || '0'}}</text>
-```
+- **首页**：`pages/index/index`
+- **购物车**：`packageOrder/cart/cart`
 
 ---
 
 ## 🧪 测试方法
 
-### 方法1: 使用开发者工具测试
+### 开发者工具测试
 
-1. **生成桌号二维码**
-   - 进入桌号二维码管理页面
-   - 点击"生成二维码"按钮
-   - 选择桌号（如：1号桌）
-   - 等待二维码生成完成
+1. 点击"编译"旁边的下拉菜单
+2. 选择"添加编译模式"
+3. 填写模式名称，如"桌号1"
+4. 启动参数填写：`scene=table=1`
+5. 点击"编译"
 
-2. **测试扫码**
-   - 在开发者工具中，点击"编译"
-   - 在"编译模式"中，选择"通过二维码编译"
-   - 输入场景参数：`table=1`
-   - 点击"编译"
+### 预期结果
 
-3. **验证结果**
-   - 查看控制台日志：
-     ```
-     场景参数: table=1
-     从场景参数获取桌号: 1
-     桌号已保存: 1
-     ```
-   - 检查首页是否显示：`📍 当前桌号 1`
-   - 检查购物车页面是否显示：`📍 桌号：1`
-
-### 方法2: 使用真机测试
-
-1. **生成桌号二维码**
-   - 进入桌号二维码管理页面
-   - 点击"生成二维码"按钮
-   - 选择桌号（如：1号桌）
-   - 等待二维码生成完成
-   - 点击"下载二维码"保存到手机
-
-2. **测试扫码**
-   - 打开微信，使用"扫一扫"功能
-   - 扫描保存的二维码
-   - 进入小程序
-
-3. **验证结果**
-   - 检查首页是否显示正确的桌号
-   - 检查购物车页面是否显示正确的桌号
-   - 提交订单时检查订单中的桌号是否正确
-
-### 方法3: 手动测试（模拟扫码）
-
-在开发者工具中，可以直接修改 app.js 中的代码来模拟扫码：
-
-```javascript
-// 在 app.js 的 onLaunch 中临时添加
-onLaunch(options) {
-  // 模拟扫码获取桌号
-  options = options || {}
-  options.scene = 'table=1'
-  
-  this.loadTableNumber(options)
-}
-```
+- 控制台日志显示桌号已保存
+- 首页显示当前桌号
+- 购物车页面显示桌号
+- 提交订单时桌号正确
 
 ---
 
@@ -165,126 +63,46 @@ onLaunch(options) {
     ↓
 小程序启动，传入 scene 参数
     ↓
-app.js 的 onLaunch 接收 options
+app.js 解析 scene 参数
     ↓
-loadTableNumber 解析 scene 参数
+提取 tableNumber
     ↓
-提取 tableNumber（如：1）
+保存到本地存储和全局数据
     ↓
-保存到 wx.setStorageSync('tableNumber')
-    ↓
-保存到 app.globalData.tableNumber
-    ↓
-各页面从 app.globalData 或本地存储读取
-    ↓
-显示在页面上
+各页面读取并显示
 ```
-
----
-
-## 🔍 调试技巧
-
-### 1. 查看控制台日志
-
-在开发者工具的控制台中，可以看到以下日志：
-
-```
-场景参数: table=1
-从场景参数获取桌号: 1
-桌号已保存: 1
-```
-
-### 2. 检查本地存储
-
-在开发者工具的"存储"面板中，可以看到：
-
-```json
-{
-  "tableNumber": "1"
-}
-```
-
-### 3. 检查全局数据
-
-在控制台中输入：
-
-```javascript
-console.log(getApp().globalData.tableNumber)
-```
-
-应该输出：`1`
 
 ---
 
 ## ⚠️ 注意事项
 
-### 1. 场景参数格式
+### 场景参数格式
 
 确保场景参数格式正确：
 - ✅ 正确：`table=1`
 - ✅ 正确：`table=10`
 - ❌ 错误：`table=1&other=value`
-- ❌ 错误：`tableNumber=1`
 
-### 2. 桌号数据类型
+### 清除桌号
 
-桌号以字符串形式存储：
-- ✅ 正确：`'1'`
-- ✅ 正确：`'10'`
-- ❌ 错误：`1`（数字）
-
-### 3. 本地存储清理
-
-如果需要清除桌号，可以：
-
+如需清除桌号：
 ```javascript
 wx.removeStorageSync('tableNumber')
-```
-
-或者在开发者工具的"存储"面板中手动删除。
-
----
-
-## 🎯 统一规则
-
-### 桌号规则
-- **有桌号**：显示实际桌号（如：1号桌、2号桌...）
-- **无桌号**：显示默认桌号0
-- **扫码获取**：通过二维码扫码获取桌号
-
-### 订单提交
-```javascript
-const orderData = {
-  tableNumber: this.data.tableNumber || '0',
-  // ... 其他参数
-}
 ```
 
 ---
 
 ## ✅ 功能检查清单
 
-- [x] app.js 中实现 loadTableNumber 函数
-- [x] 支持从 URL 参数获取桌号
-- [x] 支持从场景参数获取桌号
+- [x] app.js 解析场景参数
 - [x] 桌号保存到本地存储
-- [x] 桌号保存到全局数据
 - [x] 首页显示桌号
 - [x] 购物车页面显示桌号
 - [x] 订单提交时使用桌号
-- [x] 无桌号时默认为0
-- [x] 添加控制台日志便于调试
+- [x] 无桌号时默认处理
 
 ---
 
 ## 📝 总结
 
-扫码获取桌号功能已完整实现：
-
-1. ✅ **生成二维码**：generateTableQRCode 云函数生成包含桌号信息的小程序码
-2. ✅ **扫码识别**：app.js 的 loadTableNumber 函数解析场景参数
-3. ✅ **数据保存**：桌号保存到本地存储和全局数据
-4. ✅ **页面显示**：首页和购物车页面显示桌号
-5. ✅ **订单提交**：订单提交时使用桌号或默认值0
-
-用户扫码后，系统会自动获取并保存桌号，无需手动输入，提升了用户体验！
+扫码获取桌号功能已完整实现，用户扫码后系统自动获取并保存桌号，无需手动输入。

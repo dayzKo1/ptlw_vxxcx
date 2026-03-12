@@ -4,12 +4,20 @@
 
 ## 功能特性
 
-- 扫码点餐
-- 菜品浏览与搜索
-- 购物车管理
-- 在线支付
-- 订单管理
-- 桌号管理
+### 用户端
+- 扫码点餐 - 扫描桌号二维码自动获取桌号
+- 菜品浏览与搜索 - 分类浏览、热门推荐、新品推荐
+- 购物车管理 - 添加/删除商品、数量调整
+- 在线支付 - 微信支付集成
+- 订单管理 - 订单列表、订单详情、状态跟踪
+- 外卖配送 - 配送方式切换、地址管理、配送费计算
+
+### 商家端
+- 商家管理首页 - 订单统计、今日数据
+- 菜品管理 - 分类管理、菜品上下架
+- 订单管理 - 接单/拒单、状态更新
+- 桌号管理 - 二维码生成与批量生成
+- 自动接单 - 可配置自动接单模式
 
 ## 技术栈
 
@@ -18,6 +26,7 @@
 - 云数据库
 - 云函数
 - 云存储
+- 分包加载
 
 ## 项目结构
 
@@ -28,26 +37,102 @@ ptlw_vxxcx/
 ├── app.wxss              # 全局样式文件
 ├── sitemap.json          # 站点地图配置
 ├── project.config.json    # 项目配置文件
-├── pages/                # 页面目录
+├── pages/                # 主包页面
 │   ├── index/           # 首页
+│   ├── login/           # 登录页
 │   ├── menu/            # 点餐页面
+│   ├── mine/            # 个人中心
+│   └── order/           # 订单列表
+├── packageOrder/         # 订单分包
 │   ├── cart/            # 购物车
-│   ├── order/           # 订单列表
-│   ├── orderDetail/     # 订单详情
-│   ├── category/        # 分类页面
-│   └── dishDetail/     # 菜品详情
+│   └── orderDetail/     # 订单详情
+├── packageMerchant/      # 商家分包
+│   ├── merchantHome/    # 商家首页
+│   ├── category/        # 分类管理
+│   ├── dishDetail/      # 菜品详情
+│   └── tableQRCode/     # 桌号二维码
+├── packageUser/          # 用户分包
+│   ├── addressEdit/     # 地址编辑
+│   ├── addressList/     # 地址列表
+│   ├── about/           # 关于页面
+│   └── settings/        # 设置页面
 ├── cloudfunctions/      # 云函数目录
-│   ├── createOrder/     # 创建订单
-│   ├── createPayment/   # 创建支付
-│   ├── cancelOrder/     # 取消订单
-│   ├── paymentCallback/  # 支付回调
-│   └── initDatabase/    # 初始化数据库
 ├── utils/              # 工具函数
-│   └── util.js
 ├── database/           # 数据库文档
-│   └── README.md
 └── images/            # 图片资源目录
 ```
+
+## 云函数列表
+
+### 用户相关
+- `login` - 用户登录
+
+### 订单相关
+- `createOrder` - 创建订单
+- `createPayment` - 创建支付
+- `paymentCallback` - 支付回调
+- `cancelOrder` - 取消订单
+- `cancelTimeoutOrders` - 取消超时订单
+- `getUserOrders` - 获取用户订单
+- `getOrderDetail` - 获取订单详情
+- `updateOrderStatus` - 更新订单状态
+
+### 商家相关
+- `getMerchantOrders` - 获取商家订单
+- `merchantStats` - 商家统计数据
+- `addMerchantWhitelist` - 添加商家白名单
+
+### 菜品管理
+- `manageDish` - 菜品管理（增删改查）
+
+### 桌号管理
+- `getTables` - 获取桌号列表
+- `manageTable` - 桌号管理
+- `generateTableQRCode` - 生成桌号二维码
+- `batchGenerateTableQRCode` - 批量生成二维码
+
+### 地址管理
+- `getAddresses` - 获取地址列表
+- `addAddress` - 添加地址
+- `updateAddress` - 更新地址
+- `deleteAddress` - 删除地址
+- `setDefaultAddress` - 设置默认地址
+
+### 店铺管理
+- `manageShop` - 店铺信息管理
+
+### 数据库
+- `initDatabase` - 初始化数据库
+
+## 数据库集合
+
+| 集合名 | 说明 |
+|-------|------|
+| categories | 菜品分类 |
+| dishes | 菜品 |
+| orders | 订单 |
+| tables | 桌号 |
+| shopInfo | 店铺信息 |
+| addresses | 收货地址 |
+| orderCounters | 订单计数器 |
+| merchantWhitelist | 商家白名单 |
+
+## 订单状态
+
+| 状态码 | 状态 | 说明 |
+|-------|------|------|
+| 0 | 待支付 | 订单已创建，等待支付 |
+| 1 | 待接单 | 支付成功，等待商户接单 |
+| 2 | 制作中 | 商户已接单，正在制作 |
+| 3 | 已出餐 | 制作完成，等待取餐 |
+| 4 | 已完成 | 订单已完成 |
+| 5 | 已取消 | 订单已取消 |
+
+## 订单号规则
+
+- 桌号订单：`T桌号-序号`，如 `T05-001`（5号桌当日第1单）
+- 自取订单：`P序号`，如 `P001`（当日第1个自取单）
+- 外卖订单：`D序号`，如 `D001`（当日第1个外卖单）
 
 ## 快速开始
 
@@ -77,105 +162,9 @@ ptlw_vxxcx/
 2. 修改 `createPayment` 云函数中的商户号
 3. 配置支付回调函数
 
-## 数据库集合
+## 商家入口
 
-### categories（菜品分类）
-- name: 分类名称
-- description: 分类描述
-- image: 分类图片
-- sort: 排序
-- status: 状态
-
-### dishes（菜品）
-- categoryId: 所属分类ID
-- name: 菜品名称
-- description: 菜品描述
-- image: 菜品图片
-- price: 价格
-- ingredients: 主要食材
-- spicyLevel: 辣度等级
-- isHot: 是否热销
-- isNew: 是否新品
-- sort: 排序
-- status: 状态
-
-### orders（订单）
-- orderNo: 订单号
-- tableNumber: 桌号
-- items: 订单明细
-- totalPrice: 总金额
-- remark: 备注
-- status: 订单状态
-- transactionId: 支付交易号
-- payTime: 支付时间
-
-### tables（桌号）
-- tableNumber: 桌号
-- qrCode: 二维码
-- status: 状态
-
-### shopInfo（店铺信息）
-- name: 店铺名称
-- logo: 店铺Logo
-- address: 店铺地址
-- phone: 联系电话
-- businessHours: 营业时间
-- description: 店铺描述
-
-## 订单状态
-
-- 0: 待支付
-- 1: 待接单（支付成功后等待商户接单）
-- 2: 制作中（已接单）
-- 3: 已出餐
-- 4: 已完成
-- 5: 已取消
-
-## 订单号规则
-
-- 桌号订单：`T桌号-序号`，如 `T05-001`（5号桌当日第1单）
-- 自取订单：`P序号`，如 `P001`（当日第1个自取单）
-- 外卖订单：`D序号`，如 `D001`（当日第1个外卖单）
-
-## 自动接单模式
-
-商户可在后台开启自动接单模式：
-- 开启时：支付成功后订单自动进入"制作中"状态
-- 关闭时：支付成功后订单进入"待接单"状态，需商户手动接单
-
-## 开发指南
-
-### 云函数开发
-
-云函数位于 `cloudfunctions` 目录下，每个云函数包含：
-- `index.js`: 云函数入口文件
-- `package.json`: 依赖配置文件
-
-部署云函数：
-1. 右键点击云函数目录
-2. 选择"上传并部署：云端安装依赖"
-
-### 页面开发
-
-页面位于 `pages` 目录下，每个页面包含：
-- `.wxml`: 页面结构文件
-- `.wxss`: 页面样式文件
-- `.js`: 页面逻辑文件
-- `.json`: 页面配置文件
-
-### 工具函数
-
-工具函数位于 `utils/util.js`，包含：
-- formatPrice: 价格格式化
-- formatTime: 时间格式化
-- getStatusText: 状态文本转换
-- showToast: 提示框
-- showLoading: 加载框
-- showModal: 模态框
-- navigateTo: 页面跳转
-- generateOrderNo: 生成订单号
-- debounce: 防抖函数
-- throttle: 节流函数
+商家可通过"我的"页面进入商家管理后台，需要先在 `merchantWhitelist` 集合中添加用户 openid。
 
 ## 成本分析
 
@@ -184,8 +173,6 @@ ptlw_vxxcx/
 | 微信小程序认证费 | 300元/年 | 必须支付 |
 | 云开发资源 | 0元 | 免费额度足够使用 |
 | 服务器成本 | 0元 | 无需购买服务器 |
-| 开发成本 | 0元 | 使用模板开发 |
-| 维护成本 | 0元 | 云开发自动维护 |
 | **年度总成本** | **300元** | **仅为传统方案的1%** |
 
 ## 注意事项
@@ -195,20 +182,6 @@ ptlw_vxxcx/
 3. 支付功能需要配置微信支付商户号
 4. 建议上线前进行充分测试
 5. 定期备份数据库数据
-
-## 常见问题
-
-### Q: 如何获取小程序 AppID？
-A: 登录微信公众平台，在"开发"->"开发设置"中查看。
-
-### Q: 云开发免费额度够用吗？
-A: 免费额度包含每月10万次云函数调用、500MB数据库存储、5GB云存储，完全满足小型店铺需求。
-
-### Q: 如何修改店铺信息？
-A: 在云数据库的 `shopInfo` 集合中修改店铺信息，或通过管理后台修改。
-
-### Q: 如何添加菜品？
-A: 在云数据库的 `dishes` 集合中添加菜品数据。
 
 ## 许可证
 
