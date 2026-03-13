@@ -60,6 +60,11 @@
 - **输入**: status (可选), page, pageSize
 - **输出**: orders, total
 
+### getOrderDetail - 获取订单详情
+- **功能**: 获取订单详细信息
+- **输入**: orderId
+- **输出**: order
+
 ### merchantStats - 商家统计数据
 - **功能**: 获取商家统计数据
 - **输入**: 无

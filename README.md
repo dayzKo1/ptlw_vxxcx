@@ -18,6 +18,8 @@
 - 订单管理 - 接单/拒单、状态更新
 - 桌号管理 - 二维码生成与批量生成
 - 自动接单 - 可配置自动接单模式
+- 蓝牙打印 - 连接蓝牙打印机自动打印小票
+- 订单通知 - 新订单震动提醒
 
 ## 技术栈
 
@@ -50,7 +52,8 @@ ptlw_vxxcx/
 │   ├── merchantHome/    # 商家首页
 │   ├── category/        # 分类管理
 │   ├── dishDetail/      # 菜品详情
-│   └── tableQRCode/     # 桌号二维码
+│   ├── tableQRCode/     # 桌号二维码
+│   └── printerSetting/  # 打印机设置
 ├── packageUser/          # 用户分包
 │   ├── addressEdit/     # 地址编辑
 │   ├── addressList/     # 地址列表
@@ -58,8 +61,16 @@ ptlw_vxxcx/
 │   └── settings/        # 设置页面
 ├── cloudfunctions/      # 云函数目录
 ├── utils/              # 工具函数
+│   ├── util.js         # 通用工具
+│   ├── mock.js         # 模拟数据
+│   ├── merchant-api.js # 商家 API 封装
+│   ├── bluetooth-printer.js    # 蓝牙打印机
+│   ├── print-template.js       # 打印模板
+│   ├── print-service.js        # 打印服务
+│   └── order-notification.js   # 订单通知
 ├── database/           # 数据库文档
 └── images/            # 图片资源目录
+    └── banner/        # 轮播图
 ```
 
 ## 云函数列表
@@ -79,6 +90,7 @@ ptlw_vxxcx/
 
 ### 商家相关
 - `getMerchantOrders` - 获取商家订单
+- `getOrderDetail` - 获取订单详情
 - `merchantStats` - 商家统计数据
 - `addMerchantWhitelist` - 添加商家白名单
 

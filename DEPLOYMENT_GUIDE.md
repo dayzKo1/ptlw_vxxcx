@@ -38,19 +38,25 @@
 - [ ] `createPayment` - 创建支付
 - [ ] `paymentCallback` - 支付回调
 - [ ] `cancelOrder` - 取消订单
+- [ ] `cancelTimeoutOrders` - 取消超时订单（定时任务）
+- [ ] `getUserOrders` - 获取用户订单
+- [ ] `getOrderDetail` - 获取订单详情
+- [ ] `getMerchantOrders` - 获取商家订单
 - [ ] `updateOrderStatus` - 更新订单状态（含订阅消息通知）
 - [ ] `manageDish` - 菜品管理
+- [ ] `manageShop` - 店铺信息管理
 - [ ] `getAddresses` - 获取地址列表
 - [ ] `addAddress` - 添加地址
 - [ ] `updateAddress` - 更新地址
 - [ ] `deleteAddress` - 删除地址
 - [ ] `setDefaultAddress` - 设置默认地址
 - [ ] `getTables` - 获取桌号列表
+- [ ] `manageTable` - 桌号管理
 - [ ] `generateTableQRCode` - 生成桌号二维码
 - [ ] `batchGenerateTableQRCode` - 批量生成桌号二维码
 - [ ] `addMerchantWhitelist` - 添加商户白名单
 - [ ] `merchantStats` - 商户统计
-- [ ] `cancelTimeoutOrders` - 取消超时订单（定时任务）
+- [ ] `initDatabase` - 初始化数据库
 
 #### 3.2 验证云函数
 - [ ] 在云开发控制台 -> 云函数中查看所有云函数状态是否为"部署成功"

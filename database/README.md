@@ -65,6 +65,7 @@
   transactionId: "微信支付交易号",
   payTime: 1234567890000,
   autoAccepted: false,         // 是否自动接单
+  timeoutAt: 1234567890000,    // 订单超时时间（创建时间 + 15分钟）
   createTime: 1234567890000,
   updateTime: 1234567890000
 }
