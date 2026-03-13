@@ -18,34 +18,36 @@ Page({
   },
 
   loadBanners() {
-    this.setData({
-      banners: [
-        { 
-          _id: '1', 
-          title: '新店开业', 
-          desc: '全场优惠',
-          image: '/images/banner/banner1.jpg' 
-        },
-        { 
-          _id: '2', 
-          title: '招牌推荐', 
-          desc: '精选人气菜品',
-          image: '/images/banner/banner2.jpg' 
-        },
-        { 
-          _id: '3', 
-          title: '限时特惠', 
-          desc: '会员专享福利',
-          image: '/images/banner/banner3.jpg' 
-        },
-        { 
-          _id: '4', 
-          title: '品质保证', 
-          desc: '新鲜食材，用心烹饪',
-          image: '/images/banner/banner4.jpg' 
+    const db = wx.cloud.database()
+    db.collection('banners')
+      .where({ status: 1 })
+      .orderBy('sort', 'asc')
+      .get()
+      .then(res => {
+        if (res.data.length > 0) {
+          this.setData({ banners: res.data })
+        } else {
+          this.setData({
+            banners: [
+              { _id: '1', title: '新店开业', desc: '全场优惠', image: '/images/banner/banner1.jpg' },
+              { _id: '2', title: '招牌推荐', desc: '精选人气菜品', image: '/images/banner/banner2.jpg' },
+              { _id: '3', title: '限时特惠', desc: '会员专享福利', image: '/images/banner/banner3.jpg' },
+              { _id: '4', title: '品质保证', desc: '新鲜食材，用心烹饪', image: '/images/banner/banner4.jpg' }
+            ]
+          })
         }
-      ]
-    })
+      })
+      .catch(err => {
+        console.error('加载轮播图失败', err)
+        this.setData({
+          banners: [
+            { _id: '1', title: '新店开业', desc: '全场优惠', image: '/images/banner/banner1.jpg' },
+            { _id: '2', title: '招牌推荐', desc: '精选人气菜品', image: '/images/banner/banner2.jpg' },
+            { _id: '3', title: '限时特惠', desc: '会员专享福利', image: '/images/banner/banner3.jpg' },
+            { _id: '4', title: '品质保证', desc: '新鲜食材，用心烹饪', image: '/images/banner/banner4.jpg' }
+          ]
+        })
+      })
   },
 
   loadTableNumber() {

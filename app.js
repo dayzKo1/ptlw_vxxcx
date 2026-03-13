@@ -10,6 +10,7 @@ App({
     
     this.checkLogin()
     this.loadTableNumber(options)
+    this.loadShopInfo()
   },
   
   checkLogin() {
@@ -45,6 +46,18 @@ App({
       console.log('使用本地存储的桌号:', this.globalData.tableNumber)
     }
   },
+
+  async loadShopInfo() {
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('shopInfo').limit(1).get()
+      if (res.data.length > 0) {
+        this.globalData.shopInfo = res.data[0]
+      }
+    } catch (err) {
+      console.error('加载店铺信息失败', err)
+    }
+  },
   
   globalData: {
     userInfo: null,
@@ -56,7 +69,10 @@ App({
       businessHours: '10:00-22:00',
       logo: '',
       latitude: 25.5067,
-      longitude: 119.7956
+      longitude: 119.7956,
+      deliveryFee: 5,
+      minOrderAmount: 20,
+      packagingFee: 2
     }
   }
 })

@@ -198,6 +198,21 @@
 }
 ```
 
+## 11. banners（轮播图集合）
+
+```javascript
+{
+  _id: "轮播图ID",
+  title: "标题",
+  desc: "描述",
+  image: "图片URL",
+  sort: 1,
+  status: 1,
+  createTime: 1234567890000,
+  updateTime: 1234567890000
+}
+```
+
 ---
 
 ## 集合创建顺序
@@ -208,12 +223,13 @@
 2. `dishes` - 菜品
 3. `tables` - 桌号
 4. `shopInfo` - 店铺信息
-5. `addresses` - 收货地址
-6. `orderCounters` - 订单计数器
-7. `merchantWhitelist` - 商家白名单
-8. `orders` - 订单
-9. `config` - 系统配置
-10. `users` - 用户信息
+5. `banners` - 轮播图
+6. `addresses` - 收货地址
+7. `orderCounters` - 订单计数器
+8. `merchantWhitelist` - 商家白名单
+9. `orders` - 订单
+10. `config` - 系统配置
+11. `users` - 用户信息
 
 ---
 

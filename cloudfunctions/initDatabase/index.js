@@ -12,7 +12,6 @@ exports.main = async (event, context) => {
   const { force } = event
 
   try {
-    // 检查是否已初始化
     const initializedKey = 'database_initialized'
     const configRes = await db.collection('config')
       .where({ key: initializedKey })
@@ -26,13 +25,11 @@ exports.main = async (event, context) => {
       }
     }
 
-    // 权限验证：只有商户才能初始化数据库
     const merchantCount = await db.collection('merchantWhitelist')
       .where({ status: 1 })
       .count()
 
     if (merchantCount.total > 0) {
-      // 已有商户，验证权限
       const callerRes = await db.collection('merchantWhitelist')
         .where({ openid: openid, status: 1 })
         .get()
@@ -46,11 +43,11 @@ exports.main = async (event, context) => {
       }
     }
 
-    // 执行初始化
     await initCategories()
     await initDishes()
     await initTables()
     await initShopInfo()
+    await initBanners()
     await initOrderCounter()
     await markInitialized()
 
@@ -67,38 +64,25 @@ exports.main = async (event, context) => {
   }
 }
 
-async function initCategories() {
-  // 先清空再添加
-  const existing = await db.collection('categories').get()
+async function clearCollection(collectionName) {
+  const existing = await db.collection(collectionName).get()
   for (const item of existing.data) {
-    await db.collection('categories').doc(item._id).remove()
+    await db.collection(collectionName).doc(item._id).remove()
   }
+}
+
+async function initCategories() {
+  await clearCollection('categories')
 
   const categories = [
-    {
-      name: '热菜',
-      description: '精选热菜，美味可口',
-      sort: 1,
-      status: 1
-    },
-    {
-      name: '凉菜',
-      description: '清爽凉菜，开胃解腻',
-      sort: 2,
-      status: 1
-    },
-    {
-      name: '主食',
-      description: '丰富主食，营养均衡',
-      sort: 3,
-      status: 1
-    },
-    {
-      name: '饮品',
-      description: '特色饮品，清爽解渴',
-      sort: 4,
-      status: 1
-    }
+    { name: '招牌推荐', description: '镇店之宝，必点美味', emoji: '⭐', sort: 1, status: 1 },
+    { name: '热销菜品', description: '人气爆款，深受喜爱', emoji: '🔥', sort: 2, status: 1 },
+    { name: '海鲜美食', description: '新鲜海鲜，鲜活直供', emoji: '🦐', sort: 3, status: 1 },
+    { name: '经典热菜', description: '经典口味，回味无穷', emoji: '🍲', sort: 4, status: 1 },
+    { name: '爽口凉菜', description: '清凉爽口，开胃解腻', emoji: '🥗', sort: 5, status: 1 },
+    { name: '营养主食', description: '精选主食，饱腹之选', emoji: '🍚', sort: 6, status: 1 },
+    { name: '美味小吃', description: '特色小吃，口口留香', emoji: '🥟', sort: 7, status: 1 },
+    { name: '鲜榨饮品', description: '新鲜水果，现榨现卖', emoji: '🥤', sort: 8, status: 1 }
   ]
 
   for (const category of categories) {
@@ -113,96 +97,82 @@ async function initCategories() {
 }
 
 async function initDishes() {
-  // 先清空再添加
-  const existing = await db.collection('dishes').get()
-  for (const item of existing.data) {
-    await db.collection('dishes').doc(item._id).remove()
-  }
+  await clearCollection('dishes')
 
   const categoriesRes = await db.collection('categories').get()
-  const categories = categoriesRes.data
+  const categoryMap = {}
+  categoriesRes.data.forEach(cat => {
+    categoryMap[cat.name] = cat._id
+  })
 
-  const dishesMap = {
-    '热菜': [
-      {
-        name: '宫保鸡丁',
-        description: '经典川菜，鸡肉鲜嫩，花生香脆',
-        price: 38.00,
-        spicyLevel: 3,
-        isHot: true,
-        isNew: false,
-        sort: 1
-      },
-      {
-        name: '麻婆豆腐',
-        description: '麻辣鲜香，豆腐嫩滑',
-        price: 28.00,
-        spicyLevel: 4,
-        isHot: true,
-        isNew: false,
-        sort: 2
-      }
+  const dishesData = {
+    '招牌推荐': [
+      { name: '秘制红烧肉', description: '精选五花肉，肥而不腻，入口即化，秘制酱汁慢炖三小时', price: 68.00, emoji: '🥩', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
+      { name: '蒜蓉粉丝蒸扇贝', description: '新鲜扇贝配以蒜蓉粉丝，鲜嫩多汁', price: 58.00, emoji: '🦪', spicyLevel: 0, isHot: true, isNew: false, sort: 2 },
+      { name: '避风塘炒蟹', description: '经典港式做法，蒜香浓郁，蟹肉鲜甜', price: 128.00, emoji: '🦀', spicyLevel: 2, isHot: true, isNew: true, sort: 3 },
+      { name: '招牌脆皮鸡', description: '外酥里嫩，皮脆肉滑，配上特制酱料', price: 88.00, emoji: '🍗', spicyLevel: 0, isHot: true, isNew: false, sort: 4 }
     ],
-    '凉菜': [
-      {
-        name: '凉拌黄瓜',
-        description: '清爽解腻，开胃下饭',
-        price: 18.00,
-        spicyLevel: 1,
-        isHot: false,
-        isNew: false,
-        sort: 1
-      }
+    '热销菜品': [
+      { name: '麻辣小龙虾', description: '精选鲜活小龙虾，麻辣鲜香，吮指回味', price: 98.00, emoji: '🦞', spicyLevel: 4, isHot: true, isNew: false, sort: 1 },
+      { name: '酸菜鱼', description: '鱼片鲜嫩，酸菜爽口，汤浓味美', price: 68.00, emoji: '🐟', spicyLevel: 2, isHot: true, isNew: false, sort: 2 },
+      { name: '水煮牛肉', description: '牛肉嫩滑，麻辣过瘾，配菜丰富', price: 58.00, emoji: '🥩', spicyLevel: 4, isHot: true, isNew: false, sort: 3 },
+      { name: '干锅花菜', description: '花菜脆嫩，五花肉提香，干锅风味', price: 32.00, emoji: '🥦', spicyLevel: 2, isHot: true, isNew: false, sort: 4 },
+      { name: '糖醋里脊', description: '外酥里嫩，酸甜可口，老少皆宜', price: 38.00, emoji: '🍖', spicyLevel: 0, isHot: true, isNew: false, sort: 5 }
     ],
-    '主食': [
-      {
-        name: '米饭',
-        description: '优质大米，香软可口',
-        price: 2.00,
-        spicyLevel: 0,
-        isHot: false,
-        isNew: false,
-        sort: 1
-      },
-      {
-        name: '蛋炒饭',
-        description: '经典蛋炒饭，粒粒分明',
-        price: 15.00,
-        spicyLevel: 0,
-        isHot: false,
-        isNew: false,
-        sort: 2
-      }
+    '海鲜美食': [
+      { name: '清蒸石斑鱼', description: '新鲜石斑鱼，清蒸保留原味', price: 138.00, emoji: '🐟', spicyLevel: 0, isHot: false, isNew: false, sort: 1 },
+      { name: '椒盐皮皮虾', description: '皮皮虾肉质鲜甜，椒盐风味', price: 88.00, emoji: '🦐', spicyLevel: 2, isHot: true, isNew: false, sort: 2 },
+      { name: '白灼基围虾', description: '新鲜基围虾白灼，蘸料鲜美', price: 78.00, emoji: '🦐', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
+      { name: '蒜蓉蒸生蚝', description: '生蚝肥美，蒜蓉提鲜', price: 12.00, emoji: '🦪', spicyLevel: 0, isHot: true, isNew: true, sort: 4 },
+      { name: '香辣蟹', description: '螃蟹配以香辣调料，鲜香麻辣', price: 108.00, emoji: '🦀', spicyLevel: 3, isHot: false, isNew: false, sort: 5 }
     ],
-    '饮品': [
-      {
-        name: '酸梅汤',
-        description: '酸甜解渴，清热降火',
-        price: 8.00,
-        spicyLevel: 0,
-        isHot: true,
-        isNew: false,
-        sort: 1
-      },
-      {
-        name: '柠檬水',
-        description: '清新柠檬，维C满满',
-        price: 6.00,
-        spicyLevel: 0,
-        isHot: false,
-        isNew: true,
-        sort: 2
-      }
+    '经典热菜': [
+      { name: '宫保鸡丁', description: '经典川菜，鸡肉鲜嫩，花生香脆', price: 38.00, emoji: '🍗', spicyLevel: 2, isHot: true, isNew: false, sort: 1 },
+      { name: '麻婆豆腐', description: '麻辣鲜香，豆腐嫩滑，下饭神器', price: 28.00, emoji: '🥘', spicyLevel: 3, isHot: true, isNew: false, sort: 2 },
+      { name: '鱼香肉丝', description: '酸甜微辣，肉丝嫩滑，配菜丰富', price: 32.00, emoji: '🥢', spicyLevel: 1, isHot: true, isNew: false, sort: 3 },
+      { name: '红烧茄子', description: '茄子软糯，酱香浓郁', price: 26.00, emoji: '🍆', spicyLevel: 0, isHot: false, isNew: false, sort: 4 },
+      { name: '干煸四季豆', description: '四季豆酥脆，肉末提香', price: 28.00, emoji: '🥬', spicyLevel: 1, isHot: false, isNew: false, sort: 5 },
+      { name: '番茄炒蛋', description: '家常美味，酸甜可口', price: 22.00, emoji: '🍅', spicyLevel: 0, isHot: false, isNew: false, sort: 6 }
+    ],
+    '爽口凉菜': [
+      { name: '凉拌黄瓜', description: '清爽解腻，蒜香四溢', price: 16.00, emoji: '🥒', spicyLevel: 1, isHot: true, isNew: false, sort: 1 },
+      { name: '皮蛋豆腐', description: '皮蛋配嫩豆腐，清凉爽口', price: 18.00, emoji: '🥚', spicyLevel: 0, isHot: false, isNew: false, sort: 2 },
+      { name: '凉拌木耳', description: '木耳爽脆，酸辣开胃', price: 18.00, emoji: '🍄', spicyLevel: 1, isHot: false, isNew: false, sort: 3 },
+      { name: '口水鸡', description: '麻辣鲜香，鸡肉嫩滑', price: 38.00, emoji: '🍗', spicyLevel: 3, isHot: true, isNew: false, sort: 4 },
+      { name: '蒜泥白肉', description: '五花肉薄片，蒜泥调味', price: 36.00, emoji: '🥩', spicyLevel: 2, isHot: false, isNew: false, sort: 5 }
+    ],
+    '营养主食': [
+      { name: '招牌蛋炒饭', description: '粒粒分明，蛋香四溢', price: 18.00, emoji: '🍳', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
+      { name: '扬州炒饭', description: '虾仁、火腿、蛋花，料足味美', price: 28.00, emoji: '🍚', spicyLevel: 0, isHot: true, isNew: false, sort: 2 },
+      { name: '海鲜粥', description: '新鲜海鲜熬制，鲜香浓郁', price: 38.00, emoji: '🥣', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
+      { name: '白米饭', description: '东北大米，香软可口', price: 3.00, emoji: '🍚', spicyLevel: 0, isHot: false, isNew: false, sort: 4 },
+      { name: '担担面', description: '麻辣鲜香，肉臊浓郁', price: 22.00, emoji: '🍜', spicyLevel: 2, isHot: false, isNew: true, sort: 5 }
+    ],
+    '美味小吃': [
+      { name: '手工水饺', description: '新鲜手工包制，皮薄馅大', price: 28.00, emoji: '🥟', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
+      { name: '锅贴', description: '底部焦脆，肉馅鲜美', price: 18.00, emoji: '🥟', spicyLevel: 0, isHot: false, isNew: false, sort: 2 },
+      { name: '春卷', description: '外酥里嫩，内馅丰富', price: 12.00, emoji: '🌯', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
+      { name: '炸鸡块', description: '外酥里嫩，金黄诱人', price: 22.00, emoji: '🍗', spicyLevel: 0, isHot: true, isNew: false, sort: 4 },
+      { name: '薯条', description: '酥脆可口，配番茄酱', price: 15.00, emoji: '🍟', spicyLevel: 0, isHot: false, isNew: false, sort: 5 }
+    ],
+    '鲜榨饮品': [
+      { name: '鲜榨西瓜汁', description: '新鲜西瓜现榨，清凉解暑', price: 12.00, emoji: '🍉', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
+      { name: '芒果冰沙', description: '新鲜芒果制作，口感细腻', price: 18.00, emoji: '🥭', spicyLevel: 0, isHot: true, isNew: false, sort: 2 },
+      { name: '柠檬蜂蜜水', description: '鲜柠檬配蜂蜜，酸甜解渴', price: 10.00, emoji: '🍋', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
+      { name: '酸梅汤', description: '传统秘制，酸甜解腻', price: 8.00, emoji: '🥤', spicyLevel: 0, isHot: true, isNew: false, sort: 4 },
+      { name: '椰汁', description: '新鲜椰子，天然清甜', price: 15.00, emoji: '🥥', spicyLevel: 0, isHot: false, isNew: true, sort: 5 }
     ]
   }
 
-  for (const category of categories) {
-    const dishes = dishesMap[category.name] || []
+  for (const [categoryName, dishes] of Object.entries(dishesData)) {
+    const categoryId = categoryMap[categoryName]
+    if (!categoryId) continue
+
     for (const dish of dishes) {
       await db.collection('dishes').add({
         data: {
           ...dish,
-          categoryId: category._id,
+          categoryId,
           status: 1,
           createTime: Date.now(),
           updateTime: Date.now()
@@ -213,17 +183,14 @@ async function initDishes() {
 }
 
 async function initTables() {
-  // 先清空再添加
-  const existing = await db.collection('tables').get()
-  for (const item of existing.data) {
-    await db.collection('tables').doc(item._id).remove()
-  }
+  await clearCollection('tables')
 
   for (let i = 1; i <= 20; i++) {
     await db.collection('tables').add({
       data: {
         tableNumber: String(i),
-        status: 0, // 空闲
+        capacity: i <= 4 ? 2 : (i <= 12 ? 4 : 6),
+        status: 0,
         createTime: Date.now(),
         updateTime: Date.now()
       }
@@ -232,44 +199,54 @@ async function initTables() {
 }
 
 async function initShopInfo() {
-  // 先清空再添加
-  const existing = await db.collection('shopInfo').get()
-  for (const item of existing.data) {
-    await db.collection('shopInfo').doc(item._id).remove()
-  }
+  await clearCollection('shopInfo')
 
   await db.collection('shopInfo').add({
     data: {
-      name: '私房菜馆',
-      address: 'XX市XX区XX路XX号',
-      phone: '138-XXXX-XXXX',
+      name: '平潭礼物餐厅',
+      logo: '',
+      address: '福建省福州市平潭县君山镇北港村新门前16号',
+      phone: '181-5919-5897',
       businessHours: '10:00-22:00',
-      description: '用心做好每一道菜',
+      description: '平潭特色美食，新鲜海鲜，地道风味。用心做好每一道菜，让您品尝最纯正的海岛味道。',
+      latitude: 25.5067,
+      longitude: 119.7956,
       autoAcceptOrder: false,
+      deliveryFee: 5,
+      minOrderAmount: 20,
+      packagingFee: 2,
       createTime: Date.now(),
       updateTime: Date.now()
     }
   })
 }
 
-async function initOrderCounter() {
-  // 创建订单计数器集合（如果不存在）
-  try {
-    await db.collection('orderCounters').limit(1).get()
-  } catch (err) {
-    // 集合不存在，创建一个初始文档
-    await db.collection('orderCounters').add({
+async function initBanners() {
+  await clearCollection('banners')
+
+  const banners = [
+    { title: '新店开业', desc: '全场8折优惠，欢迎光临', image: '/images/banner/banner1.jpg', sort: 1, status: 1 },
+    { title: '招牌推荐', desc: '秘制红烧肉，限时特惠', image: '/images/banner/banner2.jpg', sort: 2, status: 1 },
+    { title: '海鲜盛宴', desc: '新鲜海鲜，鲜活直供', image: '/images/banner/banner3.jpg', sort: 3, status: 1 },
+    { title: '会员福利', desc: '注册会员享专属优惠', image: '/images/banner/banner4.jpg', sort: 4, status: 1 }
+  ]
+
+  for (const banner of banners) {
+    await db.collection('banners').add({
       data: {
-        _id: 'init',
-        value: 0,
-        createTime: Date.now()
+        ...banner,
+        createTime: Date.now(),
+        updateTime: Date.now()
       }
     })
   }
 }
 
+async function initOrderCounter() {
+  await clearCollection('orderCounters')
+}
+
 async function markInitialized() {
-  // 标记已初始化
   try {
     await db.collection('config').add({
       data: {
@@ -279,7 +256,6 @@ async function markInitialized() {
       }
     })
   } catch (err) {
-    // config 集合可能不存在，先创建
     await db.createCollection('config').catch(() => {})
     await db.collection('config').add({
       data: {
