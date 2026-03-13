@@ -9,6 +9,13 @@
       </view>
       <view class="delivery-mode-switch">
         <view 
+          class="mode-item {{deliveryMode === 'dine-in' ? 'active' : ''}}" 
+          bindtap="switchDeliveryMode" 
+          data-mode="dine-in"
+        >
+          <text class="mode-text">堂食</text>
+        </view>
+        <view 
           class="mode-item {{deliveryMode === 'pickup' ? 'active' : ''}}" 
           bindtap="switchDeliveryMode" 
           data-mode="pickup"

@@ -22,6 +22,14 @@ Page({
     this.loadCategories()
     this.loadCart()
     this.getLocation()
+    this.loadTableNumber()
+  },
+
+  loadTableNumber() {
+    const tableNumber = wx.getStorageSync('tableNumber') || ''
+    if (tableNumber && tableNumber !== '0') {
+      this.setData({ deliveryMode: 'dine-in' })
+    }
   },
 
   loadShopInfo() {
