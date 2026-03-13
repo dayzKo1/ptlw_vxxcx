@@ -40,10 +40,10 @@ Page({
           statusCondition = 0
           break
         case 1:
-          statusCondition = [1, 2]
+          statusCondition = [1, 2, 3]
           break
         case 2:
-          statusCondition = 3
+          statusCondition = [4, 5]
           break
       }
 

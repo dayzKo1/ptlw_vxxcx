@@ -64,7 +64,7 @@ Page({
       const menuPage = pages.find(page => page.route === 'pages/menu/menu')
       if (menuPage) {
         if (mode === 'dine-in') {
-          menuPage.setData({ deliveryMode: 'pickup' })
+          menuPage.setData({ deliveryMode: 'dine-in' })
         } else if (mode === 'delivery') {
           menuPage.setData({ deliveryMode: 'delivery' })
         }

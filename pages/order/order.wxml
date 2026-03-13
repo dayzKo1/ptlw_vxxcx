@@ -57,7 +57,7 @@
         <view class="footer-right">
           <text class="btn-text" wx:if="{{item.status === 0}}" catchtap="cancelOrder" data-id="{{item._id}}">取消</text>
           <text class="btn-primary" wx:if="{{item.status === 0}}" catchtap="payOrder" data-id="{{item._id}}">去支付</text>
-          <text class="btn-primary" wx:if="{{item.status === 2}}" catchtap="reorder" data-id="{{item._id}}">再来一单</text>
+          <text class="btn-primary" wx:if="{{item.status === 4 || item.status === 5}}" catchtap="reorder" data-id="{{item._id}}">再来一单</text>
         </view>
       </view>
     </view>
