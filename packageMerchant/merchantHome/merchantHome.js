@@ -209,15 +209,15 @@ Page({
   },
 
   async handleOrderAccept(e) {
-    await this.updateOrderStatusWithConfirm(e.detail.order._id, 1, '接单')
+    await this.updateOrderStatusWithConfirm(e.detail.order._id, 2, '接单')
   },
 
   async handleOrderServe(e) {
-    await this.updateOrderStatusWithConfirm(e.detail.order._id, 2, '出餐')
+    await this.updateOrderStatusWithConfirm(e.detail.order._id, 3, '出餐')
   },
 
   async handleOrderComplete(e) {
-    await this.updateOrderStatusWithConfirm(e.detail.order._id, 3, '完成')
+    await this.updateOrderStatusWithConfirm(e.detail.order._id, 4, '完成')
   },
 
   async updateOrderStatusWithConfirm(orderId, status, actionName) {

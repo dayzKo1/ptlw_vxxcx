@@ -53,7 +53,7 @@ exports.main = async (event, context) => {
 
     await db.collection('orders').doc(orderId).update({
       data: {
-        status: 4,
+        status: 5,
         updateTime: new Date().getTime()
       }
     })
