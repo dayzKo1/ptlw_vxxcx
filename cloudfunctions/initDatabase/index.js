@@ -25,7 +25,7 @@ const REQUIRED_COLLECTIONS = [
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
-  const { force, firstTime } = event
+  const { force, firstTime, testOrders } = event
 
   try {
     // 先确保所有必要集合存在
@@ -74,6 +74,11 @@ exports.main = async (event, context) => {
     await initShopInfo()
     await initBanners()
     await initOrderCounter()
+    
+    // 初始化测试订单（可选）
+    if (testOrders) {
+      await initTestOrders()
+    }
     
     // 首次初始化时，自动将调用者添加为商户
     if (firstTime || force) {
@@ -304,6 +309,131 @@ async function initBanners() {
 
 async function initOrderCounter() {
   await clearCollection('orderCounters')
+}
+
+async function initTestOrders() {
+  await clearCollection('orders')
+
+  // 获取当前用户 openid（真实用户）
+  const wxContext = cloud.getWXContext()
+  const realOpenid = wxContext.OPENID
+
+  // 获取桌号 ID 映射
+  const tablesRes = await db.collection('tables').get()
+  const tableMap = {}
+  tablesRes.data.forEach(t => {
+    tableMap[t.tableNumber] = t._id
+  })
+
+  // 获取菜品 ID 映射
+  const dishesRes = await db.collection('dishes').get()
+  const dishMap = {}
+  dishesRes.data.forEach(d => {
+    dishMap[d.name] = d._id
+  })
+
+  const testOrders = [
+    {
+      _openid: realOpenid,
+      orderNo: 'T01-001',
+      orderType: 'T',
+      orderTypeText: '桌号订单',
+      sequence: 1,
+      tableNumber: '1',
+      tableId: tableMap['1'] || '',
+      items: [
+        { dishId: dishMap['秘制红烧肉'] || 'test_1', name: '秘制红烧肉', price: 68, quantity: 1, image: '' },
+        { dishId: dishMap['蒜蓉粉丝蒸扇贝'] || 'test_2', name: '蒜蓉粉丝蒸扇贝', price: 58, quantity: 2, image: '' }
+      ],
+      totalPrice: 184,
+      remark: '少放辣',
+      deliveryMode: 'dine-in',
+      status: 1,  // 待接单
+      createTime: Date.now() - 3600000,
+      updateTime: Date.now() - 3600000,
+      userNickName: '测试用户',
+      userAvatarUrl: ''
+    },
+    {
+      _openid: realOpenid,
+      orderNo: 'P001',
+      orderType: 'P',
+      orderTypeText: '自取订单',
+      sequence: 1,
+      tableNumber: '',
+      tableId: '',
+      items: [
+        { dishId: dishMap['麻辣小龙虾'] || 'test_3', name: '麻辣小龙虾', price: 98, quantity: 1, image: '' },
+        { dishId: dishMap['招牌蛋炒饭'] || 'test_4', name: '招牌蛋炒饭', price: 18, quantity: 2, image: '' }
+      ],
+      totalPrice: 134,
+      remark: '',
+      deliveryMode: 'pickup',
+      status: 2,  // 制作中
+      createTime: Date.now() - 7200000,
+      updateTime: Date.now() - 3600000,
+      acceptTime: Date.now() - 3500000,
+      userNickName: '测试用户',
+      userAvatarUrl: ''
+    },
+    {
+      _openid: realOpenid,
+      orderNo: 'D001',
+      orderType: 'D',
+      orderTypeText: '外卖订单',
+      sequence: 1,
+      tableNumber: '',
+      tableId: '',
+      items: [
+        { dishId: dishMap['酸菜鱼'] || 'test_5', name: '酸菜鱼', price: 68, quantity: 1, image: '' }
+      ],
+      totalPrice: 73,
+      remark: '多加酸菜',
+      deliveryMode: 'delivery',
+      addressId: '',
+      status: 0,  // 待支付
+      createTime: Date.now() - 1800000,
+      updateTime: Date.now() - 1800000,
+      timeoutAt: Date.now() + 720000,
+      userNickName: '测试用户',
+      userAvatarUrl: ''
+    },
+    {
+      _openid: realOpenid,
+      orderNo: 'T05-002',
+      orderType: 'T',
+      orderTypeText: '桌号订单',
+      sequence: 2,
+      tableNumber: '5',
+      tableId: tableMap['5'] || '',
+      items: [
+        { dishId: dishMap['清蒸石斑鱼'] || 'test_6', name: '清蒸石斑鱼', price: 138, quantity: 1, image: '' },
+        { dishId: dishMap['白灼基围虾'] || 'test_7', name: '白灼基围虾', price: 78, quantity: 1, image: '' }
+      ],
+      totalPrice: 216,
+      remark: '',
+      deliveryMode: 'dine-in',
+      status: 3,  // 已出餐
+      createTime: Date.now() - 5400000,
+      updateTime: Date.now() - 1800000,
+      acceptTime: Date.now() - 5200000,
+      serveTime: Date.now() - 1800000,
+      userNickName: '测试用户',
+      userAvatarUrl: ''
+    }
+  ]
+
+  for (const order of testOrders) {
+    await db.collection('orders').add({ data: order })
+  }
+
+  // 更新桌号状态（1号桌有订单）
+  if (tableMap['1']) {
+    const order1 = testOrders.find(o => o.tableNumber === '1')
+    await db.collection('tables').doc(tableMap['1']).update({
+      data: { status: 1, currentOrderId: order1._id || '' }
+    })
+  }
 }
 
 async function markInitialized() {

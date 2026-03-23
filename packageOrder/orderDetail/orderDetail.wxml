@@ -75,6 +75,13 @@
       取消订单
     </button>
     <button 
+      class="action-btn delete-btn" 
+      wx:if="{{order.status === 0 || order.status === 4 || order.status === 5 || order.status === 6}}" 
+      bindtap="deleteOrder"
+    >
+      删除订单
+    </button>
+    <button 
       class="action-btn pay-btn" 
       wx:if="{{order.status === 0}}" 
       bindtap="payOrder"
@@ -83,7 +90,7 @@
     </button>
     <button 
       class="action-btn contact-btn" 
-      wx:if="{{order.status > 0 && order.status < 3}}"
+      wx:if="{{order.status > 0 && order.status < 4}}"
       bindtap="contactService"
     >
       联系商家

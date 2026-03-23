@@ -147,17 +147,25 @@ Page({
           })
 
           try {
-            await wx.cloud.callFunction({
+            const result = await wx.cloud.callFunction({
               name: 'order',
               data: { action: 'cancel', orderId: this.data.orderId }
             })
 
             wx.hideLoading()
-            wx.showToast({
-              title: '订单已取消',
-              icon: 'success'
-            })
-            this.loadOrderDetail()
+            
+            if (result.result.success) {
+              wx.showToast({
+                title: '订单已取消',
+                icon: 'success'
+              })
+              this.loadOrderDetail()
+            } else {
+              wx.showToast({
+                title: result.result.message || '取消失败',
+                icon: 'none'
+              })
+            }
           } catch (err) {
             wx.hideLoading()
             console.error('取消订单失败', err)
@@ -176,6 +184,39 @@ Page({
     wx.makePhoneCall({
       phoneNumber: app.globalData.shopInfo.phone
     })
+  },
+
+  deleteOrder() {
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这个订单吗？删除后无法恢复！',
+      confirmColor: '#ff4d4f',
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: '删除中...' })
+          try {
+            const result = await wx.cloud.callFunction({
+              name: 'order',
+              data: { action: 'delete', orderId: this.data.orderId }
+            })
+
+            wx.hideLoading()
+
+            if (result.result.success) {
+              wx.showToast({ title: '删除成功', icon: 'success' })
+              setTimeout(() => {
+                wx.navigateBack()
+              }, 1500)
+            } else {
+              wx.showToast({ title: result.result.message || '删除失败', icon: 'none' })
+            }
+          } catch (err) {
+            wx.hideLoading()
+            console.error('删除订单失败', err)
+            wx.showToast({ title: '删除失败', icon: 'none' })
+          }
+        }
+      }
+    })
   }
-}) }
 })

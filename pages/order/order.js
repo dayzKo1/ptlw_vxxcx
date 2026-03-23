@@ -180,17 +180,27 @@ Page({
           })
 
           try {
-            await wx.cloud.callFunction({
+            const result = await wx.cloud.callFunction({
               name: 'order',
               data: { action: 'cancel', orderId: id }
             })
 
             wx.hideLoading()
-            wx.showToast({
-              title: '订单已取消',
-              icon: 'success'
-            })
-            this.loadOrders()
+            
+            if (result.result.success) {
+              wx.showToast({
+                title: '订单已取消',
+                icon: 'success'
+              })
+              // 重置分页并刷新列表
+              this.setData({ page: 1, hasMore: true, orders: [] })
+              this.loadOrders()
+            } else {
+              wx.showToast({
+                title: result.result.message || '取消失败',
+                icon: 'none'
+              })
+            }
           } catch (err) {
             wx.hideLoading()
             console.error('取消订单失败', err)
@@ -245,6 +255,40 @@ Page({
               title: '操作失败，请重试',
               icon: 'none'
             })
+          }
+        }
+      }
+    })
+  },
+
+  deleteOrder(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这个订单吗？删除后无法恢复！',
+      confirmColor: '#ff4d4f',
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: '删除中...' })
+          try {
+            const result = await wx.cloud.callFunction({
+              name: 'order',
+              data: { action: 'delete', orderId: id }
+            })
+
+            wx.hideLoading()
+
+            if (result.result.success) {
+              wx.showToast({ title: '删除成功', icon: 'success' })
+              this.setData({ page: 1, hasMore: true, orders: [] })
+              this.loadOrders()
+            } else {
+              wx.showToast({ title: result.result.message || '删除失败', icon: 'none' })
+            }
+          } catch (err) {
+            wx.hideLoading()
+            console.error('删除订单失败', err)
+            wx.showToast({ title: '删除失败', icon: 'none' })
           }
         }
       }

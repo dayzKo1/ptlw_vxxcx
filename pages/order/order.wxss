@@ -208,6 +208,10 @@
   padding: 12rpx 20rpx;
 }
 
+.btn-text.danger {
+  color: #ff4d4f;
+}
+
 .btn-primary {
   font-size: 26rpx;
   color: var(--bg-white);

@@ -35,6 +35,7 @@ exports.main = async (event, context) => {
     case 'updateStatus': return await updateOrderStatus(event, context)
     case 'refund': return await refundOrder(event, context)
     case 'delete': return await deleteOrder(event, context)
+    case 'clearAll': return await clearAllOrders(event, context)
     default: return { success: false, message: '未知操作' }
   }
 }
@@ -439,23 +440,76 @@ async function deleteOrder(event, context) {
   const wxContext = cloud.getWXContext()
   const { orderId } = event
 
-  if (!await checkMerchantPermission(wxContext.OPENID)) {
-    return { success: false, message: '无权限' }
-  }
-
   try {
     const orderRes = await db.collection('orders').doc(orderId).get()
     if (!orderRes.data) return { success: false, message: '订单不存在' }
 
     const order = orderRes.data
-    if (![0, 4, 5, 6].includes(order.status)) {
-      return { success: false, message: '该订单状态不允许删除' }
+    const isMerchant = await checkMerchantPermission(wxContext.OPENID)
+    const isOwner = order._openid === wxContext.OPENID
+
+    // 权限检查
+    if (!isMerchant && !isOwner) {
+      return { success: false, message: '无权限' }
+    }
+
+    // 商户可删除任何状态
+    if (isMerchant) {
+      await db.collection('orders').doc(orderId).remove()
+      return { success: true, message: '删除成功' }
+    }
+
+    // 普通用户：可删除的状态
+    const deletableStatus = [0, 4, 5, 6]  // 待支付、已完成、已取消、已退款
+    if (!deletableStatus.includes(order.status)) {
+      return { success: false, message: '请先取消订单后再删除' }
     }
 
     await db.collection('orders').doc(orderId).remove()
     return { success: true, message: '删除成功' }
   } catch (err) {
     return { success: false, message: '删除失败' }
+  }
+}
+
+// ==================== 清空所有订单 ====================
+async function clearAllOrders(event, context) {
+  const wxContext = cloud.getWXContext()
+
+  if (!await checkMerchantPermission(wxContext.OPENID)) {
+    return { success: false, message: '无权限' }
+  }
+
+  try {
+    // 清空订单
+    const ordersRes = await db.collection('orders').get()
+    for (const order of ordersRes.data) {
+      await db.collection('orders').doc(order._id).remove()
+    }
+
+    // 清空订单计数器
+    const countersRes = await db.collection('orderCounters').get()
+    for (const counter of countersRes.data) {
+      await db.collection('orderCounters').doc(counter._id).remove()
+    }
+
+    // 释放所有桌号
+    const tablesRes = await db.collection('tables').where({ status: 1 }).get()
+    for (const table of tablesRes.data) {
+      await db.collection('tables').doc(table._id).update({
+        data: { status: 0, currentOrderId: _.remove() }
+      })
+    }
+
+    return { 
+      success: true, 
+      message: '清空成功',
+      deletedOrders: ordersRes.data.length,
+      resetTables: tablesRes.data.length
+    }
+  } catch (err) {
+    console.error('清空订单失败', err)
+    return { success: false, message: '清空失败' }
   }
 }
 
