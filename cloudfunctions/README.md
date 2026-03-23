@@ -79,11 +79,22 @@ wx.cloud.callFunction({ name: 'dish', data: { action: 'list' } })
 | cancel | 取消订单 | orderId, cancelReason |
 | cancelTimeout | 取消超时订单 | - |
 | getUserList | 获取用户订单 | status, page, pageSize |
-| getMerchantList | 获取商家订单 | status, page, pageSize |
+| getMerchantList | 获取商户订单 | status, page, pageSize |
 | getDetail | 获取订单详情 | orderId |
 | updateStatus | 更新订单状态 | orderId, status |
 | refund | 退款 | orderId, refundReason, refundAmount |
 | delete | 删除订单 | orderId |
+| clearAll | 清空所有订单 | -（仅商户可用）|
+
+**订单状态码：**
+| 状态码 | 状态 | 说明 |
+|--------|------|------|
+| 0 | 待支付 | 订单已创建，等待支付 |
+| 1 | 待接单 | 支付成功，等待商户接单 |
+| 2 | 制作中 | 商户已接单，正在制作 |
+| 3 | 已完成 | 制作完成，订单完成 |
+| 4 | 已取消 | 订单已取消 |
+| 5 | 已退款 | 订单已退款 |
 
 ### dish（菜品服务）
 | action | 说明 | 参数 |

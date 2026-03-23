@@ -128,10 +128,11 @@ notification.showNewOrderModal(order, onConfirm, onCancel)
 为自动取消超时订单，需要在云开发控制台配置定时触发器：
 
 1. 进入云开发控制台
-2. 选择「云函数」→「cancelTimeoutOrders」
+2. 选择「云函数」→「order」
 3. 点击「定时触发器」
 4. 添加触发器：
    - 名称：cancelTimeoutOrders
    - 触发周期：自定义
    - Cron 表达式：`*/5 * * * *`（每5分钟执行一次）
+   - 调用参数：`{"action": "cancelTimeout"}`
 5. 保存
