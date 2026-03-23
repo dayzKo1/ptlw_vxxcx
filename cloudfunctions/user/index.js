@@ -37,21 +37,19 @@ async function login(event, context) {
     await ensureCollection('users')
     await ensureCollection('merchantWhitelist')
 
-    let role = 'customer'
-
     // 检查商户白名单
     const whitelistRes = await db.collection('merchantWhitelist')
       .where({ openid, status: 1 })
       .get()
 
-    if (whitelistRes.data.length > 0) {
-      role = 'merchant'
-    }
+    const isMerchant = whitelistRes.data.length > 0
+    const role = isMerchant ? 'merchant' : 'customer'
 
     // 查询或创建用户
     const userRes = await db.collection('users').where({ openid }).get()
 
     if (userRes.data.length === 0) {
+      // 创建新用户
       await db.collection('users').add({
         data: {
           openid,
@@ -59,26 +57,42 @@ async function login(event, context) {
           avatarUrl: userInfo?.avatarUrl || '',
           gender: userInfo?.gender || 0,
           role,
-          createTime: db.serverDate(),
-          updateTime: db.serverDate()
+          lastLoginTime: Date.now(),
+          createTime: Date.now(),
+          updateTime: Date.now()
         }
       })
     } else {
+      // 更新用户信息
       const existingUser = userRes.data[0]
-      if (existingUser.role === 'merchant') {
-        role = 'merchant'
-      }
+      
+      // 同步角色（以白名单为准）
       await db.collection('users').where({ openid }).update({
         data: {
           nickName: userInfo?.nickName || existingUser.nickName,
           avatarUrl: userInfo?.avatarUrl || existingUser.avatarUrl,
-          role,
-          updateTime: db.serverDate()
+          role,  // 同步角色
+          lastLoginTime: Date.now(),
+          updateTime: Date.now()
         }
       })
+
+      // 如果白名单有但 users 表不是商户，同步
+      if (isMerchant && existingUser.role !== 'merchant') {
+        console.log(`同步用户角色: ${openid} -> merchant`)
+      }
     }
 
-    return { success: true, data: { openid, role } }
+    return { 
+      success: true, 
+      data: { 
+        openid, 
+        role,
+        isMerchant,
+        nickName: userInfo?.nickName || '微信用户',
+        avatarUrl: userInfo?.avatarUrl || ''
+      } 
+    }
   } catch (err) {
     console.error('登录失败', err)
     return { success: false, error: err.message || '登录失败' }

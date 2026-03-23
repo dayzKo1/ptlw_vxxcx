@@ -248,6 +248,9 @@ async function initTables() {
         tableNumber: String(i),
         capacity: i <= 4 ? 2 : (i <= 12 ? 4 : 6),
         status: 0,
+        currentOrderId: '',      // 当前订单ID
+        orderTime: null,         // 开台时间
+        qrCode: '',              // 二维码URL
         createTime: Date.now(),
         updateTime: Date.now()
       }

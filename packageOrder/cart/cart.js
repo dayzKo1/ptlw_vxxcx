@@ -176,6 +176,7 @@ Page({
     wx.showLoading({ title: '提交中...' })
 
     try {
+      const app = getApp()
       const res = await wx.cloud.callFunction({
         name: 'order',
         data: {
@@ -191,7 +192,8 @@ Page({
           totalPrice: parseFloat(this.data.totalPrice),
           remark: this.data.remark,
           deliveryMode: this.data.deliveryMode,
-          addressId: this.data.addressId || ''
+          addressId: this.data.addressId || '',
+          userInfo: app.globalData.userInfo || {}
         }
       })
 

@@ -42,7 +42,7 @@ exports.main = async (event, context) => {
 // ==================== 创建订单 ====================
 async function createOrder(event, context) {
   const wxContext = cloud.getWXContext()
-  const { tableNumber, items, totalPrice, remark, deliveryMode, addressId } = event
+  const { tableNumber, items, totalPrice, remark, deliveryMode, addressId, userInfo } = event
 
   if (!items?.length) return { success: false, message: '购物车为空' }
   if (!totalPrice || totalPrice <= 0) return { success: false, message: '订单金额异常' }
@@ -58,10 +58,6 @@ async function createOrder(event, context) {
       const tableRes = await db.collection('tables').where({ tableNumber }).limit(1).get()
       if (tableRes.data.length > 0) {
         tableId = tableRes.data[0]._id
-        // 锁定桌号
-        await db.collection('tables').doc(tableId).update({
-          data: { status: 1, currentOrderId: '', orderTime: Date.now() }
-        })
       }
     } else if (deliveryMode === 'delivery') {
       orderTypeText = '外卖订单'
@@ -78,10 +74,25 @@ async function createOrder(event, context) {
       status: 0,
       createTime: Date.now(),
       updateTime: Date.now(),
-      timeoutAt: Date.now() + ORDER_TIMEOUT
+      timeoutAt: Date.now() + ORDER_TIMEOUT,
+      // 用户信息冗余（方便商户查看）
+      userNickName: userInfo?.nickName || '微信用户',
+      userAvatarUrl: userInfo?.avatarUrl || ''
     }
 
     const res = await db.collection('orders').add({ data: orderData })
+
+    // 如果是桌号订单，锁定桌号
+    if (tableId) {
+      await db.collection('tables').doc(tableId).update({
+        data: { 
+          status: 1, 
+          currentOrderId: res._id, 
+          orderTime: Date.now() 
+        }
+      })
+    }
+
     return { success: true, orderId: res._id, orderNo, orderType, sequence }
   } catch (err) {
     console.error('创建订单失败', err)

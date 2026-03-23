@@ -42,12 +42,13 @@
 ```javascript
 {
   _id: "订单ID",
-  _openid: "用户OpenID",
+  _openid: "用户OpenID",        // 自动注入，标识订单所有者
   orderNo: "订单号",           // T桌号-序号 / P序号 / D序号
   orderType: "T/P/D",          // T=堂食, P=自取, D=外卖
   orderTypeText: "堂食",        // 订单类型描述
   sequence: 1,                 // 当日序号
   tableNumber: "桌号",         // 堂食时有值
+  tableId: "桌号ID",           // 关联 tables._id
   items: [
     {
       dishId: "菜品ID",
@@ -66,6 +67,9 @@
   payTime: 1234567890000,
   autoAccepted: false,         // 是否自动接单
   timeoutAt: 1234567890000,    // 订单超时时间（创建时间 + 15分钟）
+  // 用户信息冗余（方便商户查看）
+  userNickName: "用户昵称",
+  userAvatarUrl: "头像URL",
   createTime: 1234567890000,
   updateTime: 1234567890000
 }
@@ -81,6 +85,7 @@
 | 3 | 已出餐 | 制作完成，等待取餐 |
 | 4 | 已完成 | 订单已完成 |
 | 5 | 已取消 | 订单已取消 |
+| 6 | 已退款 | 订单已退款 |
 
 ### 订单号规则
 
@@ -94,8 +99,11 @@
 {
   _id: "桌号ID",
   tableNumber: "桌号",
+  capacity: 4,                 // 座位容量
   qrCode: "二维码URL",
-  status: 1,
+  status: 0,                   // 0=空闲, 1=使用中
+  currentOrderId: "",          // 当前订单ID（关联 orders._id）
+  orderTime: 1234567890000,    // 开台时间（有订单时）
   createTime: 1234567890000,
   updateTime: 1234567890000
 }
@@ -230,6 +238,101 @@
   failReason: "失败原因",        // 失败时有值
   operator: "操作人OpenID",
   createTime: 1234567890000
+}
+```
+
+---
+
+## 数据关系图
+
+### 用户与数据的关系
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        用户系统                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   users (openid) ◄────────────────────────────────────────────┐│
+│      │                                                         ││
+│      ├── role: customer/merchant                               ││
+│      ├── nickName, avatarUrl                                   ││
+│      └── lastLoginTime                                         ││
+│                                                                 ││
+│   merchantWhitelist (openid) ◄────────────────────────────────┘│
+│      │                                                          │
+│      └── status: 1                                              │
+│                                                                 │
+│   ⚠️ 注意：                                                      │
+│   - users.openid 和 merchantWhitelist.openid 应保持一致        │
+│   - 商户权限以 merchantWhitelist 为准                          │
+│   - 登录时会自动同步 users.role                                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                      用户数据（自动注入）                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   orders._openid ──────► 用户所有订单                           │
+│   addresses._openid ───► 用户所有地址                           │
+│                                                                 │
+│   ⚠️ 注意：                                                      │
+│   - _openid 由云开发自动注入，无需手动设置                       │
+│   - 与 users.openid 值相同，但字段名不同                        │
+│   - 查询时：users.where({ openid }) vs orders.where({ _openid })│
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 订单与桌号的关系
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      订单生命周期                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   创建订单 (createOrder)                                        │
+│      │                                                          │
+│      ├── 堂食订单                                               │
+│      │    └── tables.update({ status: 1, currentOrderId })     │
+│      │                                                          │
+│      ├── 支付成功 (paymentCallback)                             │
+│      │    └── 自动接单：status: 2                               │
+│      │    └── 手动接单：status: 1                               │
+│      │                                                          │
+│      └── 订单完成/取消/退款 (updateStatus/cancel/refund)         │
+│           └── releaseTable() → tables.update({ status: 0 })    │
+│                                                                 │
+│   tables.currentOrderId ─────► orders._id                      │
+│   orders.tableId ────────────► tables._id                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 字段命名规范
+
+| 集合 | 用户标识字段 | 说明 |
+|------|-------------|------|
+| users | `openid` | 手动设置，查询用户信息 |
+| merchantWhitelist | `openid` | 手动设置，商户权限验证 |
+| orders | `_openid` | 自动注入，订单所有者 |
+| addresses | `_openid` | 自动注入，地址所有者 |
+| refundLogs | `operator` | 手动设置，操作人 |
+
+### 权限验证流程
+
+```javascript
+// 用户访问自己的数据
+const orders = await db.collection('orders')
+  .where({ _openid: wxContext.OPENID })
+  .get()
+
+// 商户访问所有订单
+async function checkMerchantPermission(openid) {
+  const res = await db.collection('merchantWhitelist')
+    .where({ openid, status: 1 })
+    .get()
+  return res.data.length > 0
 }
 ```
 
