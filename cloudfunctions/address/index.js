@@ -72,6 +72,12 @@ async function updateAddress(event, context) {
   const { addressId, name, phone, province, city, district, detail, isDefault } = event
 
   try {
+    // 验证地址所有权
+    const addrRes = await db.collection('addresses').doc(addressId).get()
+    if (!addrRes.data || addrRes.data._openid !== wxContext.OPENID) {
+      return { success: false, message: '无权限修改此地址' }
+    }
+
     if (isDefault) {
       await db.collection('addresses')
         .where({ _openid: wxContext.OPENID, isDefault: true })
@@ -90,9 +96,16 @@ async function updateAddress(event, context) {
 
 // 删除地址
 async function deleteAddress(event, context) {
+  const wxContext = cloud.getWXContext()
   const { addressId } = event
 
   try {
+    // 验证地址所有权
+    const addrRes = await db.collection('addresses').doc(addressId).get()
+    if (!addrRes.data || addrRes.data._openid !== wxContext.OPENID) {
+      return { success: false, message: '无权限删除此地址' }
+    }
+
     await db.collection('addresses').doc(addressId).remove()
     return { success: true }
   } catch (err) {
@@ -106,6 +119,12 @@ async function setDefaultAddress(event, context) {
   const { addressId } = event
 
   try {
+    // 验证地址所有权
+    const addrRes = await db.collection('addresses').doc(addressId).get()
+    if (!addrRes.data || addrRes.data._openid !== wxContext.OPENID) {
+      return { success: false, message: '无权限设置此地址' }
+    }
+
     await db.collection('addresses')
       .where({ _openid: wxContext.OPENID, isDefault: true })
       .update({ data: { isDefault: false } })
