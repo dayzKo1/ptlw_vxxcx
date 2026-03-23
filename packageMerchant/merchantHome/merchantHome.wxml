@@ -73,7 +73,6 @@
                       bindtap="goToOrderDetail"
                       bindcancel="handleOrderCancel"
                       bindaccept="handleOrderAccept"
-                      bindserve="handleOrderServe"
                       bindcomplete="handleOrderComplete"
                       bindrefund="handleOrderRefund"
                       binddelete="handleOrderDelete" />

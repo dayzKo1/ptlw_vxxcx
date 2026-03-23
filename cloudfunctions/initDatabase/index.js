@@ -413,11 +413,11 @@ async function initTestOrders() {
       totalPrice: 216,
       remark: '',
       deliveryMode: 'dine-in',
-      status: 3,  // 已出餐
+      status: 3,  // 已完成
       createTime: Date.now() - 5400000,
       updateTime: Date.now() - 1800000,
       acceptTime: Date.now() - 5200000,
-      serveTime: Date.now() - 1800000,
+      completeTime: Date.now() - 1800000,
       userNickName: '测试用户',
       userAvatarUrl: ''
     }

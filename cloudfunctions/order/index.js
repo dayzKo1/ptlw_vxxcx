@@ -11,11 +11,11 @@ const db = cloud.database()
 const _ = db.command
 
 const ORDER_STATUS = {
-  PENDING: 0, WAITING: 1, COOKING: 2, SERVED: 3, COMPLETED: 4, CANCELLED: 5, REFUNDED: 6
+  PENDING: 0, WAITING: 1, COOKING: 2, COMPLETED: 3, CANCELLED: 4, REFUNDED: 5
 }
 
 const ORDER_STATUS_TEXT = {
-  0: '待支付', 1: '待接单', 2: '制作中', 3: '已出餐', 4: '已完成', 5: '已取消', 6: '已退款'
+  0: '待支付', 1: '待接单', 2: '制作中', 3: '已完成', 4: '已取消', 5: '已退款'
 }
 
 const ORDER_TIMEOUT = 15 * 60 * 1000
@@ -188,7 +188,7 @@ async function cancelOrder(event, context) {
     }
 
     // 检查订单状态是否可取消
-    const cancellableStatus = isMerchant ? [0, 1, 2, 3] : [0, 1]
+    const cancellableStatus = isMerchant ? [0, 1, 2] : [0, 1]
     if (!cancellableStatus.includes(order.status)) {
       return { success: false, message: '当前订单状态不可取消' }
     }
@@ -203,7 +203,7 @@ async function cancelOrder(event, context) {
     // 未支付直接取消
     await db.collection('orders').doc(orderId).update({
       data: { 
-        status: 5, 
+        status: 4, 
         cancelReason: cancelReason || (isMerchant ? '商户取消' : '用户取消'), 
         cancelTime: Date.now(),
         updateTime: Date.now()
@@ -229,7 +229,7 @@ async function cancelTimeoutOrders(event, context) {
 
     for (const order of result.data) {
       await db.collection('orders').doc(order._id).update({
-        data: { status: 5, cancelReason: '超时未支付', cancelTime: Date.now() }
+        data: { status: 4, cancelReason: '超时未支付', cancelTime: Date.now() }
       })
       await releaseTable(order)
     }
@@ -370,13 +370,12 @@ async function updateOrderStatus(event, context) {
 
     // 验证状态转换是否合法
     const validTransitions = {
-      0: [1, 5],       // 待支付 -> 待接单/已取消
-      1: [2, 5, 6],    // 待接单 -> 制作中/已取消/已退款
-      2: [3, 5, 6],    // 制作中 -> 已出餐/已取消/已退款
-      3: [4, 6],       // 已出餐 -> 已完成/已退款
-      4: [],           // 已完成 -> 不可变更
-      5: [],           // 已取消 -> 不可变更
-      6: []            // 已退款 -> 不可变更
+      0: [1, 4],       // 待支付 -> 待接单/已取消
+      1: [2, 4, 5],    // 待接单 -> 制作中/已取消/已退款
+      2: [3, 4, 5],    // 制作中 -> 已完成/已取消/已退款
+      3: [],           // 已完成 -> 不可变更
+      4: [],           // 已取消 -> 不可变更
+      5: []            // 已退款 -> 不可变更
     }
 
     if (!validTransitions[currentStatus]?.includes(status)) {
@@ -388,13 +387,12 @@ async function updateOrderStatus(event, context) {
 
     const updateData = { status, updateTime: Date.now() }
     if (status === 2) updateData.acceptTime = Date.now()
-    if (status === 3) updateData.serveTime = Date.now()
-    if (status === 4) updateData.completeTime = Date.now()
+    if (status === 3) updateData.completeTime = Date.now()
 
     await db.collection('orders').doc(orderId).update({ data: updateData })
 
     // 完成或取消时释放桌号
-    if (status === 4 || status === 5 || status === 6) {
+    if (status === 3 || status === 4 || status === 5) {
       await releaseTable(orderRes.data)
     }
 
@@ -419,7 +417,7 @@ async function refundOrder(event, context) {
     if (!orderRes.data) return { success: false, message: '订单不存在' }
 
     const order = orderRes.data
-    if (![1, 2, 3].includes(order.status)) {
+    if (![1, 2].includes(order.status)) {
       return { success: false, message: '订单状态不可退款' }
     }
 
@@ -460,7 +458,7 @@ async function deleteOrder(event, context) {
     }
 
     // 普通用户：可删除的状态
-    const deletableStatus = [0, 4, 5, 6]  // 待支付、已完成、已取消、已退款
+    const deletableStatus = [0, 3, 4, 5]  // 待支付、已完成、已取消、已退款
     if (!deletableStatus.includes(order.status)) {
       return { success: false, message: '请先取消订单后再删除' }
     }
@@ -579,7 +577,7 @@ async function releaseTable(order) {
   const otherOrders = await db.collection('orders')
     .where({
       tableId: order.tableId,
-      status: _.in([0, 1, 2, 3]),
+      status: _.in([0, 1, 2]),
       _id: _.neq(order._id)
     })
     .count()
@@ -601,7 +599,7 @@ async function processRefund(order, refundReason, refundAmount) {
     // 模拟退款（实际需调用微信支付）
     await db.collection('orders').doc(order._id).update({
       data: {
-        status: 6,
+        status: 5,
         refundTime: Date.now(),
         refundReason,
         refundAmount: refundFee / 100,

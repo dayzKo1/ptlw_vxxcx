@@ -25,10 +25,6 @@ Component({
       this.triggerEvent('accept', { order: this.properties.order })
     },
 
-    onServe() {
-      this.triggerEvent('serve', { order: this.properties.order })
-    },
-
     onComplete() {
       this.triggerEvent('complete', { order: this.properties.order })
     },
@@ -38,6 +34,7 @@ Component({
     },
 
     onDelete() {
+      console.log('onDelete, order:', this.properties.order)
       this.triggerEvent('delete', { order: this.properties.order })
     }
   }

@@ -29,27 +29,24 @@
       <text class="total-price">¥{{order.totalPrice}}</text>
     </view>
     <view class="order-actions" catchtap="stopPropagation">
-      <!-- 待支付状态：商户无操作按钮 -->
+      <!-- 待支付状态 -->
       <block wx:if="{{order.status === 0}}">
         <text class="action-text danger" catchtap="onDelete">删除</text>
       </block>
-      <!-- 待接单状态：可退款或接单 -->
+      <!-- 待接单状态 -->
       <block wx:elif="{{order.status === 1}}">
+        <text class="action-text danger" catchtap="onDelete">删除</text>
         <text class="action-text warning" catchtap="onRefund">退款</text>
         <text class="action-text primary" catchtap="onAccept">接单</text>
       </block>
-      <!-- 制作中状态：可退款或出餐 -->
+      <!-- 制作中状态 -->
       <block wx:elif="{{order.status === 2}}">
-        <text class="action-text warning" catchtap="onRefund">退款</text>
-        <text class="action-text primary" catchtap="onServe">出餐</text>
-      </block>
-      <!-- 已出餐状态：可退款或完成 -->
-      <block wx:elif="{{order.status === 3}}">
+        <text class="action-text danger" catchtap="onDelete">删除</text>
         <text class="action-text warning" catchtap="onRefund">退款</text>
         <text class="action-text primary" catchtap="onComplete">完成</text>
       </block>
-      <!-- 已完成/已取消/已退款状态：可删除 -->
-      <block wx:elif="{{order.status >= 4}}">
+      <!-- 已完成/已取消/已退款状态 -->
+      <block wx:elif="{{order.status >= 3}}">
         <text class="action-text danger" catchtap="onDelete">删除</text>
       </block>
     </view>

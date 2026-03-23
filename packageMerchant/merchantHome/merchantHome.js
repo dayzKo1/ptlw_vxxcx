@@ -38,10 +38,9 @@ Page({
       { value: 0, label: '待支付' },
       { value: 1, label: '待接单' },
       { value: 2, label: '制作中' },
-      { value: 3, label: '已出餐' },
-      { value: 4, label: '已完成' },
-      { value: 5, label: '已取消' },
-      { value: 6, label: '已退款' }
+      { value: 3, label: '已完成' },
+      { value: 4, label: '已取消' },
+      { value: 5, label: '已退款' }
     ],
 
     // UI状态
@@ -354,15 +353,37 @@ Page({
   },
 
   async handleOrderAccept(e) {
-    await this.updateOrderStatusWithConfirm(e.detail.order._id, 2, '接单')
-  },
-
-  async handleOrderServe(e) {
-    await this.updateOrderStatusWithConfirm(e.detail.order._id, 3, '出餐')
+    const { order } = e.detail
+    const res = await wx.showModal({
+      title: '确认操作',
+      content: '确定接单吗？'
+    })
+    
+    if (res.confirm) {
+      wx.showLoading({ title: '处理中...' })
+      try {
+        const result = await api.updateOrderStatus(order._id, 2)
+        wx.hideLoading()
+        
+        if (result && result.success) {
+          wx.showToast({ title: '接单成功', icon: 'success' })
+          
+          // 自动打印后厨单
+          await this.printKitchenTicket(order)
+          
+          this.refreshData()
+        } else {
+          wx.showToast({ title: result?.message || '接单失败', icon: 'none' })
+        }
+      } catch (err) {
+        wx.hideLoading()
+        wx.showToast({ title: '接单失败', icon: 'none' })
+      }
+    }
   },
 
   async handleOrderComplete(e) {
-    await this.updateOrderStatusWithConfirm(e.detail.order._id, 4, '完成')
+    await this.updateOrderStatusWithConfirm(e.detail.order._id, 3, '完成')
   },
 
   async handleOrderRefund(e) {
@@ -406,7 +427,14 @@ Page({
   },
 
   async handleOrderDelete(e) {
+    console.log('handleOrderDelete e:', e)
     const { order } = e.detail
+    
+    if (!order || !order._id) {
+      console.error('订单数据异常:', order)
+      wx.showToast({ title: '订单数据异常', icon: 'none' })
+      return
+    }
 
     const res = await wx.showModal({
       title: '确认删除',
@@ -417,12 +445,14 @@ Page({
     if (res.confirm) {
       wx.showLoading({ title: '删除中...' })
       try {
+        console.log('删除订单:', order._id)
         const result = await wx.cloud.callFunction({
           name: 'order',
           data: { action: 'delete', orderId: order._id }
         })
 
         wx.hideLoading()
+        console.log('删除结果:', result.result)
 
         if (result.result.success) {
           wx.showToast({ title: '删除成功', icon: 'success' })
@@ -810,13 +840,5 @@ Page({
     } catch (err) {
       console.error('打印后厨单失败', err)
     }
-  },
-
-  // 接单时自动打印
-  async acceptAndPrint(order) {
-    await this.updateOrderStatusWithConfirm(order._id, 2, '接单')
-    
-    // 打印后厨单
-    await this.printKitchenTicket(order)
   }
 })

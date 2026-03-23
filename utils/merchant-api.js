@@ -7,11 +7,11 @@ const mock = require('./mock.js')
 
 // 订单状态
 const ORDER_STATUS = {
-  PENDING: 0, WAITING: 1, COOKING: 2, SERVED: 3, COMPLETED: 4, CANCELLED: 5, REFUNDED: 6
+  PENDING: 0, WAITING: 1, COOKING: 2, COMPLETED: 3, CANCELLED: 4, REFUNDED: 5
 }
 
 const ORDER_STATUS_TEXT = {
-  0: '待支付', 1: '待接单', 2: '制作中', 3: '已出餐', 4: '已完成', 5: '已取消', 6: '已退款'
+  0: '待支付', 1: '待接单', 2: '制作中', 3: '已完成', 4: '已取消', 5: '已退款'
 }
 
 const SPICY_OPTIONS = ['不辣', '微辣', '中辣', '特辣', '变态辣']

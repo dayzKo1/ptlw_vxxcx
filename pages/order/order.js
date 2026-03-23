@@ -40,10 +40,10 @@ Page({
           statusCondition = 0
           break
         case 1:
-          statusCondition = [1, 2, 3]
+          statusCondition = [1, 2]
           break
         case 2:
-          statusCondition = [4, 5]
+          statusCondition = [3, 4, 5]
           break
       }
 
@@ -94,10 +94,9 @@ Page({
       0: '待支付',
       1: '待接单',
       2: '制作中',
-      3: '已出餐',
-      4: '已完成',
-      5: '已取消',
-      6: '已退款'
+      3: '已完成',
+      4: '已取消',
+      5: '已退款'
     }
     return statusMap[status] || '未知'
   },
