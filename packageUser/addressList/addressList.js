@@ -14,11 +14,12 @@ Page({
   async loadAddresses() {
     try {
       const res = await wx.cloud.callFunction({
-        name: 'getAddresses'
+        name: 'address',
+        data: { action: 'list' }
       })
 
       if (res.result.success) {
-        this.setData({ addresses: res.result.addresses })
+        this.setData({ addresses: res.result.data || [] })
       }
     } catch (err) {
       console.error('加载地址失败', err)
@@ -69,8 +70,8 @@ Page({
     
     try {
       const res = await wx.cloud.callFunction({
-        name: 'setDefaultAddress',
-        data: { addressId: id }
+        name: 'address',
+        data: { action: 'setDefault', addressId: id }
       })
       
       wx.hideLoading()
@@ -110,8 +111,8 @@ Page({
 
           try {
             const res = await wx.cloud.callFunction({
-              name: 'deleteAddress',
-              data: { addressId: id }
+              name: 'address',
+              data: { action: 'delete', addressId: id }
             })
 
             wx.hideLoading()
@@ -138,6 +139,10 @@ Page({
           }
         }
       }
+    })
+  }
+})
+ }
     })
   }
 })

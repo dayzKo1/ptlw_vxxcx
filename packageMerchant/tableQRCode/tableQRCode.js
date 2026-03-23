@@ -16,12 +16,13 @@ Page({
 
     try {
       const res = await wx.cloud.callFunction({
-        name: 'getTables'
+        name: 'table',
+        data: { action: 'list' }
       })
 
       if (res.result.success) {
         this.setData({
-          tables: res.result.tables
+          tables: res.result.data || []
         })
       }
     } catch (err) {
@@ -42,8 +43,9 @@ Page({
 
     try {
       const res = await wx.cloud.callFunction({
-        name: 'generateTableQRCode',
+        name: 'table',
         data: {
+          action: 'generateQR',
           tableNumber: tableNumber
         }
       })
@@ -81,7 +83,8 @@ Page({
 
           try {
             const res = await wx.cloud.callFunction({
-              name: 'batchGenerateTableQRCode'
+              name: 'table',
+              data: { action: 'batchGenerateQR' }
             })
 
             if (res.result.success) {

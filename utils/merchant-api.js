@@ -1,89 +1,61 @@
 /**
  * 商户后台 API 封装模块
+ * 适配新版整合云函数
  */
 
 const mock = require('./mock.js')
 
-// 订单状态映射
+// 订单状态
 const ORDER_STATUS = {
-  PENDING: 0,       // 待支付
-  WAITING: 1,       // 待接单（支付成功后，等待商户接单）
-  COOKING: 2,       // 制作中（已接单）
-  SERVED: 3,        // 已出餐
-  COMPLETED: 4,     // 已完成
-  CANCELLED: 5,     // 已取消
-  REFUNDED: 6       // 已退款
+  PENDING: 0, WAITING: 1, COOKING: 2, SERVED: 3, COMPLETED: 4, CANCELLED: 5, REFUNDED: 6
 }
 
 const ORDER_STATUS_TEXT = {
-  0: '待支付',
-  1: '待接单',
-  2: '制作中',
-  3: '已出餐',
-  4: '已完成',
-  5: '已取消',
-  6: '已退款'
+  0: '待支付', 1: '待接单', 2: '制作中', 3: '已出餐', 4: '已完成', 5: '已取消', 6: '已退款'
 }
 
-// 辣度选项
 const SPICY_OPTIONS = ['不辣', '微辣', '中辣', '特辣', '变态辣']
 
-/**
- * 判断是否开发模式
- */
 function isDevMode() {
   return mock.isDevMode()
 }
 
-/**
- * 云函数调用封装
- */
-function callCloudFunction(name, data) {
+// 云函数调用封装
+function callCloudFunction(name, action, data = {}) {
   return new Promise((resolve, reject) => {
     wx.cloud.callFunction({
       name,
-      data,
+      data: { action, ...data },
       success: res => resolve(res.result),
       fail: err => reject(err)
     })
   })
 }
 
-/**
- * 数据库查询封装
- */
+// 数据库查询封装
 function dbQuery(collection, condition = {}, options = {}) {
   return new Promise((resolve, reject) => {
     const db = wx.cloud.database()
     let query = db.collection(collection).where(condition)
-    
     if (options.orderBy) {
       query = query.orderBy(options.orderBy.field, options.orderBy.order || 'desc')
     }
     if (options.limit) {
       query = query.limit(options.limit)
     }
-    
-    query.get({
-      success: res => resolve(res.data),
-      fail: err => reject(err)
-    })
+    query.get({ success: res => resolve(res.data), fail: err => reject(err) })
   })
 }
 
-// ==================== 统计相关 ====================
-
+// ==================== 统计 ====================
 function getStats() {
   return new Promise((resolve) => {
     if (isDevMode()) {
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      
       resolve({
         todayOrders: mock.orders.filter(o => o.createTime >= today.getTime()).length,
-        todayIncome: mock.orders
-          .filter(o => o.createTime >= today.getTime() && o.status >= 1)
-          .reduce((sum, o) => sum + o.totalPrice, 0),
+        todayIncome: mock.orders.filter(o => o.createTime >= today.getTime() && o.status >= 1).reduce((sum, o) => sum + o.totalPrice, 0),
         pendingOrders: mock.orders.filter(o => o.status === 0).length,
         cookingOrders: mock.orders.filter(o => o.status === 1).length,
         dishCount: mock.dishes.length,
@@ -93,35 +65,21 @@ function getStats() {
       })
       return
     }
-
-    callCloudFunction('merchantStats', { type: 'overview' })
-      .then(res => resolve(res.success ? res.data : {}))
-      .catch(() => resolve({}))
+    callCloudFunction('stats', '').then(res => resolve(res.success ? res.data : {})).catch(() => resolve({}))
   })
 }
 
-// ==================== 订单相关 ====================
-
+// ==================== 订单 ====================
 function getOrders(status = -1) {
   return new Promise((resolve) => {
     if (isDevMode()) {
       let orders = [...mock.orders]
-      if (status >= 0) {
-        orders = orders.filter(o => o.status === status)
-      }
+      if (status >= 0) orders = orders.filter(o => o.status === status)
       resolve(processOrders(orders))
       return
     }
-
-    callCloudFunction('getMerchantOrders', { status })
-      .then(res => {
-        if (res.success) {
-          resolve(processOrders(res.data.orders))
-        } else {
-          console.error('获取订单失败', res.message)
-          resolve([])
-        }
-      })
+    callCloudFunction('order', 'getMerchantList', { status })
+      .then(res => resolve(res.success ? processOrders(res.data.orders) : []))
       .catch(() => resolve([]))
   })
 }
@@ -130,7 +88,7 @@ function processOrders(orders) {
   return orders.map(order => ({
     ...order,
     orderNo: order.orderNo || (order._id || '').slice(-8),
-    orderTypeText: order.orderTypeText || (order.orderType === 'T' ? '桌号订单' : order.orderType === 'P' ? '自取订单' : order.orderType === 'D' ? '外卖订单' : ''),
+    orderTypeText: order.orderTypeText || (order.orderType === 'T' ? '桌号订单' : order.orderType === 'P' ? '自取订单' : '外卖订单'),
     statusText: ORDER_STATUS_TEXT[order.status] || '未知',
     timeText: formatTime(order.createTime),
     itemCount: order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0
@@ -140,8 +98,8 @@ function processOrders(orders) {
 function updateOrderStatus(orderId, status) {
   return new Promise((resolve, reject) => {
     wx.cloud.callFunction({
-      name: 'updateOrderStatus',
-      data: { orderId, status },
+      name: 'order',
+      data: { action: 'updateStatus', orderId, status },
       success: res => {
         console.log('updateOrderStatus result:', res.result)
         resolve(res.result)
@@ -155,36 +113,28 @@ function updateOrderStatus(orderId, status) {
 }
 
 function cancelOrder(orderId) {
-  return callCloudFunction('cancelOrder', { orderId })
+  return callCloudFunction('order', 'cancel', { orderId })
 }
 
 function refundOrder(orderId, refundReason, refundAmount) {
-  return callCloudFunction('refundOrder', { orderId, refundReason, refundAmount })
+  return callCloudFunction('order', 'refund', { orderId, refundReason, refundAmount })
 }
 
-// ==================== 菜品相关 ====================
-
+// ==================== 菜品 ====================
 function getDishes(status = 'all') {
   return new Promise((resolve) => {
     if (isDevMode()) {
       let dishes = [...mock.dishes]
-      if (status === 'online') {
-        dishes = dishes.filter(d => d.status === 1)
-      } else if (status === 'offline') {
-        dishes = dishes.filter(d => d.status === 0)
-      }
+      if (status === 'online') dishes = dishes.filter(d => d.status === 1)
+      else if (status === 'offline') dishes = dishes.filter(d => d.status === 0)
       resolve(dishes)
       return
     }
-
-    callCloudFunction('manageDish', { action: 'getList' })
+    callCloudFunction('dish', 'list', {})
       .then(res => {
         let dishes = res.data || []
-        if (status === 'online') {
-          dishes = dishes.filter(d => d.status === 1)
-        } else if (status === 'offline') {
-          dishes = dishes.filter(d => d.status === 0)
-        }
+        if (status === 'online') dishes = dishes.filter(d => d.status === 1)
+        else if (status === 'offline') dishes = dishes.filter(d => d.status === 0)
         resolve(dishes)
       })
       .catch(() => resolve([]))
@@ -192,32 +142,28 @@ function getDishes(status = 'all') {
 }
 
 function createDish(dishData) {
-  return callCloudFunction('manageDish', { action: 'create', dishData })
+  return callCloudFunction('dish', 'create', { dishData })
 }
 
 function updateDish(dishId, dishData) {
-  return callCloudFunction('manageDish', { action: 'update', dishId, dishData })
+  return callCloudFunction('dish', 'update', { dishId, dishData })
 }
 
 function toggleDishStatus(dishId, status) {
-  return callCloudFunction('manageDish', { action: 'toggleStatus', dishId, status })
+  return callCloudFunction('dish', 'toggle', { dishId, status })
 }
 
 function deleteDish(dishId) {
-  return callCloudFunction('manageDish', { action: 'delete', dishId })
+  return callCloudFunction('dish', 'delete', { dishId })
 }
 
-// ==================== 桌号相关 ====================
-
+// ==================== 桌号 ====================
 function getTables(status = 'all') {
   return new Promise((resolve) => {
     if (isDevMode()) {
       let tables = [...mock.tables]
-      if (status === 'occupied') {
-        tables = tables.filter(t => t.status === 1)
-      } else if (status === 'idle') {
-        tables = tables.filter(t => t.status === 0)
-      }
+      if (status === 'occupied') tables = tables.filter(t => t.status === 1)
+      else if (status === 'idle') tables = tables.filter(t => t.status === 0)
       resolve(tables.map(t => ({
         ...t,
         statusText: t.status === 1 ? '使用中' : '空闲',
@@ -226,15 +172,10 @@ function getTables(status = 'all') {
       return
     }
 
-    // 直接查询数据库
     const db = wx.cloud.database()
     let query = db.collection('tables')
-    
-    if (status === 'occupied') {
-      query = query.where({ status: 1 })
-    } else if (status === 'idle') {
-      query = query.where({ status: 0 })
-    }
+    if (status === 'occupied') query = query.where({ status: 1 })
+    else if (status === 'idle') query = query.where({ status: 0 })
 
     query.orderBy('tableNumber', 'asc').get({
       success: res => {
@@ -250,30 +191,28 @@ function getTables(status = 'all') {
 }
 
 function createTable(tableData) {
-  return callCloudFunction('manageTable', { action: 'create', tableData })
+  return callCloudFunction('table', 'create', { tableData })
 }
 
 function updateTable(tableId, tableData) {
-  return callCloudFunction('manageTable', { action: 'update', tableId, tableData })
+  return callCloudFunction('table', 'update', { tableId, tableData })
 }
 
 function toggleTableStatus(tableId, status) {
-  return callCloudFunction('manageTable', { action: 'toggleStatus', tableId, status })
+  return callCloudFunction('table', 'toggle', { tableId, status })
 }
 
 function deleteTable(tableId) {
-  return callCloudFunction('manageTable', { action: 'delete', tableId })
+  return callCloudFunction('table', 'delete', { tableId })
 }
 
-// ==================== 分类相关 ====================
-
+// ==================== 分类 ====================
 function getCategories() {
   return new Promise((resolve) => {
     if (isDevMode()) {
       resolve([...mock.categories])
       return
     }
-
     dbQuery('categories', { status: 1 }, { orderBy: { field: 'sort', order: 'asc' } })
       .then(categories => resolve(categories))
       .catch(() => resolve([
@@ -284,22 +223,20 @@ function getCategories() {
   })
 }
 
-// ==================== 店铺设置相关 ====================
-
+// ==================== 店铺设置 ====================
 function getShopInfo() {
-  return callCloudFunction('manageShop', { action: 'get' })
+  return callCloudFunction('shop', 'get')
 }
 
 function updateShopInfo(shopData) {
-  return callCloudFunction('manageShop', { action: 'update', shopData })
+  return callCloudFunction('shop', 'update', { shopData })
 }
 
 function toggleAutoAccept() {
-  return callCloudFunction('manageShop', { action: 'toggleAutoAccept' })
+  return callCloudFunction('shop', 'toggleAutoAccept')
 }
 
 // ==================== 工具函数 ====================
-
 function formatTime(timestamp) {
   if (!timestamp) return ''
   const date = new Date(timestamp)
@@ -323,43 +260,35 @@ function uploadImage(tempFilePath) {
 }
 
 module.exports = {
-  // 常量
   ORDER_STATUS,
   ORDER_STATUS_TEXT,
   SPICY_OPTIONS,
 
-  // 统计
   getStats,
 
-  // 订单
   getOrders,
   updateOrderStatus,
   cancelOrder,
   refundOrder,
 
-  // 菜品
   getDishes,
   createDish,
   updateDish,
   toggleDishStatus,
   deleteDish,
 
-  // 桌号
   getTables,
   createTable,
   updateTable,
   toggleTableStatus,
   deleteTable,
 
-  // 分类
   getCategories,
 
-  // 店铺设置
   getShopInfo,
   updateShopInfo,
   toggleAutoAccept,
 
-  // 工具
   isDevMode,
   formatTime,
   uploadImage,

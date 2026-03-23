@@ -141,7 +141,8 @@ Page({
   async loadAddresses() {
     try {
       const res = await wx.cloud.callFunction({
-        name: 'getAddresses'
+        name: 'address',
+        data: { action: 'list' }
       })
 
       if (res.result.success) {
@@ -229,6 +230,31 @@ Page({
               wx.switchTab({
                 url: '/pages/order/order'
               })
+            }, 2000)
+          }
+        })
+      } else {
+        wx.showToast({
+          title: res.result.message || '提交失败',
+          icon: 'none'
+        })
+      }
+    } catch (err) {
+      wx.hideLoading()
+      console.error('提交订单失败', err)
+      wx.showToast({
+        title: '提交失败，请重试',
+        icon: 'none'
+      })
+    }
+  },
+
+  goToMenu() {
+    wx.switchTab({
+      url: '/pages/menu/menu'
+    })
+  }
+})    })
             }, 2000)
           }
         })

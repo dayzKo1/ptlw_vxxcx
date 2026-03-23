@@ -22,11 +22,12 @@ Page({
   async loadAddress(id) {
     try {
       const res = await wx.cloud.callFunction({
-        name: 'getAddresses'
+        name: 'address',
+        data: { action: 'list' }
       })
 
       if (res.result.success) {
-        const address = res.result.addresses.find(addr => addr._id === id)
+        const address = res.result.data.find(addr => addr._id === id)
         if (address) {
           this.setData({
             addressId: id,
@@ -171,8 +172,8 @@ Page({
 
           try {
             const res = await wx.cloud.callFunction({
-              name: 'deleteAddress',
-              data: { addressId: this.data.addressId }
+              name: 'address',
+              data: { action: 'delete', addressId: this.data.addressId }
             })
 
             wx.hideLoading()
@@ -204,6 +205,10 @@ Page({
           }
         }
       }
+    })
+  }
+})
+ }
     })
   }
 })

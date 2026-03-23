@@ -91,8 +91,9 @@ Page({
 
     try {
       const loginRes = await wx.cloud.callFunction({
-        name: 'login',
+        name: 'user',
         data: {
+          action: 'login',
           userInfo: userInfo
         }
       })

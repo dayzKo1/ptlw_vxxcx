@@ -43,7 +43,6 @@
     <view class="date-filter">
       <picker mode="date" value="{{filterDate}}" start="2024-01-01" end="{{today}}" bindchange="onDateChange">
         <view class="date-picker-btn">
-          <text class="date-icon">📅</text>
           <text class="date-text">{{filterDate || '全部日期'}}</text>
           <text class="date-arrow">▼</text>
         </view>

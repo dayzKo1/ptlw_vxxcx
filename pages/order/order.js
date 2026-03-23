@@ -48,8 +48,9 @@ Page({
       }
 
       const res = await wx.cloud.callFunction({
-        name: 'getUserOrders',
+        name: 'order',
         data: {
+          action: 'getUserList',
           status: statusCondition,
           page: this.data.page,
           pageSize: this.data.pageSize

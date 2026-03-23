@@ -148,8 +148,8 @@ Page({
 
           try {
             await wx.cloud.callFunction({
-              name: 'cancelOrder',
-              data: { orderId: this.data.orderId }
+              name: 'order',
+              data: { action: 'cancel', orderId: this.data.orderId }
             })
 
             wx.hideLoading()

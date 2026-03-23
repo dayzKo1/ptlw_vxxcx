@@ -1,214 +1,161 @@
-# 云函数说明文档
+# 云函数整合说明
 
-## 用户相关
+## 整合前后对比
 
-### login - 用户登录
-- **功能**: 用户登录/注册
-- **输入**: userInfo (用户信息)
-- **输出**: openid, sessionKey
-
----
-
-## 订单相关
-
-### createOrder - 创建订单
-- **功能**: 创建新订单
-- **输入**: tableNumber, items, totalPrice, remark, deliveryMode, addressId
-- **输出**: orderId, orderNo
-- **说明**: 桌号订单会自动查询并记录 tableId，用于超时取消时释放桌号
-
-### createPayment - 创建支付
-- **功能**: 创建微信支付订单
-- **输入**: orderId
-- **输出**: payment (支付参数)
-
-### paymentCallback - 支付回调
-- **功能**: 处理微信支付回调
-- **触发方式**: 微信支付服务器回调
-
-### cancelOrder - 取消订单
-- **功能**: 取消订单（仅限待支付状态）
-- **输入**: orderId
-- **输出**: success
-
-### refundOrder - 退款
-- **功能**: 商家手动退款（已支付订单）
-- **输入**: orderId, refundReason(可选), refundAmount(可选，部分退款)
-- **输出**: success, refundAmount, outRefundNo
-- **说明**: 仅支持状态为待接单(1)、制作中(2)、已出餐(3)的订单退款
-
-### deleteOrder - 删除订单
-- **功能**: 删除订单（商户后台）
-- **输入**: orderId
-- **输出**: success, message
-- **说明**: 仅支持删除待支付(0)、已完成(4)、已取消(5)、已退款(6)状态的订单
-
-### cancelTimeoutOrders - 取消超时订单
-- **功能**: 取消超时未支付的订单
-- **输入**: 无
-- **输出**: cancelledCount
-- **触发方式**: 定时触发器
-
-### getUserOrders - 获取用户订单
-- **功能**: 获取当前用户的订单列表
-- **输入**: status (可选), page, pageSize
-- **输出**: orders, total
-
-### getOrderDetail - 获取订单详情
-- **功能**: 获取订单详细信息
-- **输入**: orderId
-- **输出**: order
-
-### updateOrderStatus - 更新订单状态
-- **功能**: 更新订单状态
-- **输入**: orderId, status
-- **输出**: success, message
+| 整合前（25个） | 整合后（8个） |
+|---------------|--------------|
+| login | **user** (action: login, addMerchant, checkMerchant) |
+| addMerchantWhitelist | ↑ |
+| createOrder | **order** (action: create, pay, payCallback, cancel, cancelTimeout, getUserList, getMerchantList, getDetail, updateStatus, refund, delete) |
+| createPayment | ↑ |
+| paymentCallback | ↑ |
+| cancelOrder | ↑ |
+| cancelTimeoutOrders | ↑ |
+| getUserOrders | ↑ |
+| getMerchantOrders | ↑ |
+| getOrderDetail | ↑ |
+| updateOrderStatus | ↑ |
+| refundOrder | ↑ |
+| deleteOrder | ↑ |
+| manageDish | **dish** (action: list, detail, create, update, delete, toggle) |
+| getTables | **table** (action: list, create, update, delete, toggle, generateQR, batchGenerateQR) |
+| manageTable | ↑ |
+| generateTableQRCode | ↑ |
+| batchGenerateTableQRCode | ↑ |
+| getAddresses | **address** (action: list, add, update, delete, setDefault) |
+| addAddress | ↑ |
+| updateAddress | ↑ |
+| deleteAddress | ↑ |
+| setDefaultAddress | ↑ |
+| manageShop | **shop** (action: get, update, toggleAutoAccept) |
+| merchantStats | **stats** |
+| initDatabase | **initDatabase** (保持不变) |
 
 ---
 
-## 商家相关
+## 调用方式变化
 
-### getMerchantOrders - 获取商家订单
-- **功能**: 获取商家所有订单
-- **输入**: status (可选), page, pageSize
-- **输出**: orders, total
+### 旧方式
+```javascript
+// 登录
+wx.cloud.callFunction({ name: 'login', data: { userInfo } })
 
-### getOrderDetail - 获取订单详情
-- **功能**: 获取订单详细信息
-- **输入**: orderId
-- **输出**: order
+// 创建订单
+wx.cloud.callFunction({ name: 'createOrder', data: { items, totalPrice } })
 
-### merchantStats - 商家统计数据
-- **功能**: 获取商家统计数据
-- **输入**: 无
-- **输出**: todayOrders, todayRevenue, pendingOrders
-
-### addMerchantWhitelist - 添加商家白名单
-- **功能**: 添加商家用户到白名单
-- **输入**: openid
-- **输出**: success
-
----
-
-## 菜品管理
-
-### manageDish - 菜品管理
-- **功能**: 菜品增删改查
-- **输入**: action (add/update/delete/get), dishData
-- **输出**: success, dish/dishes
-
----
-
-## 桌号管理
-
-### getTables - 获取桌号列表
-- **功能**: 获取可用桌号列表
-- **输入**: status (默认1)
-- **输出**: tables
-
-### manageTable - 桌号管理
-- **功能**: 桌号增删改查
-- **输入**: action (add/update/delete/get), tableData
-- **输出**: success, table/tables
-
-### generateTableQRCode - 生成桌号二维码
-- **功能**: 为指定桌号生成小程序码
-- **输入**: tableNumber
-- **输出**: success, fileID, downloadURL
-
-### batchGenerateTableQRCode - 批量生成桌号二维码
-- **功能**: 为所有桌号批量生成小程序码
-- **输入**: 无
-- **输出**: success, results, total, successCount
-
----
-
-## 地址管理
-
-### getAddresses - 获取地址列表
-- **功能**: 获取用户所有收货地址
-- **输入**: 无
-- **输出**: success, addresses
-
-### addAddress - 添加地址
-- **功能**: 添加用户收货地址
-- **输入**: name, phone, province, city, district, detail, isDefault
-- **输出**: success, addressId
-
-### updateAddress - 更新地址
-- **功能**: 更新用户收货地址
-- **输入**: addressId, name, phone, province, city, district, detail, isDefault
-- **输出**: success
-
-### deleteAddress - 删除地址
-- **功能**: 删除用户收货地址
-- **输入**: addressId
-- **输出**: success
-
-### setDefaultAddress - 设置默认地址
-- **功能**: 设置默认收货地址
-- **输入**: addressId
-- **输出**: success
-
----
-
-## 店铺管理
-
-### manageShop - 店铺信息管理
-- **功能**: 店铺信息增删改查
-- **输入**: action (get/update), shopData
-- **输出**: success, shopInfo
-
----
-
-## 数据库初始化
-
-### initDatabase - 初始化数据库
-- **功能**: 初始化数据库数据和集合
-- **输入**: 无
-- **输出**: success
-
----
-
-## 订单状态说明
-
-| 状态码 | 状态 | 说明 |
-|-------|------|------|
-| 0 | 待支付 | 订单已创建，等待支付 |
-| 1 | 待接单 | 支付成功，等待商户接单 |
-| 2 | 制作中 | 商户已接单，正在制作 |
-| 3 | 已出餐 | 制作完成，等待取餐 |
-| 4 | 已完成 | 订单已完成 |
-| 5 | 已取消 | 订单已取消 |
-| 6 | 已退款 | 订单已退款 |
-
----
-
-## 部署说明
-
-所有云函数都需要上传到微信云开发环境后才能使用。
-
-部署步骤：
-1. 右键点击云函数文件夹
-2. 选择"上传并部署：云端安装依赖"
-3. 等待部署完成
-4. 在云开发控制台查看部署状态
-
----
-
-## 定时触发器配置
-
-### cancelTimeoutOrders
-建议配置定时触发器，每 5 分钟执行一次：
+// 获取菜品列表
+wx.cloud.callFunction({ name: 'manageDish', data: { action: 'getList' } })
 ```
-Cron 表达式: */5 * * * *
+
+### 新方式
+```javascript
+// 登录
+wx.cloud.callFunction({ name: 'user', data: { action: 'login', userInfo } })
+
+// 创建订单
+wx.cloud.callFunction({ name: 'order', data: { action: 'create', items, totalPrice } })
+
+// 获取菜品列表
+wx.cloud.callFunction({ name: 'dish', data: { action: 'list' } })
 ```
 
 ---
 
-## 注意事项
+## 新云函数 API 文档
 
-1. 所有云函数都包含错误处理
-2. 返回格式统一为 `{ success: boolean, message?: string, ...data }`
-3. 数据库操作都使用 try-catch 包裹
-4. 使用 cloud.DYNAMIC_CURRENT_ENV 自动适配环境
+### user（用户服务）
+| action | 说明 | 参数 |
+|--------|------|------|
+| login | 用户登录 | userInfo |
+| addMerchant | 添加商户 | openid |
+| checkMerchant | 检查商户权限 | - |
+
+### order（订单服务）
+| action | 说明 | 参数 |
+|--------|------|------|
+| create | 创建订单 | tableNumber, items, totalPrice, remark, deliveryMode, addressId |
+| pay | 创建支付 | orderId |
+| payCallback | 支付回调 | returnCode, returnMsg, transactionId, outTradeNo |
+| cancel | 取消订单 | orderId, cancelReason |
+| cancelTimeout | 取消超时订单 | - |
+| getUserList | 获取用户订单 | status, page, pageSize |
+| getMerchantList | 获取商家订单 | status, page, pageSize |
+| getDetail | 获取订单详情 | orderId |
+| updateStatus | 更新订单状态 | orderId, status |
+| refund | 退款 | orderId, refundReason, refundAmount |
+| delete | 删除订单 | orderId |
+
+### dish（菜品服务）
+| action | 说明 | 参数 |
+|--------|------|------|
+| list | 获取菜品列表 | categoryId, status |
+| detail | 获取菜品详情 | dishId |
+| create | 创建菜品 | dishData |
+| update | 更新菜品 | dishId, dishData |
+| delete | 删除菜品 | dishId |
+| toggle | 切换菜品状态 | dishId, status |
+
+### table（桌号服务）
+| action | 说明 | 参数 |
+|--------|------|------|
+| list | 获取桌号列表 | status |
+| create | 创建桌号 | tableData |
+| update | 更新桌号 | tableId, tableData |
+| delete | 删除桌号 | tableId |
+| toggle | 切换桌号状态 | tableId, status |
+| generateQR | 生成二维码 | tableNumber |
+| batchGenerateQR | 批量生成二维码 | - |
+
+### address（地址服务）
+| action | 说明 | 参数 |
+|--------|------|------|
+| list | 获取地址列表 | - |
+| add | 添加地址 | name, phone, province, city, district, detail, isDefault |
+| update | 更新地址 | addressId, ... |
+| delete | 删除地址 | addressId |
+| setDefault | 设置默认地址 | addressId |
+
+### shop（店铺服务）
+| action | 说明 | 参数 |
+|--------|------|------|
+| get | 获取店铺信息 | - |
+| update | 更新店铺信息 | shopData |
+| toggleAutoAccept | 切换自动接单 | - |
+
+### stats（统计服务）
+- 无需 action 参数，直接调用返回统计数据
+
+### initDatabase（数据库初始化）
+- 保持原有调用方式
+
+---
+
+## 迁移步骤
+
+1. **备份现有云函数**
+   ```bash
+   mv cloudfunctions cloudfunctions-old
+   mv cloudfunctions-v2 cloudfunctions
+   ```
+
+2. **更新调用代码**
+   - 全局搜索 `wx.cloud.callFunction`
+   - 按照上述映射关系修改调用参数
+
+3. **部署新云函数**
+   - 右键 `cloudfunctions` → 上传并部署
+
+4. **测试验证**
+   - 测试所有功能确保正常
+
+---
+
+## 优势
+
+| 项目 | 整合前 | 整合后 |
+|------|--------|--------|
+| 云函数数量 | 25个 | 8个 |
+| 部署时间 | ~5分钟 | ~2分钟 |
+| 冷启动开销 | 高 | 低 |
+| 代码复用 | 低 | 高 |
+| 维护成本 | 高 | 低 |

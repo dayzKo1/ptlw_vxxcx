@@ -201,8 +201,8 @@ class OrderNotification {
       
       try {
         const res = await wx.cloud.callFunction({
-          name: 'getMerchantOrders',
-          data: { status: 1 } // 待接单
+          name: 'order',
+          data: { action: 'getMerchantList', status: 1 }
         })
 
         if (res.result.success) {

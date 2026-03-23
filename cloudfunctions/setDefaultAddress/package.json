@@ -1,9 +1,0 @@
-{
-  "name": "setDefaultAddress",
-  "version": "1.0.0",
-  "description": "设置默认地址云函数",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}

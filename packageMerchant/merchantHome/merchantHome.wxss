@@ -219,11 +219,6 @@
   border-radius: 8rpx;
 }
 
-.date-icon {
-  font-size: 28rpx;
-  margin-right: 8rpx;
-}
-
 .date-text {
   font-size: 26rpx;
   color: #333;

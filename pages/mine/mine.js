@@ -60,9 +60,10 @@ Page({
     wx.showLoading({ title: '处理中...' })
     try {
       const res = await wx.cloud.callFunction({
-        name: 'addMerchantWhitelist',
+        name: 'user',
         data: {
-          nickname: this.data.userInfo.nickName
+          action: 'addMerchant',
+          openid: this.data.userInfo.openid
         }
       })
       wx.hideLoading()
@@ -70,7 +71,7 @@ Page({
       if (res.result.success) {
         wx.showModal({
           title: '成功',
-          content: res.result.message + '\n\nOpenID: ' + res.result.openid + '\n\n请重新登录生效',
+          content: res.result.message + '\n\n请重新登录生效',
           showCancel: false
         })
       } else {

@@ -418,8 +418,8 @@ Page({
       wx.showLoading({ title: '删除中...' })
       try {
         const result = await wx.cloud.callFunction({
-          name: 'deleteOrder',
-          data: { orderId: order._id }
+          name: 'order',
+          data: { action: 'delete', orderId: order._id }
         })
 
         wx.hideLoading()
@@ -643,8 +643,8 @@ Page({
     wx.showLoading({ title: '生成中...' })
     try {
       const res = await wx.cloud.callFunction({
-        name: 'generateTableQRCode',
-        data: { tableNumber: table.tableNumber }
+        name: 'table',
+        data: { action: 'generateQR', tableNumber: table.tableNumber }
       })
 
       wx.hideLoading()
@@ -699,7 +699,7 @@ Page({
     if (res.confirm) {
       this.setData({ generating: true })
       try {
-        const res = await wx.cloud.callFunction({ name: 'batchGenerateTableQRCode' })
+        const res = await wx.cloud.callFunction({ name: 'table', data: { action: 'batchGenerateQR' } })
 
         if (res.result.success) {
           wx.showToast({
