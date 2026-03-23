@@ -10,15 +10,27 @@ Page({
     shopInfo: {},
     stats: {},
     orders: [],
+    groupedOrders: [],
     dishes: [],
     tables: [],
     categories: [],
     printerConnected: false,
 
+    // 日期筛选
+    filterDate: '',
+    today: '',
+    yesterday: '',
+
     // 筛选状态
     orderStatus: -1,
     dishStatus: 'all',
     tableStatus: 'all',
+    tableViewMode: 'grid', // 'grid' | 'list'
+    tableStats: {
+      total: 0,
+      idle: 0,
+      occupied: 0
+    },
 
     // 状态配置
     orderStatusList: [
@@ -43,8 +55,23 @@ Page({
   },
 
   onLoad() {
+    this.initDateFilter()
     this.checkMerchantRole()
     notification.init()
+  },
+
+  initDateFilter() {
+    const now = new Date()
+    const today = this.formatDate(now)
+    const yesterday = this.formatDate(new Date(now.getTime() - 24 * 60 * 60 * 1000))
+    this.setData({ today, yesterday, filterDate: today })
+  },
+
+  formatDate(date) {
+    const year = date.getFullYear()
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+    return `${year}-${month}-${day}`
   },
 
   onShow() {
@@ -144,16 +171,119 @@ Page({
     this.loadTables()
   },
 
+  switchTableView(e) {
+    const mode = e.currentTarget.dataset.mode
+    this.setData({ tableViewMode: mode })
+  },
+
+  onTableGridTap(e) {
+    const { table } = e.currentTarget.dataset
+    if (!table) return
+
+    wx.showActionSheet({
+      itemList: [
+        table.status === 1 ? '设为空闲' : '设为使用中',
+        '生成二维码',
+        '编辑桌号',
+        '删除桌号'
+      ],
+      success: (res) => {
+        switch (res.tapIndex) {
+          case 0:
+            this.handleTableToggle({ detail: { table } })
+            break
+          case 1:
+            this.handleTableGenerateQR({ detail: { table } })
+            break
+          case 2:
+            this.showEditTableModal({ detail: { table } })
+            break
+          case 3:
+            this.handleTableDelete({ detail: { table } })
+            break
+        }
+      }
+    })
+  },
+
   // ==================== 数据加载 ====================
 
   async loadOrders() {
     try {
-      const orders = await api.getOrders(this.data.orderStatus)
-      this.setData({ orders })
+      let orders = await api.getOrders(this.data.orderStatus)
+      
+      // 按日期筛选
+      if (this.data.filterDate) {
+        orders = this.filterOrdersByDate(orders, this.data.filterDate)
+      }
+      
+      // 按日期分组
+      const groupedOrders = this.groupOrdersByDate(orders)
+      
+      this.setData({ orders, groupedOrders })
     } catch (err) {
       console.error('加载订单失败', err)
       wx.showToast({ title: '加载失败', icon: 'none' })
     }
+  },
+
+  filterOrdersByDate(orders, filterDate) {
+    const [year, month, day] = filterDate.split('-').map(Number)
+    return orders.filter(order => {
+      const date = new Date(order.createTime)
+      return date.getFullYear() === year &&
+             date.getMonth() + 1 === month &&
+             date.getDate() === day
+    })
+  },
+
+  groupOrdersByDate(orders) {
+    const groups = {}
+    const today = this.data.today
+    const yesterday = this.data.yesterday
+    
+    orders.forEach(order => {
+      const dateStr = this.formatDate(new Date(order.createTime))
+      if (!groups[dateStr]) {
+        let dateText = dateStr
+        if (dateStr === today) {
+          dateText = '今天'
+        } else if (dateStr === yesterday) {
+          dateText = '昨天'
+        }
+        groups[dateStr] = {
+          date: dateStr,
+          dateText,
+          orders: []
+        }
+      }
+      groups[dateStr].orders.push(order)
+    })
+    
+    // 按日期降序排列
+    return Object.keys(groups).map(key => groups[key]).sort((a, b) => b.date.localeCompare(a.date))
+  },
+
+  // ==================== 日期筛选 ====================
+
+  onDateChange(e) {
+    this.setData({ filterDate: e.detail.value })
+    this.loadOrders()
+  },
+
+  setToday() {
+    this.setData({ filterDate: this.data.today })
+    this.loadOrders()
+  },
+
+  setYesterday() {
+    this.setData({ filterDate: this.data.yesterday })
+    this.loadOrders()
+  },
+
+  clearDateFilter() {
+    this.setData({ filterDate: '' })
+    this.loadOrders()
   },
 
   async loadDishes() {
@@ -174,8 +304,17 @@ Page({
 
   async loadTables() {
     try {
-      const tables = await api.getTables(this.data.tableStatus)
-      this.setData({ tables })
+      let tables = await api.getTables(this.data.tableStatus)
+      
+      // 计算统计数据
+      const allTables = await api.getTables('all')
+      const stats = {
+        total: allTables.length,
+        idle: allTables.filter(t => t.status === 0).length,
+        occupied: allTables.filter(t => t.status === 1).length
+      }
+      
+      this.setData({ tables, tableStats: stats })
     } catch (err) {
       console.error('加载桌号失败', err)
       wx.showToast({ title: '加载失败', icon: 'none' })
@@ -185,7 +324,11 @@ Page({
   // ==================== 订单操作 ====================
 
   goToOrderDetail(e) {
-    const { order } = e.detail
+    const order = e.detail?.order || e.currentTarget.dataset?.order
+    if (!order || !order._id) {
+      wx.showToast({ title: '订单数据异常', icon: 'none' })
+      return
+    }
     wx.navigateTo({ url: `/packageOrder/orderDetail/orderDetail?id=${order._id}` })
   },
 
@@ -262,6 +405,39 @@ Page({
     })
   },
 
+  async handleOrderDelete(e) {
+    const { order } = e.detail
+
+    const res = await wx.showModal({
+      title: '确认删除',
+      content: `确定要删除订单 ${order.orderNo || ''} 吗？删除后无法恢复！`,
+      confirmColor: '#ff4d4f'
+    })
+
+    if (res.confirm) {
+      wx.showLoading({ title: '删除中...' })
+      try {
+        const result = await wx.cloud.callFunction({
+          name: 'deleteOrder',
+          data: { orderId: order._id }
+        })
+
+        wx.hideLoading()
+
+        if (result.result.success) {
+          wx.showToast({ title: '删除成功', icon: 'success' })
+          this.refreshData()
+        } else {
+          wx.showToast({ title: result.result.message || '删除失败', icon: 'none' })
+        }
+      } catch (err) {
+        wx.hideLoading()
+        console.error('删除订单失败', err)
+        wx.showToast({ title: '删除失败', icon: 'none' })
+      }
+    }
+  },
+
   async updateOrderStatusWithConfirm(orderId, status, actionName) {
     const res = await wx.showModal({
       title: '确认操作',
@@ -271,13 +447,28 @@ Page({
     if (res.confirm) {
       wx.showLoading({ title: '处理中...' })
       try {
-        await api.updateOrderStatus(orderId, status)
+        const result = await api.updateOrderStatus(orderId, status)
         wx.hideLoading()
-        wx.showToast({ title: '操作成功', icon: 'success' })
-        this.refreshData()
+        
+        if (result && result.success) {
+          wx.showToast({ title: '操作成功', icon: 'success' })
+          this.refreshData()
+        } else {
+          console.error('更新订单状态失败', result)
+          wx.showToast({ 
+            title: result?.message || '操作失败', 
+            icon: 'none',
+            duration: 2000
+          })
+        }
       } catch (err) {
         wx.hideLoading()
-        wx.showToast({ title: '操作失败', icon: 'none' })
+        console.error('更新订单状态异常', err)
+        wx.showToast({ 
+          title: err.message || '操作失败', 
+          icon: 'none',
+          duration: 2000
+        })
       }
     }
   },

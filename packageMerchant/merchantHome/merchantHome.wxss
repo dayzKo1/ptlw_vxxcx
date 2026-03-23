@@ -200,3 +200,214 @@
 .batch-btn[disabled] {
   background: #ccc;
 }
+
+/* 日期筛选 */
+.date-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 16rpx 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.date-picker-btn {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+}
+
+.date-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.date-text {
+  font-size: 26rpx;
+  color: #333;
+}
+
+.date-arrow {
+  font-size: 20rpx;
+  color: #999;
+  margin-left: 8rpx;
+}
+
+.date-quick-btns {
+  display: flex;
+  gap: 16rpx;
+}
+
+.date-quick-btn {
+  font-size: 24rpx;
+  color: #666;
+  padding: 10rpx 20rpx;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+}
+
+.date-quick-btn.active {
+  color: #fff;
+  background: #FF6B6B;
+}
+
+/* 日期分组标题 */
+.date-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 8rpx;
+  background: #f5f5f5;
+  margin: 8rpx 0;
+  border-radius: 8rpx;
+}
+
+.date-group-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.date-group-count {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 视图切换 */
+.view-switch {
+  display: flex;
+  background: #fff;
+  padding: 12rpx 24rpx;
+  gap: 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.view-switch-btn {
+  font-size: 26rpx;
+  color: #666;
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+}
+
+.view-switch-btn.active {
+  color: #fff;
+  background: #FF6B6B;
+}
+
+/* 网格视图 - 状态总览 */
+.table-grid-view {
+  padding: 16rpx;
+}
+
+.grid-stats {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.grid-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grid-stat-item .stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.grid-stat-item.idle .stat-value {
+  color: #4CAF50;
+}
+
+.grid-stat-item.occupied .stat-value {
+  color: #FF6B6B;
+}
+
+.grid-stat-item .stat-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.table-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.table-grid-item {
+  width: calc(25% - 12rpx);
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.table-grid-item.idle {
+  background: #E8F5E9;
+  border-color: #4CAF50;
+}
+
+.table-grid-item.occupied {
+  background: #FFEBEE;
+  border-color: #FF6B6B;
+}
+
+.table-grid-item.add-new {
+  background: #f5f5f5;
+  border: 2rpx dashed #ccc;
+}
+
+.grid-table-number {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.table-grid-item.idle .grid-table-number {
+  color: #4CAF50;
+}
+
+.table-grid-item.occupied .grid-table-number {
+  color: #FF6B6B;
+}
+
+.grid-table-status {
+  font-size: 22rpx;
+  color: #666;
+  margin-top: 8rpx;
+}
+
+.grid-table-time {
+  font-size: 18rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.table-grid-item.add-new .add-icon {
+  font-size: 48rpx;
+  color: #999;
+}
+
+.table-grid-item.add-new .add-text {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.table-list-view {
+  flex: 1;
+}

@@ -45,6 +45,20 @@
   margin-bottom: var(--spacing-4xl);
 }
 
+.logo-text {
+  width: 160rpx;
+  height: 160rpx;
+  line-height: 160rpx;
+  text-align: center;
+  font-size: 80rpx;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  margin: 0 auto var(--spacing-xl);
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+}
+
 .logo {
   font-size: 140rpx;
   margin-bottom: var(--spacing-xl);
@@ -159,11 +173,6 @@
   box-shadow: var(--shadow-md);
 }
 
-.login-icon {
-  font-size: 36rpx;
-  margin-right: var(--spacing-lg);
-}
-
 .login-text {
   font-size: var(--font-size-xl);
 }
@@ -225,11 +234,6 @@
 .dev-login-btn:active {
   transform: scale(0.98);
   box-shadow: var(--shadow-md);
-}
-
-.dev-login-icon {
-  font-size: 36rpx;
-  margin-right: var(--spacing-lg);
 }
 
 .dev-login-text {

@@ -126,60 +126,61 @@ async function initDishes() {
 
   const dishesData = {
     '招牌推荐': [
-      { name: '秘制红烧肉', description: '精选五花肉，肥而不腻，入口即化，秘制酱汁慢炖三小时', price: 68.00, emoji: '🥩', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
-      { name: '蒜蓉粉丝蒸扇贝', description: '新鲜扇贝配以蒜蓉粉丝，鲜嫩多汁', price: 58.00, emoji: '🦪', spicyLevel: 0, isHot: true, isNew: false, sort: 2 },
-      { name: '避风塘炒蟹', description: '经典港式做法，蒜香浓郁，蟹肉鲜甜', price: 128.00, emoji: '🦀', spicyLevel: 2, isHot: true, isNew: true, sort: 3 },
-      { name: '招牌脆皮鸡', description: '外酥里嫩，皮脆肉滑，配上特制酱料', price: 88.00, emoji: '🍗', spicyLevel: 0, isHot: true, isNew: false, sort: 4 }
+      { name: '秘制红烧肉', description: '精选五花肉，肥而不腻，入口即化，秘制酱汁慢炖三小时', price: 68.00, emoji: '🥩', spicyLevel: 0, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 1 },
+      { name: '蒜蓉粉丝蒸扇贝', description: '新鲜扇贝配以蒜蓉粉丝，鲜嫩多汁', price: 12.00, emoji: '🦪', spicyLevel: 0, isHot: true, isNew: false, unit: '只', servingSize: 1, sort: 2 },
+      { name: '避风塘炒蟹', description: '经典港式做法，蒜香浓郁，蟹肉鲜甜', price: 128.00, emoji: '🦀', spicyLevel: 2, isHot: true, isNew: true, unit: '份', servingSize: 1, sort: 3 },
+      { name: '招牌脆皮鸡', description: '外酥里嫩，皮脆肉滑，配上特制酱料', price: 88.00, emoji: '🍗', spicyLevel: 0, isHot: true, isNew: false, unit: '只', servingSize: 1, sort: 4 }
     ],
     '热销菜品': [
-      { name: '麻辣小龙虾', description: '精选鲜活小龙虾，麻辣鲜香，吮指回味', price: 98.00, emoji: '🦞', spicyLevel: 4, isHot: true, isNew: false, sort: 1 },
-      { name: '酸菜鱼', description: '鱼片鲜嫩，酸菜爽口，汤浓味美', price: 68.00, emoji: '🐟', spicyLevel: 2, isHot: true, isNew: false, sort: 2 },
-      { name: '水煮牛肉', description: '牛肉嫩滑，麻辣过瘾，配菜丰富', price: 58.00, emoji: '🥩', spicyLevel: 4, isHot: true, isNew: false, sort: 3 },
-      { name: '干锅花菜', description: '花菜脆嫩，五花肉提香，干锅风味', price: 32.00, emoji: '🥦', spicyLevel: 2, isHot: true, isNew: false, sort: 4 },
-      { name: '糖醋里脊', description: '外酥里嫩，酸甜可口，老少皆宜', price: 38.00, emoji: '🍖', spicyLevel: 0, isHot: true, isNew: false, sort: 5 }
+      { name: '麻辣小龙虾', description: '精选鲜活小龙虾，麻辣鲜香，吮指回味', price: 98.00, emoji: '🦞', spicyLevel: 4, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 1 },
+      { name: '羊肉串', description: '新疆风味，肥瘦相间，外焦里嫩', price: 10.00, emoji: '🍢', spicyLevel: 2, isHot: true, isNew: false, unit: '串', servingSize: 3, sort: 2 },
+      { name: '酸菜鱼', description: '鱼片鲜嫩，酸菜爽口，汤浓味美', price: 68.00, emoji: '🐟', spicyLevel: 2, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 3 },
+      { name: '水煮牛肉', description: '牛肉嫩滑，麻辣过瘾，配菜丰富', price: 58.00, emoji: '🥩', spicyLevel: 4, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 4 },
+      { name: '干锅花菜', description: '花菜脆嫩，五花肉提香，干锅风味', price: 32.00, emoji: '🥦', spicyLevel: 2, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 5 },
+      { name: '糖醋里脊', description: '外酥里嫩，酸甜可口，老少皆宜', price: 38.00, emoji: '🍖', spicyLevel: 0, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 6 }
     ],
     '海鲜美食': [
-      { name: '清蒸石斑鱼', description: '新鲜石斑鱼，清蒸保留原味', price: 138.00, emoji: '🐟', spicyLevel: 0, isHot: false, isNew: false, sort: 1 },
-      { name: '椒盐皮皮虾', description: '皮皮虾肉质鲜甜，椒盐风味', price: 88.00, emoji: '🦐', spicyLevel: 2, isHot: true, isNew: false, sort: 2 },
-      { name: '白灼基围虾', description: '新鲜基围虾白灼，蘸料鲜美', price: 78.00, emoji: '🦐', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
-      { name: '蒜蓉蒸生蚝', description: '生蚝肥美，蒜蓉提鲜', price: 12.00, emoji: '🦪', spicyLevel: 0, isHot: true, isNew: true, sort: 4 },
-      { name: '香辣蟹', description: '螃蟹配以香辣调料，鲜香麻辣', price: 108.00, emoji: '🦀', spicyLevel: 3, isHot: false, isNew: false, sort: 5 }
+      { name: '清蒸石斑鱼', description: '新鲜石斑鱼，清蒸保留原味', price: 138.00, emoji: '🐟', spicyLevel: 0, isHot: false, isNew: false, unit: '条', servingSize: 1, sort: 1 },
+      { name: '椒盐皮皮虾', description: '皮皮虾肉质鲜甜，椒盐风味', price: 88.00, emoji: '🦐', spicyLevel: 2, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 2 },
+      { name: '白灼基围虾', description: '新鲜基围虾白灼，蘸料鲜美', price: 78.00, emoji: '🦐', spicyLevel: 0, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 3 },
+      { name: '蒜蓉蒸生蚝', description: '生蚝肥美，蒜蓉提鲜', price: 12.00, emoji: '🦪', spicyLevel: 0, isHot: true, isNew: true, unit: '只', servingSize: 1, sort: 4 },
+      { name: '香辣蟹', description: '螃蟹配以香辣调料，鲜香麻辣', price: 108.00, emoji: '🦀', spicyLevel: 3, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 5 }
     ],
     '经典热菜': [
-      { name: '宫保鸡丁', description: '经典川菜，鸡肉鲜嫩，花生香脆', price: 38.00, emoji: '🍗', spicyLevel: 2, isHot: true, isNew: false, sort: 1 },
-      { name: '麻婆豆腐', description: '麻辣鲜香，豆腐嫩滑，下饭神器', price: 28.00, emoji: '🥘', spicyLevel: 3, isHot: true, isNew: false, sort: 2 },
-      { name: '鱼香肉丝', description: '酸甜微辣，肉丝嫩滑，配菜丰富', price: 32.00, emoji: '🥢', spicyLevel: 1, isHot: true, isNew: false, sort: 3 },
-      { name: '红烧茄子', description: '茄子软糯，酱香浓郁', price: 26.00, emoji: '🍆', spicyLevel: 0, isHot: false, isNew: false, sort: 4 },
-      { name: '干煸四季豆', description: '四季豆酥脆，肉末提香', price: 28.00, emoji: '🥬', spicyLevel: 1, isHot: false, isNew: false, sort: 5 },
-      { name: '番茄炒蛋', description: '家常美味，酸甜可口', price: 22.00, emoji: '🍅', spicyLevel: 0, isHot: false, isNew: false, sort: 6 }
+      { name: '宫保鸡丁', description: '经典川菜，鸡肉鲜嫩，花生香脆', price: 38.00, emoji: '🍗', spicyLevel: 2, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 1 },
+      { name: '麻婆豆腐', description: '麻辣鲜香，豆腐嫩滑，下饭神器', price: 28.00, emoji: '🥘', spicyLevel: 3, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 2 },
+      { name: '鱼香肉丝', description: '酸甜微辣，肉丝嫩滑，配菜丰富', price: 32.00, emoji: '🥢', spicyLevel: 1, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 3 },
+      { name: '红烧茄子', description: '茄子软糯，酱香浓郁', price: 26.00, emoji: '🍆', spicyLevel: 0, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 4 },
+      { name: '干煸四季豆', description: '四季豆酥脆，肉末提香', price: 28.00, emoji: '🥬', spicyLevel: 1, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 5 },
+      { name: '番茄炒蛋', description: '家常美味，酸甜可口', price: 22.00, emoji: '🍅', spicyLevel: 0, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 6 }
     ],
     '爽口凉菜': [
-      { name: '凉拌黄瓜', description: '清爽解腻，蒜香四溢', price: 16.00, emoji: '🥒', spicyLevel: 1, isHot: true, isNew: false, sort: 1 },
-      { name: '皮蛋豆腐', description: '皮蛋配嫩豆腐，清凉爽口', price: 18.00, emoji: '🥚', spicyLevel: 0, isHot: false, isNew: false, sort: 2 },
-      { name: '凉拌木耳', description: '木耳爽脆，酸辣开胃', price: 18.00, emoji: '🍄', spicyLevel: 1, isHot: false, isNew: false, sort: 3 },
-      { name: '口水鸡', description: '麻辣鲜香，鸡肉嫩滑', price: 38.00, emoji: '🍗', spicyLevel: 3, isHot: true, isNew: false, sort: 4 },
-      { name: '蒜泥白肉', description: '五花肉薄片，蒜泥调味', price: 36.00, emoji: '🥩', spicyLevel: 2, isHot: false, isNew: false, sort: 5 }
+      { name: '凉拌黄瓜', description: '清爽解腻，蒜香四溢', price: 16.00, emoji: '🥒', spicyLevel: 1, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 1 },
+      { name: '皮蛋豆腐', description: '皮蛋配嫩豆腐，清凉爽口', price: 18.00, emoji: '🥚', spicyLevel: 0, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 2 },
+      { name: '凉拌木耳', description: '木耳爽脆，酸辣开胃', price: 18.00, emoji: '🍄', spicyLevel: 1, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 3 },
+      { name: '口水鸡', description: '麻辣鲜香，鸡肉嫩滑', price: 38.00, emoji: '🍗', spicyLevel: 3, isHot: true, isNew: false, unit: '份', servingSize: 1, sort: 4 },
+      { name: '蒜泥白肉', description: '五花肉薄片，蒜泥调味', price: 36.00, emoji: '🥩', spicyLevel: 2, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 5 }
     ],
     '营养主食': [
-      { name: '招牌蛋炒饭', description: '粒粒分明，蛋香四溢', price: 18.00, emoji: '🍳', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
-      { name: '扬州炒饭', description: '虾仁、火腿、蛋花，料足味美', price: 28.00, emoji: '🍚', spicyLevel: 0, isHot: true, isNew: false, sort: 2 },
-      { name: '海鲜粥', description: '新鲜海鲜熬制，鲜香浓郁', price: 38.00, emoji: '🥣', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
-      { name: '白米饭', description: '东北大米，香软可口', price: 3.00, emoji: '🍚', spicyLevel: 0, isHot: false, isNew: false, sort: 4 },
-      { name: '担担面', description: '麻辣鲜香，肉臊浓郁', price: 22.00, emoji: '🍜', spicyLevel: 2, isHot: false, isNew: true, sort: 5 }
+      { name: '招牌蛋炒饭', description: '粒粒分明，蛋香四溢', price: 18.00, emoji: '🍳', spicyLevel: 0, isHot: true, isNew: false, unit: '碗', servingSize: 1, sort: 1 },
+      { name: '扬州炒饭', description: '虾仁、火腿、蛋花，料足味美', price: 28.00, emoji: '🍚', spicyLevel: 0, isHot: true, isNew: false, unit: '碗', servingSize: 1, sort: 2 },
+      { name: '海鲜粥', description: '新鲜海鲜熬制，鲜香浓郁', price: 38.00, emoji: '🥣', spicyLevel: 0, isHot: false, isNew: false, unit: '碗', servingSize: 1, sort: 3 },
+      { name: '白米饭', description: '东北大米，香软可口', price: 3.00, emoji: '🍚', spicyLevel: 0, isHot: false, isNew: false, unit: '碗', servingSize: 1, sort: 4 },
+      { name: '担担面', description: '麻辣鲜香，肉臊浓郁', price: 22.00, emoji: '🍜', spicyLevel: 2, isHot: false, isNew: true, unit: '碗', servingSize: 1, sort: 5 }
     ],
     '美味小吃': [
-      { name: '手工水饺', description: '新鲜手工包制，皮薄馅大', price: 28.00, emoji: '🥟', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
-      { name: '锅贴', description: '底部焦脆，肉馅鲜美', price: 18.00, emoji: '🥟', spicyLevel: 0, isHot: false, isNew: false, sort: 2 },
-      { name: '春卷', description: '外酥里嫩，内馅丰富', price: 12.00, emoji: '🌯', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
-      { name: '炸鸡块', description: '外酥里嫩，金黄诱人', price: 22.00, emoji: '🍗', spicyLevel: 0, isHot: true, isNew: false, sort: 4 },
-      { name: '薯条', description: '酥脆可口，配番茄酱', price: 15.00, emoji: '🍟', spicyLevel: 0, isHot: false, isNew: false, sort: 5 }
+      { name: '手工水饺', description: '新鲜手工包制，皮薄馅大', price: 28.00, emoji: '🥟', spicyLevel: 0, isHot: true, isNew: false, unit: '份', servingSize: 12, sort: 1 },
+      { name: '锅贴', description: '底部焦脆，肉馅鲜美', price: 18.00, emoji: '🥟', spicyLevel: 0, isHot: false, isNew: false, unit: '份', servingSize: 6, sort: 2 },
+      { name: '春卷', description: '外酥里嫩，内馅丰富', price: 12.00, emoji: '🌯', spicyLevel: 0, isHot: false, isNew: false, unit: '个', servingSize: 1, sort: 3 },
+      { name: '炸鸡块', description: '外酥里嫩，金黄诱人', price: 22.00, emoji: '🍗', spicyLevel: 0, isHot: true, isNew: false, unit: '份', servingSize: 6, sort: 4 },
+      { name: '薯条', description: '酥脆可口，配番茄酱', price: 15.00, emoji: '🍟', spicyLevel: 0, isHot: false, isNew: false, unit: '份', servingSize: 1, sort: 5 }
     ],
     '鲜榨饮品': [
-      { name: '鲜榨西瓜汁', description: '新鲜西瓜现榨，清凉解暑', price: 12.00, emoji: '🍉', spicyLevel: 0, isHot: true, isNew: false, sort: 1 },
-      { name: '芒果冰沙', description: '新鲜芒果制作，口感细腻', price: 18.00, emoji: '🥭', spicyLevel: 0, isHot: true, isNew: false, sort: 2 },
-      { name: '柠檬蜂蜜水', description: '鲜柠檬配蜂蜜，酸甜解渴', price: 10.00, emoji: '🍋', spicyLevel: 0, isHot: false, isNew: false, sort: 3 },
-      { name: '酸梅汤', description: '传统秘制，酸甜解腻', price: 8.00, emoji: '🥤', spicyLevel: 0, isHot: true, isNew: false, sort: 4 },
-      { name: '椰汁', description: '新鲜椰子，天然清甜', price: 15.00, emoji: '🥥', spicyLevel: 0, isHot: false, isNew: true, sort: 5 }
+      { name: '鲜榨西瓜汁', description: '新鲜西瓜现榨，清凉解暑', price: 12.00, emoji: '🍉', spicyLevel: 0, isHot: true, isNew: false, unit: '杯', servingSize: 1, sort: 1 },
+      { name: '芒果冰沙', description: '新鲜芒果制作，口感细腻', price: 18.00, emoji: '🥭', spicyLevel: 0, isHot: true, isNew: false, unit: '杯', servingSize: 1, sort: 2 },
+      { name: '柠檬蜂蜜水', description: '鲜柠檬配蜂蜜，酸甜解渴', price: 10.00, emoji: '🍋', spicyLevel: 0, isHot: false, isNew: false, unit: '杯', servingSize: 1, sort: 3 },
+      { name: '酸梅汤', description: '传统秘制，酸甜解腻', price: 8.00, emoji: '🥤', spicyLevel: 0, isHot: true, isNew: false, unit: '杯', servingSize: 1, sort: 4 },
+      { name: '椰汁', description: '新鲜椰子，天然清甜', price: 15.00, emoji: '🥥', spicyLevel: 0, isHot: false, isNew: true, unit: '个', servingSize: 1, sort: 5 }
     ]
   }
 

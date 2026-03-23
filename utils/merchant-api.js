@@ -138,7 +138,20 @@ function processOrders(orders) {
 }
 
 function updateOrderStatus(orderId, status) {
-  return callCloudFunction('updateOrderStatus', { orderId, status })
+  return new Promise((resolve, reject) => {
+    wx.cloud.callFunction({
+      name: 'updateOrderStatus',
+      data: { orderId, status },
+      success: res => {
+        console.log('updateOrderStatus result:', res.result)
+        resolve(res.result)
+      },
+      fail: err => {
+        console.error('updateOrderStatus failed:', err)
+        reject(err)
+      }
+    })
+  })
 }
 
 function cancelOrder(orderId) {
@@ -213,20 +226,26 @@ function getTables(status = 'all') {
       return
     }
 
-    callCloudFunction('getTables', { status })
-      .then(res => {
-        if (res.success) {
-          resolve(res.tables.map(t => ({
-            ...t,
-            statusText: t.status === 1 ? '使用中' : '空闲',
-            timeText: t.orderTime ? formatTime(t.orderTime) : ''
-          })))
-        } else {
-          console.error('获取桌号失败', res.message)
-          resolve([])
-        }
-      })
-      .catch(() => resolve([]))
+    // 直接查询数据库
+    const db = wx.cloud.database()
+    let query = db.collection('tables')
+    
+    if (status === 'occupied') {
+      query = query.where({ status: 1 })
+    } else if (status === 'idle') {
+      query = query.where({ status: 0 })
+    }
+
+    query.orderBy('tableNumber', 'asc').get({
+      success: res => {
+        resolve(res.data.map(t => ({
+          ...t,
+          statusText: t.status === 1 ? '使用中' : '空闲',
+          timeText: t.orderTime ? formatTime(t.orderTime) : ''
+        })))
+      },
+      fail: () => resolve([])
+    })
   })
 }
 

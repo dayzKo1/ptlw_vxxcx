@@ -105,6 +105,17 @@ exports.main = async (event, context) => {
       data: orderData
     })
 
+    // 如果是桌号订单，设置桌号为"使用中"
+    if (tableId && orderType === ORDER_TYPE.TABLE) {
+      await db.collection('tables').doc(tableId).update({
+        data: {
+          status: 1,  // 使用中
+          currentOrderId: res._id,
+          orderTime: new Date().getTime()
+        }
+      }).catch(err => console.error('更新桌号状态失败', err))
+    }
+
     return {
       success: true,
       orderId: res._id,

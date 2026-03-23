@@ -5,6 +5,11 @@ Page({
   },
 
   onLoad(options) {
+    if (!options.id) {
+      wx.showToast({ title: '订单ID不存在', icon: 'none' })
+      setTimeout(() => wx.navigateBack(), 1500)
+      return
+    }
     this.setData({ orderId: options.id })
     this.loadOrderDetail()
   },

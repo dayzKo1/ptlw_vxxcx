@@ -8,7 +8,11 @@ Component({
 
   methods: {
     onTap() {
-      this.triggerEvent('tap', { order: this.properties.order })
+      if (this.properties.order && this.properties.order._id) {
+        this.triggerEvent('tap', { order: this.properties.order })
+      } else {
+        console.warn('order-card: order data is missing or invalid')
+      }
     },
 
     stopPropagation() {},
@@ -31,6 +35,10 @@ Component({
 
     onRefund() {
       this.triggerEvent('refund', { order: this.properties.order })
+    },
+
+    onDelete() {
+      this.triggerEvent('delete', { order: this.properties.order })
     }
   }
 })

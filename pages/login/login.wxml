@@ -1,7 +1,7 @@
 <view class="container">
   <view class="login-card">
     <view class="logo-section">
-      <view class="logo">🏪</view>
+      <view class="logo-text">礼</view>
       <text class="app-name">平潭礼物</text>
       <text class="app-desc">扫码点餐，轻松用餐</text>
     </view>
@@ -21,7 +21,6 @@
       </view>
 
       <button class="login-btn" bindtap="handleLogin">
-        <text class="login-icon">📱</text>
         <text class="login-text">微信登录</text>
       </button>
 
@@ -48,7 +47,6 @@
           </view>
         </view>
         <button class="dev-login-btn" bindtap="handleDevLogin">
-          <text class="dev-login-icon">🔧</text>
           <text class="dev-login-text">开发环境模拟登录</text>
         </button>
       </view>

@@ -111,6 +111,16 @@ exports.main = async (event, context) => {
         }
       })
 
+      // 如果是桌号订单，释放桌号
+      if (order.orderType === 'T' && order.tableId) {
+        await db.collection('tables').doc(order.tableId).update({
+          data: {
+            status: 0,  // 空闲
+            currentOrderId: _.remove()
+          }
+        }).catch(err => console.error('释放桌号失败', err))
+      }
+
       return {
         success: true,
         message: '退款成功（模拟）',

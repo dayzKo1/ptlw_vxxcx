@@ -7,18 +7,21 @@ const db = cloud.database()
 
 // 订单状态文本映射
 const STATUS_TEXT = {
+  0: '待支付',
   1: '待接单',
   2: '制作中',
   3: '已出餐',
   4: '已完成',
-  5: '已取消'
+  5: '已取消',
+  6: '已退款'
 }
 
 // 允许的状态转换
 const VALID_TRANSITIONS = {
+  0: [1, 5],  // 待支付 -> 待接单(支付成功) 或 已取消
   1: [2, 5],  // 待接单 -> 制作中 或 已取消
   2: [3, 5],  // 制作中 -> 已出餐 或 已取消
-  3: [4],     // 已出餐 -> 已完成
+  3: [4, 5],  // 已出餐 -> 已完成 或 已取消
   4: [],      // 已完成 -> 无
   5: []       // 已取消 -> 无
 }
@@ -83,9 +86,36 @@ exports.main = async (event, context) => {
       updateData.serveTime = new Date().getTime()
     }
 
+    // 如果是完成操作，记录完成时间
+    if (status === 4) {
+      updateData.completeTime = new Date().getTime()
+    }
+
     await db.collection('orders').doc(orderId).update({
       data: updateData
     })
+
+    // 如果订单完成或取消，释放桌号
+    if ((status === 4 || status === 5) && order.orderType === 'T' && order.tableId) {
+      // 检查是否还有其他进行中的订单使用该桌号
+      const otherOrders = await db.collection('orders')
+        .where({
+          tableId: order.tableId,
+          status: db.command.in([0, 1, 2, 3]), // 待支付、待接单、制作中、已出餐
+          _id: db.command.neq(orderId)
+        })
+        .count()
+
+      if (otherOrders.total === 0) {
+        // 没有其他订单，释放桌号
+        await db.collection('tables').doc(order.tableId).update({
+          data: {
+            status: 0,  // 空闲
+            currentOrderId: db.command.remove()
+          }
+        }).catch(err => console.error('释放桌号失败', err))
+      }
+    }
 
     // 发送订阅消息通知（如果用户已订阅）
     if (userOpenid && STATUS_TEXT[status]) {

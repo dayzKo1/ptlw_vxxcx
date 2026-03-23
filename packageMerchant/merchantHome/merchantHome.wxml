@@ -39,6 +39,22 @@
 
   <!-- 订单管理 -->
   <view class="content-area" wx:if="{{currentTab === 'order'}}">
+    <!-- 日期筛选 -->
+    <view class="date-filter">
+      <picker mode="date" value="{{filterDate}}" start="2024-01-01" end="{{today}}" bindchange="onDateChange">
+        <view class="date-picker-btn">
+          <text class="date-icon">📅</text>
+          <text class="date-text">{{filterDate || '全部日期'}}</text>
+          <text class="date-arrow">▼</text>
+        </view>
+      </picker>
+      <view class="date-quick-btns">
+        <text class="date-quick-btn {{filterDate === today ? 'active' : ''}}" bindtap="setToday">今天</text>
+        <text class="date-quick-btn {{filterDate === yesterday ? 'active' : ''}}" bindtap="setYesterday">昨天</text>
+        <text class="date-quick-btn {{filterDate === '' ? 'active' : ''}}" bindtap="clearDateFilter">全部</text>
+      </view>
+    </view>
+
     <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="sub-tab {{orderStatus === item.value ? 'active' : ''}}"
             wx:for="{{orderStatusList}}" wx:key="value"
@@ -48,14 +64,21 @@
     </scroll-view>
 
     <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
-      <block wx:if="{{orders.length > 0}}">
-        <order-card wx:for="{{orders}}" wx:key="_id" order="{{item}}"
-                    bindtap="goToOrderDetail"
-                    bindcancel="handleOrderCancel"
-                    bindaccept="handleOrderAccept"
-                    bindserve="handleOrderServe"
-                    bindcomplete="handleOrderComplete"
-                    bindrefund="handleOrderRefund" />
+      <block wx:if="{{groupedOrders.length > 0}}">
+        <block wx:for="{{groupedOrders}}" wx:key="date">
+          <view class="date-group-header">
+            <text class="date-group-title">{{item.dateText}}</text>
+            <text class="date-group-count">{{item.orders.length}}单</text>
+          </view>
+          <order-card wx:for="{{item.orders}}" wx:for-item="order" wx:key="_id" order="{{order}}" data-order="{{order}}"
+                      bindtap="goToOrderDetail"
+                      bindcancel="handleOrderCancel"
+                      bindaccept="handleOrderAccept"
+                      bindserve="handleOrderServe"
+                      bindcomplete="handleOrderComplete"
+                      bindrefund="handleOrderRefund"
+                      binddelete="handleOrderDelete" />
+        </block>
       </block>
       <empty-state wx:else text="暂无订单" />
     </scroll-view>
@@ -84,32 +107,73 @@
 
   <!-- 桌号管理 -->
   <view class="content-area" wx:if="{{currentTab === 'table'}}">
-    <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="sub-tab {{tableStatus === 'all' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="all">全部</view>
-      <view class="sub-tab {{tableStatus === 'idle' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="idle">空闲</view>
-      <view class="sub-tab {{tableStatus === 'occupied' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="occupied">使用中</view>
-    </scroll-view>
-
-    <!-- 批量操作按钮 -->
-    <view class="batch-actions">
-      <button class="batch-btn" bindtap="handleBatchGenerateQR" disabled="{{generating}}">
-        {{generating ? '生成中...' : '批量生成二维码'}}
-      </button>
+    <!-- 视图切换 -->
+    <view class="view-switch">
+      <text class="view-switch-btn {{tableViewMode === 'grid' ? 'active' : ''}}" bindtap="switchTableView" data-mode="grid">📊 状态总览</text>
+      <text class="view-switch-btn {{tableViewMode === 'list' ? 'active' : ''}}" bindtap="switchTableView" data-mode="list">📋 详细列表</text>
     </view>
 
-    <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
-      <block wx:if="{{tables.length > 0}}">
-        <table-card wx:for="{{tables}}" wx:key="_id" table="{{item}}"
-                    bindedit="showEditTableModal"
-                    bindtoggle="handleTableToggle"
-                    binddelete="handleTableDelete"
-                    bindgenerateqr="handleTableGenerateQR"
-                    binddownloadqr="handleTableDownloadQR" />
-      </block>
-      <empty-state wx:else text="暂无桌号" btnText="添加桌号" bindaction="showAddTableModal" />
-    </scroll-view>
+    <!-- 网格视图 - 状态总览 -->
+    <view class="table-grid-view" wx:if="{{tableViewMode === 'grid'}}">
+      <view class="grid-stats">
+        <view class="grid-stat-item">
+          <text class="stat-value">{{tableStats.total}}</text>
+          <text class="stat-label">总桌数</text>
+        </view>
+        <view class="grid-stat-item idle">
+          <text class="stat-value">{{tableStats.idle}}</text>
+          <text class="stat-label">空闲</text>
+        </view>
+        <view class="grid-stat-item occupied">
+          <text class="stat-value">{{tableStats.occupied}}</text>
+          <text class="stat-label">使用中</text>
+        </view>
+      </view>
 
-    <view class="fab" bindtap="showAddTableModal">+</view>
+      <view class="table-grid">
+        <view class="table-grid-item {{item.status === 1 ? 'occupied' : 'idle'}}" 
+              wx:for="{{tables}}" wx:key="_id"
+              bindtap="onTableGridTap" data-table="{{item}}">
+          <text class="grid-table-number">{{item.tableNumber}}</text>
+          <text class="grid-table-status">{{item.status === 1 ? '使用中' : '空闲'}}</text>
+          <text class="grid-table-time" wx:if="{{item.timeText}}">{{item.timeText}}</text>
+        </view>
+        <view class="table-grid-item add-new" bindtap="showAddTableModal">
+          <text class="add-icon">+</text>
+          <text class="add-text">添加桌号</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 列表视图 -->
+    <view class="table-list-view" wx:if="{{tableViewMode === 'list'}}">
+      <scroll-view class="sub-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="sub-tab {{tableStatus === 'all' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="all">全部</view>
+        <view class="sub-tab {{tableStatus === 'idle' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="idle">空闲</view>
+        <view class="sub-tab {{tableStatus === 'occupied' ? 'active' : ''}}" bindtap="switchTableStatus" data-status="occupied">使用中</view>
+      </scroll-view>
+
+      <!-- 批量操作按钮 -->
+      <view class="batch-actions">
+        <button class="batch-btn" bindtap="handleBatchGenerateQR" disabled="{{generating}}">
+          {{generating ? '生成中...' : '批量生成二维码'}}
+        </button>
+      </view>
+
+      <scroll-view class="list-container" scroll-y refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+        <block wx:if="{{tables.length > 0}}">
+          <table-card wx:for="{{tables}}" wx:key="_id" table="{{item}}"
+                      bindedit="showEditTableModal"
+                      bindtoggle="handleTableToggle"
+                      binddelete="handleTableDelete"
+                      bindgenerateqr="handleTableGenerateQR"
+                      binddownloadqr="handleTableDownloadQR" />
+        </block>
+        <empty-state wx:else text="暂无桌号" btnText="添加桌号" bindaction="showAddTableModal" />
+      </scroll-view>
+
+      <view class="fab" bindtap="showAddTableModal">+</view>
+    </view>
   </view>
 </view>
 

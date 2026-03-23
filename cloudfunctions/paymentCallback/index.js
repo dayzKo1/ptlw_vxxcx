@@ -41,6 +41,17 @@ exports.main = async (event, context) => {
             autoAccepted: autoAcceptOrder
           }
         })
+
+        // 如果是桌号订单，确保桌号状态为"使用中"
+        if (order.orderType === 'T' && order.tableId) {
+          await db.collection('tables').doc(order.tableId).update({
+            data: {
+              status: 1,  // 使用中
+              currentOrderId: order._id,
+              orderTime: order.createTime
+            }
+          }).catch(err => console.error('更新桌号状态失败', err))
+        }
       }
 
       return {

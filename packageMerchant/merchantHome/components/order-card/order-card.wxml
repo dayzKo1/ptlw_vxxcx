@@ -31,7 +31,7 @@
     <view class="order-actions" catchtap="stopPropagation">
       <!-- 待支付状态：商户无操作按钮 -->
       <block wx:if="{{order.status === 0}}">
-        <text class="action-text disabled">等待支付</text>
+        <text class="action-text danger" catchtap="onDelete">删除</text>
       </block>
       <!-- 待接单状态：可退款或接单 -->
       <block wx:elif="{{order.status === 1}}">
@@ -48,7 +48,10 @@
         <text class="action-text warning" catchtap="onRefund">退款</text>
         <text class="action-text primary" catchtap="onComplete">完成</text>
       </block>
-      <!-- 已完成/已取消/已退款状态：无操作按钮 -->
+      <!-- 已完成/已取消/已退款状态：可删除 -->
+      <block wx:elif="{{order.status >= 4}}">
+        <text class="action-text danger" catchtap="onDelete">删除</text>
+      </block>
     </view>
   </view>
 
