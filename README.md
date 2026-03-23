@@ -15,15 +15,13 @@
 ### 商家端
 - 商家管理首页 - 订单统计、今日数据
 - 菜品管理 - 分类管理、菜品上下架
-- 订单管理 - 接单/出餐/完成/取消/退款
+- 订单管理 - 接单/完成/取消/退款
 - 桌号管理 - 二维码生成与批量生成
 - 自动接单 - 可配置自动接单模式
 - 蓝牙打印 - 连接蓝牙打印机自动打印小票和后厨单
 - 订单通知 - 新订单震动提醒
 
 ## 快速开始
-
-请查看 [完整部署指南](./DEPLOY.md) 了解详细的部署流程。
 
 ### 最简步骤
 
@@ -37,11 +35,14 @@
 5. 刷新页面，自动添加当前用户为商户
 6. 点击编译测试
 
+详细步骤请查看 [部署指南](./DEPLOY.md)
+
 ## 技术栈
 
 - 微信小程序原生开发
 - 微信云开发（云数据库、云函数、云存储）
 - 分包加载
+- 全局缓存优化
 
 ## 项目结构
 
@@ -65,7 +66,11 @@ ptlw_vxxcx/
 │   ├── shop/            # 店铺服务
 │   ├── stats/           # 统计服务
 │   └── initDatabase/    # 数据库初始化
-└── utils/               # 工具函数
+├── utils/               # 工具函数
+│   ├── merchant-api.js  # 商户 API 封装
+│   ├── print-service.js # 打印服务
+│   └── ...
+└── app.js               # 应用入口（含全局缓存）
 ```
 
 ## 云函数
@@ -106,10 +111,40 @@ ptlw_vxxcx/
                           └──────退款──────→ 已退款(5)
 ```
 
+## 性能优化
+
+### 全局缓存
+
+应用启动时加载店铺信息到 `globalData`，分类和菜品数据缓存 5 分钟：
+
+```javascript
+// app.js
+globalData: {
+  shopInfo: { ... },
+  cache: {
+    categories: null,
+    categoriesTime: 0,
+    dishes: null,
+    dishesTime: 0
+  }
+}
+
+// 使用缓存
+const cached = app.getCache('categories')
+if (cached) { /* 使用缓存 */ }
+```
+
+### 查询优化
+
+- `shopInfo` 使用固定 ID `main` 避免全表扫描
+- 分类和菜品数据缓存减少重复请求
+
 ## 文档
 
-- [完整部署指南](./DEPLOY.md) - 详细部署流程
-- [云函数文档](./cloudfunctions/README.md) - 云函数 API 文档
+- [部署指南](./DEPLOY.md) - 详细部署流程
+- [快速开始](./QUICKSTART.md) - 5分钟快速部署
+- [云函数文档](./cloudfunctions/README.md) - 云函数 API
+- [数据库结构](./database/README.md) - 集合结构说明
 - [打印机配置](./PRINTER_NOTIFICATION.md) - 打印机使用说明
 
 ## 成本
