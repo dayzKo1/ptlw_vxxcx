@@ -1,6 +1,5 @@
 {
   "description": "云函数配置文件",
-  "envId": "your-env-id",
-  "functionRoot": "./cloudfunctions/",
-  "_comment": "请将 envId 替换为你的云开发环境 ID，可在云开发控制台查看"
+  "envId": "cloud1-2gj3ujpj1708bd55",
+  "functionRoot": "./cloudfunctions/"
 }
