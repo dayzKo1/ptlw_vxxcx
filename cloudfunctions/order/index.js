@@ -144,8 +144,8 @@ async function paymentCallback(event, context) {
     const order = orderRes.data[0]
 
     // 检查自动接单
-    const shopRes = await db.collection('shopInfo').limit(1).get()
-    const autoAccept = shopRes.data[0]?.autoAcceptOrder === true
+    const shopRes = await db.collection('shopInfo').doc('main').get()
+    const autoAccept = shopRes.data?.autoAcceptOrder === true
     const newStatus = autoAccept ? 2 : 1
 
     await db.collection('orders').doc(order._id).update({

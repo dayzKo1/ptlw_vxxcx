@@ -8,6 +8,9 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
 
+// 店铺信息固定 ID
+const SHOP_INFO_ID = 'main'
+
 exports.main = async (event, context) => {
   const { action } = event
 
@@ -22,9 +25,13 @@ exports.main = async (event, context) => {
 // 获取店铺信息
 async function getShopInfo(event, context) {
   try {
-    const res = await db.collection('shopInfo').limit(1).get()
-    return { success: true, data: res.data[0] || {} }
+    const res = await db.collection('shopInfo').doc(SHOP_INFO_ID).get()
+    return { success: true, data: res.data || {} }
   } catch (err) {
+    // 如果不存在，返回空对象
+    if (err.errMsg?.includes('not exist')) {
+      return { success: true, data: {} }
+    }
     return { success: false, message: '获取失败' }
   }
 }
@@ -36,17 +43,14 @@ async function updateShopInfo(event, context) {
   const { shopData } = event
 
   try {
-    const res = await db.collection('shopInfo').limit(1).get()
-    
-    if (res.data.length > 0) {
-      await db.collection('shopInfo').doc(res.data[0]._id).update({
-        data: { ...shopData, updateTime: Date.now() }
-      })
-    } else {
-      await db.collection('shopInfo').add({
-        data: { ...shopData, createTime: Date.now() }
-      })
-    }
+    // 使用 set 方法，不存在则创建
+    await db.collection('shopInfo').doc(SHOP_INFO_ID).set({
+      data: { 
+        _id: SHOP_INFO_ID,
+        ...shopData, 
+        updateTime: Date.now() 
+      }
+    })
 
     return { success: true }
   } catch (err) {
@@ -59,17 +63,14 @@ async function toggleAutoAccept(event, context) {
   if (!await checkMerchantPermission()) return { success: false, message: '无权限' }
 
   try {
-    const res = await db.collection('shopInfo').limit(1).get()
+    const res = await db.collection('shopInfo').doc(SHOP_INFO_ID).get()
+    const newValue = !res.data?.autoAcceptOrder
     
-    if (res.data.length > 0) {
-      const newValue = !res.data[0].autoAcceptOrder
-      await db.collection('shopInfo').doc(res.data[0]._id).update({
-        data: { autoAcceptOrder: newValue, updateTime: Date.now() }
-      })
-      return { success: true, message: newValue ? '已开启自动接单' : '已关闭自动接单' }
-    }
-
-    return { success: false, message: '店铺信息不存在' }
+    await db.collection('shopInfo').doc(SHOP_INFO_ID).update({
+      data: { autoAcceptOrder: newValue, updateTime: Date.now() }
+    })
+    
+    return { success: true, message: newValue ? '已开启自动接单' : '已关闭自动接单' }
   } catch (err) {
     return { success: false, message: '操作失败' }
   }

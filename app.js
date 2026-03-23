@@ -51,9 +51,9 @@ App({
   async loadShopInfo() {
     try {
       const db = wx.cloud.database()
-      const res = await db.collection('shopInfo').limit(1).get()
-      if (res.data.length > 0) {
-        this.globalData.shopInfo = res.data[0]
+      const res = await db.collection('shopInfo').doc('main').get()
+      if (res.data) {
+        this.globalData.shopInfo = res.data
       }
     } catch (err) {
       console.error('加载店铺信息失败', err)

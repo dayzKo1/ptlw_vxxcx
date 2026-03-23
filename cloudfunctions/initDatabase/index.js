@@ -268,6 +268,7 @@ async function initShopInfo() {
 
   await db.collection('shopInfo').add({
     data: {
+      _id: 'main',  // 固定 ID，避免全表扫描
       name: '平潭礼物餐厅',
       logo: '',
       address: '福建省福州市平潭县君山镇北港村新门前16号',
