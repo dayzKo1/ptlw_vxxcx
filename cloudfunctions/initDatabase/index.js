@@ -18,13 +18,14 @@ const REQUIRED_COLLECTIONS = [
   'banners',
   'orderCounters',
   'config',
-  'refundLogs'
+  'refundLogs',
+  'addresses'
 ]
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
-  const { force } = event
+  const { force, firstTime } = event
 
   try {
     // 先确保所有必要集合存在
@@ -39,34 +40,46 @@ exports.main = async (event, context) => {
       return {
         success: false,
         message: '数据库已初始化，如需重新初始化请传入 force: true',
-        code: 'ALREADY_INITIALIZED'
+        code: 'ALREADY_INITIALIZED',
+        collections: collectionResults
       }
     }
 
-    const merchantCount = await db.collection('merchantWhitelist')
-      .where({ status: 1 })
-      .count()
+    // 权限检查：首次初始化跳过权限验证
+    if (!firstTime) {
+      const merchantCount = await db.collection('merchantWhitelist')
+        .where({ status: 1 })
+        .count()
 
-    if (merchantCount.total > 0) {
-      const callerRes = await db.collection('merchantWhitelist')
-        .where({ openid: openid, status: 1 })
-        .get()
+      if (merchantCount.total > 0) {
+        const callerRes = await db.collection('merchantWhitelist')
+          .where({ openid: openid, status: 1 })
+          .get()
 
-      if (callerRes.data.length === 0) {
-        return {
-          success: false,
-          message: '无权限：只有商户才能初始化数据库',
-          code: 'PERMISSION_DENIED'
+        if (callerRes.data.length === 0) {
+          return {
+            success: false,
+            message: '无权限：只有商户才能初始化数据库',
+            code: 'PERMISSION_DENIED',
+            collections: collectionResults
+          }
         }
       }
     }
 
+    // 初始化数据
     await initCategories()
     await initDishes()
     await initTables()
     await initShopInfo()
     await initBanners()
     await initOrderCounter()
+    
+    // 首次初始化时，自动将调用者添加为商户
+    if (firstTime || force) {
+      await addFirstMerchant(openid)
+    }
+    
     await markInitialized()
 
     return {
@@ -83,10 +96,35 @@ exports.main = async (event, context) => {
   }
 }
 
+// 添加首个商户
+async function addFirstMerchant(openid) {
+  if (!openid) return
+  
+  const existing = await db.collection('merchantWhitelist')
+    .where({ openid })
+    .get()
+  
+  if (existing.data.length === 0) {
+    await db.collection('merchantWhitelist').add({
+      data: {
+        openid,
+        status: 1,
+        createTime: Date.now()
+      }
+    })
+    console.log('已将调用者添加为商户:', openid)
+  }
+}
+
+// 清空集合并重新创建（更高效）
 async function clearCollection(collectionName) {
-  const existing = await db.collection(collectionName).get()
-  for (const item of existing.data) {
-    await db.collection(collectionName).doc(item._id).remove()
+  try {
+    // 删除整个集合并重新创建
+    await db.collection(collectionName).where({
+      _id: _.exists(true)
+    }).remove()
+  } catch (err) {
+    console.log(`清空集合 ${collectionName} 时出错，继续执行:`, err.message)
   }
 }
 

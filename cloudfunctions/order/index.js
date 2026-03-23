@@ -104,7 +104,7 @@ async function createPayment(event, context) {
     const payment = {
       timeStamp: String(Math.floor(Date.now() / 1000)),
       nonceStr: Math.random().toString(36).substr(2, 32),
-      package: `prepay_id=mock_${orderNo}`,
+      package: `prepay_id=mock_${order.orderNo}`,
       signType: 'MD5',
       paySign: 'mock_sign'
     }
@@ -173,6 +173,12 @@ async function cancelOrder(event, context) {
       return { success: false, message: '无权限' }
     }
 
+    // 检查订单状态是否可取消
+    const cancellableStatus = isMerchant ? [0, 1, 2, 3] : [0, 1]
+    if (!cancellableStatus.includes(order.status)) {
+      return { success: false, message: '当前订单状态不可取消' }
+    }
+
     // 已支付订单需要退款
     if (order.transactionId && order.status >= 1) {
       const refundResult = await processRefund(order, cancelReason || '订单取消')
@@ -182,12 +188,18 @@ async function cancelOrder(event, context) {
 
     // 未支付直接取消
     await db.collection('orders').doc(orderId).update({
-      data: { status: 5, cancelReason: cancelReason || '用户取消', cancelTime: Date.now() }
+      data: { 
+        status: 5, 
+        cancelReason: cancelReason || (isMerchant ? '商户取消' : '用户取消'), 
+        cancelTime: Date.now(),
+        updateTime: Date.now()
+      }
     })
 
     await releaseTable(order)
     return { success: true, message: '订单已取消' }
   } catch (err) {
+    console.error('取消订单失败', err)
     return { success: false, message: '取消失败' }
   }
 }
@@ -222,7 +234,11 @@ async function getUserOrders(event, context) {
   try {
     let query = db.collection('orders').where({ _openid: wxContext.OPENID })
     if (status !== undefined && status !== -1) {
-      query = query.where({ status })
+      if (Array.isArray(status)) {
+        query = query.where({ status: _.in(status) })
+      } else {
+        query = query.where({ status })
+      }
     }
 
     const countRes = await query.count()
@@ -237,10 +253,12 @@ async function getUserOrders(event, context) {
       data: {
         orders: res.data.map(formatOrder),
         total: countRes.total,
-        page, pageSize
+        page, pageSize,
+        hasMore: res.data.length === pageSize
       }
     }
   } catch (err) {
+    console.error('获取订单失败', err)
     return { success: false, message: '获取订单失败' }
   }
 }
@@ -257,7 +275,11 @@ async function getMerchantOrders(event, context) {
   try {
     let query = db.collection('orders')
     if (status !== undefined && status !== -1) {
-      query = query.where({ status })
+      if (Array.isArray(status)) {
+        query = query.where({ status: _.in(status) })
+      } else {
+        query = query.where({ status })
+      }
     }
 
     const countRes = await query.count()
@@ -272,10 +294,12 @@ async function getMerchantOrders(event, context) {
       data: {
         orders: res.data.map(formatOrder),
         total: countRes.total,
-        page, pageSize
+        page, pageSize,
+        hasMore: res.data.length === pageSize
       }
     }
   } catch (err) {
+    console.error('获取订单失败', err)
     return { success: false, message: '获取订单失败' }
   }
 }
@@ -315,6 +339,27 @@ async function updateOrderStatus(event, context) {
     const orderRes = await db.collection('orders').doc(orderId).get()
     if (!orderRes.data) return { success: false, message: '订单不存在' }
 
+    const order = orderRes.data
+    const currentStatus = order.status
+
+    // 验证状态转换是否合法
+    const validTransitions = {
+      0: [1, 5],       // 待支付 -> 待接单/已取消
+      1: [2, 5, 6],    // 待接单 -> 制作中/已取消/已退款
+      2: [3, 5, 6],    // 制作中 -> 已出餐/已取消/已退款
+      3: [4, 6],       // 已出餐 -> 已完成/已退款
+      4: [],           // 已完成 -> 不可变更
+      5: [],           // 已取消 -> 不可变更
+      6: []            // 已退款 -> 不可变更
+    }
+
+    if (!validTransitions[currentStatus]?.includes(status)) {
+      return { 
+        success: false, 
+        message: `订单状态不允许从"${ORDER_STATUS_TEXT[currentStatus]}"变为"${ORDER_STATUS_TEXT[status]}"` 
+      }
+    }
+
     const updateData = { status, updateTime: Date.now() }
     if (status === 2) updateData.acceptTime = Date.now()
     if (status === 3) updateData.serveTime = Date.now()
@@ -323,12 +368,13 @@ async function updateOrderStatus(event, context) {
     await db.collection('orders').doc(orderId).update({ data: updateData })
 
     // 完成或取消时释放桌号
-    if (status === 4 || status === 5) {
+    if (status === 4 || status === 5 || status === 6) {
       await releaseTable(orderRes.data)
     }
 
-    return { success: true, message: '状态更新成功' }
+    return { success: true, message: '状态更新成功', data: { status, statusText: ORDER_STATUS_TEXT[status] } }
   } catch (err) {
+    console.error('更新订单状态失败', err)
     return { success: false, message: '更新失败' }
   }
 }
@@ -467,38 +513,45 @@ async function releaseTable(order) {
 }
 
 async function processRefund(order, refundReason, refundAmount) {
+  const wxContext = cloud.getWXContext()
   const totalFee = Math.round(order.totalPrice * 100)
   const refundFee = refundAmount ? Math.round(refundAmount * 100) : totalFee
   const outRefundNo = `RF${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`
 
-  // 模拟退款（实际需调用微信支付）
-  await db.collection('orders').doc(order._id).update({
-    data: {
-      status: 6,
-      refundTime: Date.now(),
-      refundReason,
-      refundAmount: refundFee / 100,
-      outRefundNo,
-      updateTime: Date.now()
-    }
-  })
+  try {
+    // 模拟退款（实际需调用微信支付）
+    await db.collection('orders').doc(order._id).update({
+      data: {
+        status: 6,
+        refundTime: Date.now(),
+        refundReason,
+        refundAmount: refundFee / 100,
+        outRefundNo,
+        updateTime: Date.now()
+      }
+    })
 
-  // 记录退款日志
-  await db.collection('refundLogs').add({
-    data: {
-      orderId: order._id,
-      orderNo: order.orderNo,
-      outRefundNo,
-      transactionId: order.transactionId,
-      totalFee, refundFee,
-      refundReason,
-      status: 'mock',
-      operator: '',
-      createTime: Date.now()
-    }
-  })
+    // 记录退款日志
+    await db.collection('refundLogs').add({
+      data: {
+        orderId: order._id,
+        orderNo: order.orderNo,
+        outRefundNo,
+        transactionId: order.transactionId || '',
+        totalFee, 
+        refundFee,
+        refundReason,
+        status: 'mock',
+        operator: wxContext.OPENID,
+        createTime: Date.now()
+      }
+    })
 
-  return { success: true, data: { refundAmount: refundFee / 100, outRefundNo } }
+    return { success: true, data: { refundAmount: refundFee / 100, outRefundNo } }
+  } catch (err) {
+    console.error('退款失败', err)
+    return { success: false, message: '退款失败' }
+  }
 }
 
 function formatOrder(order) {
