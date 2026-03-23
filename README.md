@@ -29,10 +29,40 @@
 
 1. 导入项目到微信开发者工具，填入 AppID
 2. 创建云开发环境，修改 `cloudbaserc.json` 中的 `envId`
-3. 右键 `cloudfunctions` 文件夹，部署所有云函数
-4. 在控制台执行 `wx.cloud.callFunction({ name: 'initDatabase' })`
-5. 在 `merchantWhitelist` 集合添加商家 openid
-6. 点击编译测试
+3. **在云开发控制台创建以下集合**（重要！）：
+   - `users` - 用户表
+   - `merchantWhitelist` - 商户白名单表
+   - `orders` - 订单表
+   - `dishes` - 菜品表
+   - `categories` - 分类表
+   - `tables` - 桌号表
+   - `shopInfo` - 店铺信息表
+   - `banners` - 轮播图表
+   - `orderCounters` - 订单计数器表
+4. 右键 `cloudfunctions` 文件夹，部署所有云函数
+5. 在控制台执行 `wx.cloud.callFunction({ name: 'initDatabase' })` 初始化数据
+6. 在 `merchantWhitelist` 集合添加商家 openid（格式：`{ openid: 'xxx', status: 1 }`）
+7. 点击编译测试
+
+### 登录问题排查
+
+如果登录失败，请检查：
+
+1. **云开发环境是否配置正确**
+   - 检查 `cloudbaserc.json` 中的 `envId` 是否正确
+   - 在微信开发者工具中确认云开发环境已开通
+
+2. **云函数是否部署成功**
+   - 右键 `cloudfunctions/login` → 上传并部署
+   - 在云开发控制台查看云函数列表
+
+3. **数据库集合是否存在**
+   - 登录需要 `users` 和 `merchantWhitelist` 集合
+   - 可在云开发控制台手动创建
+
+4. **查看控制台日志**
+   - 打开微信开发者工具控制台
+   - 查看云函数调用返回的错误信息
 
 ## 技术栈
 

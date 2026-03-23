@@ -6,12 +6,30 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
+// 需要创建的集合列表
+const REQUIRED_COLLECTIONS = [
+  'users',
+  'merchantWhitelist',
+  'orders',
+  'dishes',
+  'categories',
+  'tables',
+  'shopInfo',
+  'banners',
+  'orderCounters',
+  'config',
+  'refundLogs'
+]
+
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
   const { force } = event
 
   try {
+    // 先确保所有必要集合存在
+    const collectionResults = await ensureCollections()
+
     const initializedKey = 'database_initialized'
     const configRes = await db.collection('config')
       .where({ key: initializedKey })
@@ -53,7 +71,8 @@ exports.main = async (event, context) => {
 
     return {
       success: true,
-      message: '数据库初始化成功'
+      message: '数据库初始化成功',
+      collections: collectionResults
     }
   } catch (err) {
     console.error('数据库初始化失败', err)
@@ -265,4 +284,29 @@ async function markInitialized() {
       }
     })
   }
+}
+
+// 确保所有必要集合存在
+async function ensureCollections() {
+  const results = []
+  for (const collectionName of REQUIRED_COLLECTIONS) {
+    try {
+      // 尝试查询集合，检查是否存在
+      await db.collection(collectionName).limit(1).get()
+      results.push({ name: collectionName, status: 'exists' })
+    } catch (err) {
+      // 集合不存在，尝试创建
+      if (err.errMsg && err.errMsg.includes('collection')) {
+        try {
+          await db.createCollection(collectionName)
+          results.push({ name: collectionName, status: 'created' })
+          console.log(`集合 ${collectionName} 创建成功`)
+        } catch (createErr) {
+          results.push({ name: collectionName, status: 'failed', error: createErr.message })
+          console.error(`创建集合 ${collectionName} 失败:`, createErr)
+        }
+      }
+    }
+  }
+  return results
 }

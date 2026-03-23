@@ -97,8 +97,12 @@ Page({
         }
       })
 
-      if (loginRes.result.success) {
-        const { openid, sessionKey, role } = loginRes.result.data
+      console.log('登录云函数返回:', loginRes)
+
+      wx.hideLoading()
+
+      if (loginRes.result && loginRes.result.success) {
+        const { openid, role } = loginRes.result.data
 
         const userData = {
           ...userInfo,
@@ -110,7 +114,6 @@ Page({
         wx.setStorageSync('userInfo', userData)
         app.globalData.userInfo = userData
 
-        wx.hideLoading()
         wx.showToast({
           title: '登录成功',
           icon: 'success',
@@ -121,18 +124,35 @@ Page({
           this.navigateByRole(role)
         }, 1500)
       } else {
-        wx.hideLoading()
-        wx.showToast({
+        // 显示详细错误信息
+        const errorMsg = loginRes.result?.error || loginRes.result?.message || '登录失败'
+        console.error('登录失败:', errorMsg, loginRes.result)
+
+        wx.showModal({
           title: '登录失败',
-          icon: 'none'
+          content: errorMsg,
+          showCancel: false
         })
       }
     } catch (err) {
-      console.error('登录失败', err)
       wx.hideLoading()
-      wx.showToast({
-        title: '登录失败，请重试',
-        icon: 'none'
+      console.error('登录异常', err)
+
+      let errorMsg = '登录失败，请重试'
+      if (err.errMsg) {
+        if (err.errMsg.includes('timeout')) {
+          errorMsg = '网络超时，请检查网络后重试'
+        } else if (err.errMsg.includes('not deployed')) {
+          errorMsg = '云函数未部署，请先上传 login 云函数'
+        } else if (err.errMsg.includes('env')) {
+          errorMsg = '云开发环境未配置，请检查 cloudbaserc.json'
+        }
+      }
+
+      wx.showModal({
+        title: '登录异常',
+        content: errorMsg,
+        showCancel: false
       })
     }
   },
