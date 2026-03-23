@@ -11,7 +11,8 @@ const ORDER_STATUS = {
   COOKING: 2,       // 制作中（已接单）
   SERVED: 3,        // 已出餐
   COMPLETED: 4,     // 已完成
-  CANCELLED: 5      // 已取消
+  CANCELLED: 5,     // 已取消
+  REFUNDED: 6       // 已退款
 }
 
 const ORDER_STATUS_TEXT = {
@@ -20,7 +21,8 @@ const ORDER_STATUS_TEXT = {
   2: '制作中',
   3: '已出餐',
   4: '已完成',
-  5: '已取消'
+  5: '已取消',
+  6: '已退款'
 }
 
 // 辣度选项
@@ -141,6 +143,10 @@ function updateOrderStatus(orderId, status) {
 
 function cancelOrder(orderId) {
   return callCloudFunction('cancelOrder', { orderId })
+}
+
+function refundOrder(orderId, refundReason, refundAmount) {
+  return callCloudFunction('refundOrder', { orderId, refundReason, refundAmount })
 }
 
 // ==================== 菜品相关 ====================
@@ -310,6 +316,7 @@ module.exports = {
   getOrders,
   updateOrderStatus,
   cancelOrder,
+  refundOrder,
 
   // 菜品
   getDishes,

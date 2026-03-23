@@ -29,7 +29,8 @@ Page({
         statusText: this.getStatusText(res.result.data.status),
         statusDesc: this.getStatusDesc(res.result.data.status),
         createTimeText: this.formatTime(res.result.data.createTime),
-        payTimeText: res.result.data.payTime ? this.formatTime(res.result.data.payTime) : ''
+        payTimeText: res.result.data.payTime ? this.formatTime(res.result.data.payTime) : '',
+        refundTimeText: res.result.data.refundTime ? this.formatTime(res.result.data.refundTime) : ''
       }
 
       this.setData({ order })
@@ -51,7 +52,8 @@ Page({
       2: '制作中',
       3: '已出餐',
       4: '已完成',
-      5: '已取消'
+      5: '已取消',
+      6: '已退款'
     }
     return statusMap[status] || '未知'
   },
@@ -63,7 +65,8 @@ Page({
       2: '商家正在为您准备美食',
       3: '美食已准备好，请耐心等待',
       4: '订单已完成，感谢您的光临',
-      5: '订单已取消'
+      5: '订单已取消',
+      6: '订单已退款'
     }
     return descMap[status] || ''
   },

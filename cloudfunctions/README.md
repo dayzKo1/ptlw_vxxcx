@@ -15,6 +15,7 @@
 - **功能**: 创建新订单
 - **输入**: tableNumber, items, totalPrice, remark, deliveryMode, addressId
 - **输出**: orderId, orderNo
+- **说明**: 桌号订单会自动查询并记录 tableId，用于超时取消时释放桌号
 
 ### createPayment - 创建支付
 - **功能**: 创建微信支付订单
@@ -26,9 +27,15 @@
 - **触发方式**: 微信支付服务器回调
 
 ### cancelOrder - 取消订单
-- **功能**: 取消订单
+- **功能**: 取消订单（仅限待支付状态）
 - **输入**: orderId
 - **输出**: success
+
+### refundOrder - 退款
+- **功能**: 商家手动退款（已支付订单）
+- **输入**: orderId, refundReason(可选), refundAmount(可选，部分退款)
+- **输出**: success, refundAmount, outRefundNo
+- **说明**: 仅支持状态为待接单(1)、制作中(2)、已出餐(3)的订单退款
 
 ### cancelTimeoutOrders - 取消超时订单
 - **功能**: 取消超时未支付的订单
@@ -167,6 +174,7 @@
 | 3 | 已出餐 | 制作完成，等待取餐 |
 | 4 | 已完成 | 订单已完成 |
 | 5 | 已取消 | 订单已取消 |
+| 6 | 已退款 | 订单已退款 |
 
 ---
 

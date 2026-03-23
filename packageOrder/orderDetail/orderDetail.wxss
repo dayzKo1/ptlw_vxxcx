@@ -65,6 +65,11 @@
   text-align: right;
 }
 
+.info-value.refund {
+  color: #9C27B0;
+  font-weight: 500;
+}
+
 .card-title {
   font-size: 30rpx;
   font-weight: bold;

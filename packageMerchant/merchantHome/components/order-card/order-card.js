@@ -27,6 +27,10 @@ Component({
 
     onComplete() {
       this.triggerEvent('complete', { order: this.properties.order })
+    },
+
+    onRefund() {
+      this.triggerEvent('refund', { order: this.properties.order })
     }
   }
 })

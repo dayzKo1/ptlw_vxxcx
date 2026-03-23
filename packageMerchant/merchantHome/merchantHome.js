@@ -28,7 +28,8 @@ Page({
       { value: 2, label: '制作中' },
       { value: 3, label: '已出餐' },
       { value: 4, label: '已完成' },
-      { value: 5, label: '已取消' }
+      { value: 5, label: '已取消' },
+      { value: 6, label: '已退款' }
     ],
 
     // UI状态
@@ -219,6 +220,46 @@ Page({
 
   async handleOrderComplete(e) {
     await this.updateOrderStatusWithConfirm(e.detail.order._id, 4, '完成')
+  },
+
+  async handleOrderRefund(e) {
+    const { order } = e.detail
+
+    // 弹出退款确认框
+    wx.showModal({
+      title: '确认退款',
+      content: `确定要退款吗？订单金额：¥${order.totalPrice}`,
+      editable: true,
+      placeholderText: '请输入退款原因（可选）',
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: '处理中...' })
+          try {
+            const refundReason = res.content || '商家退款'
+            const result = await api.refundOrder(order._id, refundReason)
+
+            wx.hideLoading()
+
+            if (result.success) {
+              wx.showToast({
+                title: `已退款 ¥${result.data.refundAmount}`,
+                icon: 'success'
+              })
+              this.refreshData()
+            } else {
+              wx.showToast({
+                title: result.message || '退款失败',
+                icon: 'none'
+              })
+            }
+          } catch (err) {
+            wx.hideLoading()
+            console.error('退款失败', err)
+            wx.showToast({ title: '退款失败', icon: 'none' })
+          }
+        }
+      }
+    })
   },
 
   async updateOrderStatusWithConfirm(orderId, status, actionName) {

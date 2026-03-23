@@ -60,8 +60,22 @@ exports.main = async (event, context) => {
     // 确定订单类型
     let finalDeliveryMode = deliveryMode || 'pickup'
     let orderTypeText = ''
+    let tableId = ''  // 桌号记录ID，用于超时取消时释放桌号
+
     if (tableNumber && tableNumber !== '0' && tableNumber !== '未选择') {
       orderTypeText = '桌号订单'
+      // 根据 tableNumber 查询对应的 tableId
+      try {
+        const tableRes = await db.collection('tables')
+          .where({ tableNumber: tableNumber })
+          .limit(1)
+          .get()
+        if (tableRes.data.length > 0) {
+          tableId = tableRes.data[0]._id
+        }
+      } catch (err) {
+        console.error('查询桌号ID失败', err)
+      }
     } else if (finalDeliveryMode === 'delivery') {
       orderTypeText = '外卖订单'
     } else {
@@ -75,6 +89,7 @@ exports.main = async (event, context) => {
       orderTypeText,
       sequence,
       tableNumber: tableNumber || '',
+      tableId,  // 新增：桌号记录ID
       items,
       totalPrice,
       remark,

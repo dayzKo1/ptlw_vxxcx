@@ -54,7 +54,8 @@
                     bindcancel="handleOrderCancel"
                     bindaccept="handleOrderAccept"
                     bindserve="handleOrderServe"
-                    bindcomplete="handleOrderComplete" />
+                    bindcomplete="handleOrderComplete"
+                    bindrefund="handleOrderRefund" />
       </block>
       <empty-state wx:else text="暂无订单" />
     </scroll-view>
