@@ -121,14 +121,14 @@ Page({
     })
 
     try {
-      const cloudFunctionName = this.data.addressId ? 'updateAddress' : 'addAddress'
+      const action = this.data.addressId ? 'update' : 'add'
       const data = this.data.addressId 
         ? { ...formData, addressId: this.data.addressId }
         : formData
 
       const res = await wx.cloud.callFunction({
-        name: cloudFunctionName,
-        data
+        name: 'address',
+        data: { action, ...data }
       })
 
       wx.hideLoading()

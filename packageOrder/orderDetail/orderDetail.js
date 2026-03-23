@@ -21,8 +21,8 @@ Page({
 
     try {
       const res = await wx.cloud.callFunction({
-        name: 'getOrderDetail',
-        data: { orderId: this.data.orderId }
+        name: 'order',
+        data: { action: 'getDetail', orderId: this.data.orderId }
       })
 
       if (!res.result.success) {
@@ -94,8 +94,8 @@ Page({
 
     try {
       const res = await wx.cloud.callFunction({
-        name: 'createPayment',
-        data: { orderId: this.data.orderId }
+        name: 'order',
+        data: { action: 'pay', orderId: this.data.orderId }
       })
 
       wx.hideLoading()
@@ -177,4 +177,5 @@ Page({
       phoneNumber: app.globalData.shopInfo.phone
     })
   }
+}) }
 })

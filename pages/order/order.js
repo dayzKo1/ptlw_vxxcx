@@ -126,8 +126,8 @@ Page({
 
     try {
       const res = await wx.cloud.callFunction({
-        name: 'createPayment',
-        data: { orderId: id }
+        name: 'order',
+        data: { action: 'pay', orderId: id }
       })
 
       wx.hideLoading()
@@ -181,8 +181,8 @@ Page({
 
           try {
             await wx.cloud.callFunction({
-              name: 'cancelOrder',
-              data: { orderId: id }
+              name: 'order',
+              data: { action: 'cancel', orderId: id }
             })
 
             wx.hideLoading()
@@ -213,8 +213,8 @@ Page({
         if (res.confirm) {
           try {
             const orderRes = await wx.cloud.callFunction({
-              name: 'getOrderDetail',
-              data: { orderId: id }
+              name: 'order',
+              data: { action: 'getDetail', orderId: id }
             })
 
             if (!orderRes.result.success) {
@@ -250,4 +250,5 @@ Page({
       }
     })
   }
+}) }
 })
