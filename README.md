@@ -83,7 +83,7 @@ ptlw_vxxcx/
 ├── packageOrder/         # 订单分包
 ├── packageMerchant/      # 商家分包
 ├── packageUser/          # 用户分包
-├── cloudfunctions/       # 云函数（24个）
+├── cloudfunctions/       # 云函数（25个）
 └── utils/               # 工具函数
 ```
 
@@ -97,6 +97,7 @@ ptlw_vxxcx/
 | 3 | 已出餐 | 制作完成，等待取餐 |
 | 4 | 已完成 | 订单已完成 |
 | 5 | 已取消 | 订单已取消 |
+| 6 | 已退款 | 订单已退款 |
 
 ## 文档
 

@@ -113,7 +113,7 @@
 
 ### 3.1 云函数列表
 
-本项目包含 24 个云函数：
+本项目包含 25 个云函数：
 
 | 分类 | 云函数 | 说明 |
 |-----|-------|------|
@@ -127,6 +127,8 @@
 | 订单 | getOrderDetail | 获取订单详情 |
 | 订单 | getMerchantOrders | 获取商家订单 |
 | 订单 | updateOrderStatus | 更新订单状态 |
+| 订单 | refundOrder | 退款 |
+| 订单 | deleteOrder | 删除订单 |
 | 菜品 | manageDish | 菜品管理 |
 | 桌号 | getTables | 获取桌号列表 |
 | 桌号 | manageTable | 桌号管理 |
@@ -139,7 +141,6 @@
 | 地址 | setDefaultAddress | 设置默认地址 |
 | 店铺 | manageShop | 店铺信息管理 |
 | 商家 | merchantStats | 商家统计 |
-| 商家 | addMerchantWhitelist | 添加商家白名单 |
 | 数据库 | initDatabase | 初始化数据库 |
 
 ### 3.2 部署云函数

@@ -213,6 +213,26 @@
 }
 ```
 
+## 12. refundLogs（退款日志集合）
+
+```javascript
+{
+  _id: "退款日志ID",
+  orderId: "订单ID",
+  orderNo: "订单号",
+  outRefundNo: "退款单号",
+  transactionId: "微信支付交易号",
+  refundId: "微信退款ID",
+  totalFee: 5600,              // 订单总金额（分）
+  refundFee: 5600,             // 退款金额（分）
+  refundReason: "退款原因",
+  status: "success/failed/mock", // 退款状态
+  failReason: "失败原因",        // 失败时有值
+  operator: "操作人OpenID",
+  createTime: 1234567890000
+}
+```
+
 ---
 
 ## 集合创建顺序
@@ -230,6 +250,7 @@
 9. `orders` - 订单
 10. `config` - 系统配置
 11. `users` - 用户信息
+12. `refundLogs` - 退款日志
 
 ---
 
