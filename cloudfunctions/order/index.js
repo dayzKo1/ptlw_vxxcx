@@ -112,15 +112,17 @@ async function createPayment(event, context) {
     if (order.status !== 0) return { success: false, message: '订单状态不允许支付' }
 
     // 模拟支付（实际需配置微信支付）
+    const totalFee = Math.round(order.totalPrice * 100)  // 转换为分
     const payment = {
       timeStamp: String(Math.floor(Date.now() / 1000)),
       nonceStr: Math.random().toString(36).substr(2, 32),
       package: `prepay_id=mock_${order.orderNo}`,
       signType: 'MD5',
-      paySign: 'mock_sign'
+      paySign: 'mock_sign',
+      total_fee: totalFee  // 支付金额（分）
     }
 
-    return { success: true, payment }
+    return { success: true, payment, totalFee }
   } catch (err) {
     return { success: false, message: '创建支付失败' }
   }
