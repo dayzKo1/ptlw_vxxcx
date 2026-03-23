@@ -70,7 +70,7 @@ function getStats() {
 }
 
 // ==================== 订单 ====================
-function getOrders(status = -1) {
+function getOrders(status = -1, startDate = '', endDate = '') {
   return new Promise((resolve) => {
     if (isDevMode()) {
       let orders = [...mock.orders]
@@ -78,7 +78,7 @@ function getOrders(status = -1) {
       resolve(processOrders(orders))
       return
     }
-    callCloudFunction('order', 'getMerchantList', { status })
+    callCloudFunction('order', 'getMerchantList', { status, startDate, endDate })
       .then(res => resolve(res.success ? processOrders(res.data.orders) : []))
       .catch(() => resolve([]))
   })
@@ -213,14 +213,26 @@ function getCategories() {
       resolve([...mock.categories])
       return
     }
-    dbQuery('categories', { status: 1 }, { orderBy: { field: 'sort', order: 'asc' } })
-      .then(categories => resolve(categories))
+    callCloudFunction('dish', 'categoryList', {})
+      .then(res => resolve(res.data || []))
       .catch(() => resolve([
-        { _id: '1', name: '热菜' },
-        { _id: '2', name: '凉菜' },
-        { _id: '3', name: '主食' }
+        { _id: '1', name: '热菜', status: 1 },
+        { _id: '2', name: '凉菜', status: 1 },
+        { _id: '3', name: '主食', status: 1 }
       ]))
   })
+}
+
+function createCategory(categoryData) {
+  return callCloudFunction('dish', 'categoryCreate', { categoryData })
+}
+
+function updateCategory(categoryId, categoryData) {
+  return callCloudFunction('dish', 'categoryUpdate', { categoryId, categoryData })
+}
+
+function deleteCategory(categoryId) {
+  return callCloudFunction('dish', 'categoryDelete', { categoryId })
 }
 
 // ==================== 店铺设置 ====================
@@ -277,13 +289,16 @@ module.exports = {
   toggleDishStatus,
   deleteDish,
 
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+
   getTables,
   createTable,
   updateTable,
   toggleTableStatus,
   deleteTable,
-
-  getCategories,
 
   getShopInfo,
   updateShopInfo,

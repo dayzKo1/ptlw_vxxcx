@@ -103,12 +103,14 @@ Page({
       wx.hideLoading()
 
       if (loginRes.result && loginRes.result.success) {
-        const { openid, role } = loginRes.result.data
+        const { openid, role, isMerchant, nickName, avatarUrl } = loginRes.result.data
 
         const userData = {
-          ...userInfo,
+          nickName: nickName || userInfo.nickName,
+          avatarUrl: avatarUrl || userInfo.avatarUrl,
           openid: openid,
           role: role,
+          isMerchant: isMerchant || role === 'merchant',
           loginTime: new Date().getTime()
         }
 

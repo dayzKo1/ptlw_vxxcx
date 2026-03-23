@@ -1,6 +1,6 @@
 /**
  * 菜品服务云函数
- * 整合：manageDish 的所有操作
+ * 整合：manageDish 的所有操作 + 分类管理
  */
 
 const cloud = require('wx-server-sdk')
@@ -11,6 +11,12 @@ const db = cloud.database()
 exports.main = async (event, context) => {
   const { action } = event
 
+  // 分类管理
+  if (action.startsWith('category')) {
+    return await handleCategory(event, context)
+  }
+
+  // 菜品管理
   switch (action) {
     case 'list': return await getDishList(event, context)
     case 'detail': return await getDishDetail(event, context)
@@ -19,6 +25,108 @@ exports.main = async (event, context) => {
     case 'delete': return await deleteDish(event, context)
     case 'toggle': return await toggleDishStatus(event, context)
     default: return { success: false, message: '未知操作' }
+  }
+}
+
+// ==================== 分类管理 ====================
+async function handleCategory(event, context) {
+  const { action } = event
+
+  switch (action) {
+    case 'categoryList': return await getCategoryList(event, context)
+    case 'categoryCreate': return await createCategory(event, context)
+    case 'categoryUpdate': return await updateCategory(event, context)
+    case 'categoryDelete': return await deleteCategory(event, context)
+    default: return { success: false, message: '未知分类操作' }
+  }
+}
+
+async function getCategoryList(event, context) {
+  const { status } = event
+
+  try {
+    let query = db.collection('categories')
+    if (status !== undefined) {
+      query = query.where({ status })
+    }
+
+    const res = await query.orderBy('sort', 'asc').get()
+    return { success: true, data: res.data }
+  } catch (err) {
+    return { success: false, message: '获取分类失败' }
+  }
+}
+
+async function createCategory(event, context) {
+  if (!await checkMerchantPermission()) {
+    return { success: false, message: '无权限' }
+  }
+
+  const { categoryData } = event
+  if (!categoryData?.name) {
+    return { success: false, message: '分类名称不能为空' }
+  }
+
+  try {
+    const category = {
+      name: categoryData.name,
+      description: categoryData.description || '',
+      emoji: categoryData.emoji || '🍽️',
+      image: categoryData.image || '',
+      sort: categoryData.sort || 0,
+      status: categoryData.status ?? 1,
+      createTime: Date.now(),
+      updateTime: Date.now()
+    }
+
+    const res = await db.collection('categories').add({ data: category })
+    return { success: true, data: { _id: res._id, ...category } }
+  } catch (err) {
+    return { success: false, message: '创建分类失败' }
+  }
+}
+
+async function updateCategory(event, context) {
+  if (!await checkMerchantPermission()) {
+    return { success: false, message: '无权限' }
+  }
+
+  const { categoryId, categoryData } = event
+
+  try {
+    await db.collection('categories').doc(categoryId).update({
+      data: { ...categoryData, updateTime: Date.now() }
+    })
+    return { success: true, message: '更新成功' }
+  } catch (err) {
+    return { success: false, message: '更新分类失败' }
+  }
+}
+
+async function deleteCategory(event, context) {
+  if (!await checkMerchantPermission()) {
+    return { success: false, message: '无权限' }
+  }
+
+  const { categoryId } = event
+
+  try {
+    // 检查分类下是否有菜品
+    const dishesRes = await db.collection('dishes')
+      .where({ categoryId })
+      .count()
+
+    if (dishesRes.total > 0) {
+      return { 
+        success: false, 
+        message: `该分类下有 ${dishesRes.total} 道菜品，请先移动或删除菜品` 
+      }
+    }
+
+    await db.collection('categories').doc(categoryId).remove()
+    return { success: true, message: '删除成功' }
+  } catch (err) {
+    return { success: false, message: '删除分类失败' }
   }
 }
 

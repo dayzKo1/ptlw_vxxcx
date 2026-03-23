@@ -277,7 +277,7 @@ async function getUserOrders(event, context) {
 // ==================== 获取商家订单列表 ====================
 async function getMerchantOrders(event, context) {
   const wxContext = cloud.getWXContext()
-  const { status, page = 1, pageSize = 50 } = event
+  const { status, startDate, endDate, page = 1, pageSize = 50 } = event
 
   if (!await checkMerchantPermission(wxContext.OPENID)) {
     return { success: false, message: '无权限' }
@@ -285,12 +285,24 @@ async function getMerchantOrders(event, context) {
 
   try {
     let query = db.collection('orders')
+    
+    // 状态筛选
     if (status !== undefined && status !== -1) {
       if (Array.isArray(status)) {
         query = query.where({ status: _.in(status) })
       } else {
         query = query.where({ status })
       }
+    }
+    
+    // 日期筛选
+    if (startDate) {
+      const startTimestamp = new Date(startDate + 'T00:00:00').getTime()
+      query = query.where({ createTime: _.gte(startTimestamp) })
+    }
+    if (endDate) {
+      const endTimestamp = new Date(endDate + 'T23:59:59').getTime()
+      query = query.where({ createTime: _.lte(endTimestamp) })
     }
 
     const countRes = await query.count()

@@ -210,9 +210,9 @@ Page({
 
   async loadOrders() {
     try {
-      let orders = await api.getOrders(this.data.orderStatus)
+      let orders = await api.getOrders(this.data.orderStatus, this.data.filterDate, '')
       
-      // 按日期筛选
+      // 按日期筛选（前端二次筛选，云函数已支持）
       if (this.data.filterDate) {
         orders = this.filterOrdersByDate(orders, this.data.filterDate)
       }
