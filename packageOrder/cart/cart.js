@@ -86,7 +86,6 @@ Page({
     const tableNumber = wx.getStorageSync('tableNumber') || ''
     this.setData({ tableNumber: tableNumber || '未选择' })
     
-    // 有桌号时强制为堂食模式
     if (tableNumber && tableNumber !== '0' && tableNumber !== '未选择') {
       this.setData({ deliveryMode: 'dine-in' })
     }
@@ -127,9 +126,7 @@ Page({
   },
 
   onRemarkInput(e) {
-    this.setData({
-      remark: e.detail.value
-    })
+    this.setData({ remark: e.detail.value })
   },
 
   switchDeliveryMode(e) {
@@ -146,19 +143,13 @@ Page({
       })
 
       if (res.result.success) {
-        const addresses = res.result.addresses
+        const addresses = res.result.data || []
         const defaultAddress = addresses.find(addr => addr.isDefault)
-        this.setData({
-          addresses,
-          addressId: defaultAddress ? defaultAddress._id : ''
-        })
+        this.setData({ addresses, addressId: defaultAddress ? defaultAddress._id : '' })
       }
     } catch (err) {
       console.error('加载地址失败', err)
-      this.setData({
-        addresses: [],
-        addressId: ''
-      })
+      this.setData({ addresses: [], addressId: '' })
     }
   },
 
@@ -168,53 +159,40 @@ Page({
   },
 
   addAddress() {
-    wx.navigateTo({
-      url: '/packageUser/addressEdit/addressEdit'
-    })
+    wx.navigateTo({ url: '/packageUser/addressEdit/addressEdit' })
   },
 
   async submitOrder() {
     if (this.data.cartItems.length === 0) {
-      wx.showToast({
-        title: '购物车为空',
-        icon: 'none'
-      })
+      wx.showToast({ title: '购物车为空', icon: 'none' })
       return
     }
 
     if (this.data.deliveryMode === 'delivery' && !this.data.addressId) {
-      wx.showToast({
-        title: '请选择配送地址',
-        icon: 'none'
-      })
+      wx.showToast({ title: '请选择配送地址', icon: 'none' })
       return
     }
 
-    wx.showLoading({
-      title: '提交中...'
-    })
+    wx.showLoading({ title: '提交中...' })
 
     try {
-      const orderData = {
-        tableNumber: this.data.tableNumber || '0',
-        items: this.data.cartItems.map(item => ({
-          dishId: item._id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image
-        })),
-        totalPrice: parseFloat(this.data.totalPrice),
-        remark: this.data.remark,
-        deliveryMode: this.data.deliveryMode,
-        addressId: this.data.addressId || '',
-        status: 0,
-        createTime: new Date().getTime()
-      }
-
       const res = await wx.cloud.callFunction({
-        name: 'createOrder',
-        data: orderData
+        name: 'order',
+        data: {
+          action: 'create',
+          tableNumber: this.data.tableNumber || '0',
+          items: this.data.cartItems.map(item => ({
+            dishId: item._id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          totalPrice: parseFloat(this.data.totalPrice),
+          remark: this.data.remark,
+          deliveryMode: this.data.deliveryMode,
+          addressId: this.data.addressId || ''
+        }
       })
 
       wx.hideLoading()
@@ -227,56 +205,21 @@ Page({
           duration: 2000,
           success: () => {
             setTimeout(() => {
-              wx.switchTab({
-                url: '/pages/order/order'
-              })
+              wx.switchTab({ url: '/pages/order/order' })
             }, 2000)
           }
         })
       } else {
-        wx.showToast({
-          title: res.result.message || '提交失败',
-          icon: 'none'
-        })
+        wx.showToast({ title: res.result.message || '提交失败', icon: 'none' })
       }
     } catch (err) {
       wx.hideLoading()
       console.error('提交订单失败', err)
-      wx.showToast({
-        title: '提交失败，请重试',
-        icon: 'none'
-      })
+      wx.showToast({ title: '提交失败，请重试', icon: 'none' })
     }
   },
 
   goToMenu() {
-    wx.switchTab({
-      url: '/pages/menu/menu'
-    })
-  }
-})    })
-            }, 2000)
-          }
-        })
-      } else {
-        wx.showToast({
-          title: res.result.message || '提交失败',
-          icon: 'none'
-        })
-      }
-    } catch (err) {
-      wx.hideLoading()
-      console.error('提交订单失败', err)
-      wx.showToast({
-        title: '提交失败，请重试',
-        icon: 'none'
-      })
-    }
-  },
-
-  goToMenu() {
-    wx.switchTab({
-      url: '/pages/menu/menu'
-    })
+    wx.switchTab({ url: '/pages/menu/menu' })
   }
 })
